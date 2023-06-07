@@ -29,7 +29,10 @@ Shader::~Shader() {
 	glDeleteProgram(m_ShaderID);
 }
 
- 
+Shader::Shader(Shader&& other) noexcept {
+	*this = std::move(other);
+}
+
 Shader& Shader::operator=(Shader&& other) noexcept {
 	if (this == &other) {
 		return *this;
@@ -39,10 +42,6 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 	other.m_ShaderID = 0;
 
 	return *this;
-}
-
-Shader::Shader(Shader&& other) noexcept {
-	*this = std::move(other);
 }
 
 unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, const unsigned int& p_ShaderType) const {

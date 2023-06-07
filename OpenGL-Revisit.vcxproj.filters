@@ -21,7 +21,7 @@
     <ClCompile Include="src\rendering\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rendering\VertexBuffer.cpp">
+    <ClCompile Include="src\rendering\Buffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,7 +33,7 @@
     <ClInclude Include="src\rendering\Shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\rendering\VertexBuffer.hpp">
+    <ClInclude Include="src\rendering\Buffers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

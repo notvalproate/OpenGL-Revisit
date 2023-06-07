@@ -5,7 +5,9 @@
 #include <vector>
 
 #include "rendering/Shader.hpp"
-#include "rendering/VertexBuffer.hpp"
+//#include "rendering/VertexBuffer.hpp"
+//#include "rendering/IndexBuffer.hpp"
+#include "rendering/Buffers.hpp"
 
 int main() {
     if (!glfwInit()) {
@@ -52,10 +54,8 @@ int main() {
     glEnableVertexAttribArray(1);
 
     //INDEX BUFFER
-    unsigned int ib;
-    glGenBuffers(1, &ib);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * t_Indices.size(), &t_Indices[0], GL_STATIC_DRAW);
+    IndexBuffer IBO(t_Indices);
+    IBO.Bind();
 
     //SHADER
     Shader t_GlobalShader("src/shaders/global/vertex.shader", "src/shaders/global/fragment.shader");

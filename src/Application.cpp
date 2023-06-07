@@ -28,11 +28,12 @@ int main() {
     std::vector<float> vertices = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+        1.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f
     };
 
     std::vector<unsigned int> indices = { 
-        0, 1, 2
+        0, 1, 2, 3
     };
 
     //VERTEX BUFFER
@@ -62,9 +63,9 @@ int main() {
     t_GlobalShader.Bind();
 
     while (!glfwWindowShouldClose(window)) { 
-        glClear(GL_COLOR_BUFFER_BIT);  
-  
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr); 
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, nullptr); 
 
         glfwSwapBuffers(window); 
         glfwPollEvents();  
@@ -72,5 +73,4 @@ int main() {
 
     glfwTerminate();
     return 0;
-	return 0;
 }

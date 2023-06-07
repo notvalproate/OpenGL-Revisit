@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-Shader::Shader(const std::string& p_VertexPath, const std::string& p_FragmentPath) {
+Shader::Shader(const std::filesystem::path& p_VertexPath, const std::filesystem::path& p_FragmentPath) {
 	m_ShaderID = glCreateProgram();
 	unsigned int t_VertexShader = 0, t_FragmentShader = 0;
 
@@ -29,8 +29,28 @@ Shader::~Shader() {
 	glDeleteProgram(m_ShaderID);
 }
 
-unsigned int Shader::CompileShader(const std::string& p_ShaderPath, const unsigned int& p_ShaderType) const {
-	std::ifstream t_File(p_ShaderPath.c_str());
+ 
+Shader& Shader::operator=(Shader&& other) noexcept {
+	if (this == &other) {
+		return *this;
+	}
+
+	m_ShaderID = other.m_ShaderID;
+	other.m_ShaderID = 0;
+
+	return *this;
+}
+
+Shader::Shader(Shader&& other) noexcept {
+	*this = std::move(other);
+}
+
+unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, const unsigned int& p_ShaderType) const {
+	if (!std::filesystem::exists(p_ShaderPath)) {
+		throw std::runtime_error("Shader Path Not found! Path: " + p_ShaderPath.string());
+	}
+	
+	std::ifstream t_File(p_ShaderPath);
 	std::string t_ShaderSrc((std::istreambuf_iterator<char>(t_File)), std::istreambuf_iterator<char>());
 
 	unsigned int t_Shader = glCreateShader(p_ShaderType);

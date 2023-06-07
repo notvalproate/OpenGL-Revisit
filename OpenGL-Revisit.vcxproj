@@ -150,6 +150,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\rendering\Buffers.cpp" />
     <ClCompile Include="src\rendering\Shader.cpp" />
+    <ClCompile Include="src\rendering\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\global\fragment.shader" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="src\rendering\Buffers.hpp" />
     <ClInclude Include="src\rendering\Shader.hpp" />
+    <ClInclude Include="src\rendering\VertexArray.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

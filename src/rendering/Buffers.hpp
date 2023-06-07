@@ -21,6 +21,8 @@ public:
 
 	void Bind();
 	void Unbind();
+
+	[[nodiscard]] unsigned int GetID() const { return m_BufferID; }
 private:
 	unsigned int m_BufferID;
 	GLenum m_BufferType;

@@ -5,9 +5,8 @@
 #include <vector>
 
 #include "rendering/Shader.hpp"
-//#include "rendering/VertexBuffer.hpp"
-//#include "rendering/IndexBuffer.hpp"
 #include "rendering/Buffers.hpp"
+#include "rendering/VertexArray.hpp"
 
 int main() {
     if (!glfwInit()) {
@@ -29,10 +28,11 @@ int main() {
     }
 
     std::vector<float> t_Vertices = {
+        //POSITION          //COLOR
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-        1.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f
+         0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+         1.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f
     };
 
     std::vector<unsigned int> t_Indices = { 
@@ -44,14 +44,8 @@ int main() {
     VBO.Bind();
 
     //VERTEX ARRAY
-    unsigned int va;
-    glGenVertexArrays(1, &va);
-    glBindVertexArray(va);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    VertexArray VAO(VBO);
+    VAO.Bind();
 
     //INDEX BUFFER
     IndexBuffer IBO(t_Indices);

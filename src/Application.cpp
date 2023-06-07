@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "rendering/Shader.hpp"
+#include "rendering/VertexBuffer.hpp"
 
 int main() {
     if (!glfwInit()) {
@@ -25,22 +26,20 @@ int main() {
         return -1;
     }
 
-    std::vector<float> vertices = {
+    std::vector<float> t_Vertices = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
         1.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f
     };
 
-    std::vector<unsigned int> indices = { 
+    std::vector<unsigned int> t_Indices = { 
         0, 1, 2, 3
     };
 
     //VERTEX BUFFER
-    unsigned int vb;
-    glGenBuffers(1, &vb);
-    glBindBuffer(GL_ARRAY_BUFFER, vb);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+    VertexBuffer VBO(t_Vertices);
+    VBO.Bind();
 
     //VERTEX ARRAY
     unsigned int va;
@@ -56,7 +55,7 @@ int main() {
     unsigned int ib;
     glGenBuffers(1, &ib);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * t_Indices.size(), &t_Indices[0], GL_STATIC_DRAW);
 
     //SHADER
     Shader t_GlobalShader("src/shaders/global/vertex.shader", "src/shaders/global/fragment.shader");
@@ -65,8 +64,8 @@ int main() {
     while (!glfwWindowShouldClose(window)) { 
         glClear(GL_COLOR_BUFFER_BIT);
         
-        glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, nullptr); 
-
+        glDrawElements(GL_TRIANGLE_STRIP, t_Indices.size(), GL_UNSIGNED_INT, nullptr);
+         
         glfwSwapBuffers(window); 
         glfwPollEvents();  
     }

@@ -4,7 +4,6 @@
 
 class Shader {
 public:
-	Shader() = delete;
 	Shader(const std::filesystem::path& p_VertexPath, const std::filesystem::path& p_FragmentPath);
 	~Shader();
 
@@ -22,4 +21,6 @@ private:
 	unsigned int m_ShaderID;
 
 	unsigned int CompileShader(const std::filesystem::path& p_ShaderPath, const unsigned int& p_ShaderType) const;
+	std::string GetShaderSrc(const std::filesystem::path& p_ShaderPath) const;
+	void CheckCompilationStatus(const unsigned int& p_Shader) const;
 };

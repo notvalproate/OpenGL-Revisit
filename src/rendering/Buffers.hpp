@@ -5,7 +5,7 @@
 class BufferBase {
 public:
 	template<typename T>
-	BufferBase(const std::vector<T>& p_Data, const GLenum& p_Type) : m_BufferType(p_Type) { 
+	BufferBase(const std::vector<T>& p_Data, GLenum p_Type) : m_BufferType(p_Type) { 
 		glGenBuffers(1, &m_BufferID); 
 		glBindBuffer(m_BufferType, m_BufferID); 
 		glBufferData(m_BufferType, sizeof(T) * p_Data.size(), p_Data.data(), GL_STATIC_DRAW); 

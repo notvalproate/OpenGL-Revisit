@@ -44,7 +44,7 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 	return *this;
 }
 
-unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, const unsigned int& p_ShaderType) const {
+unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, unsigned int p_ShaderType) const {
 	if (!std::filesystem::is_regular_file(p_ShaderPath)) {
 		throw std::runtime_error("Shader Path Not found or not a regular file! Path: " + p_ShaderPath.string());
 	}
@@ -69,7 +69,7 @@ std::string Shader::GetShaderSrc(const std::filesystem::path& p_ShaderPath) cons
 	return std::string((std::istreambuf_iterator<char>(t_File)), std::istreambuf_iterator<char>());
 }
 
-void Shader::CheckCompilationStatus(const unsigned int& p_Shader) const {
+void Shader::CheckCompilationStatus(unsigned int p_Shader) const {
 	int result;
 	glGetShaderiv(p_Shader, GL_COMPILE_STATUS, &result); 
 	if (result == GL_FALSE) {

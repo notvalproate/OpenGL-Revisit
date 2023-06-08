@@ -20,7 +20,7 @@ public:
 private:
 	unsigned int m_ShaderID;
 
-	unsigned int CompileShader(const std::filesystem::path& p_ShaderPath, const unsigned int& p_ShaderType) const;
+	unsigned int CompileShader(const std::filesystem::path& p_ShaderPath, unsigned int p_ShaderType) const;
 	std::string GetShaderSrc(const std::filesystem::path& p_ShaderPath) const;
-	void CheckCompilationStatus(const unsigned int& p_Shader) const;
+	void CheckCompilationStatus(unsigned int p_Shader) const;
 };

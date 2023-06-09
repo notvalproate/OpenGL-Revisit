@@ -1,16 +1,25 @@
 #include "VertexArray.hpp"
+#include <iostream>
+#include <numeric>
 
-VertexArray::VertexArray(VertexBuffer& p_VBO) {
+VertexArray::VertexArray(VertexBuffer& p_VBO, const std::span<unsigned int>& p_Layout) {
 	glGenVertexArrays(1, &m_ArrayID);
 	glBindVertexArray(m_ArrayID);
 	p_VBO.Bind();
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)0); 
-	glEnableVertexAttribArray(0); 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)(3 * sizeof(float))); 
-	glEnableVertexAttribArray(1); 
+	size_t i = 0;
+	size_t t_Offset = 0;
+	size_t t_TypeSize = sizeof(float);
+	size_t t_Stride = std::accumulate(p_Layout.begin(), p_Layout.end(), 0) * sizeof(float);
+
+	for (const auto t_Element : p_Layout) {
+		glVertexAttribPointer(i, t_Element, GL_FLOAT, GL_FALSE, t_Stride, (const void*)t_Offset); 
+		glEnableVertexAttribArray(i++);
+		t_Offset += t_TypeSize * t_Element; 
+	}
 
 	glBindVertexArray(0);
+	p_VBO.Unbind();
 }
 
 VertexArray::~VertexArray() {

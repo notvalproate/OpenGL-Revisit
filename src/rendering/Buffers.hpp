@@ -1,14 +1,14 @@
 #pragma once
 #include <GL/glew.h>
-#include <vector>
+#include <span>
 
 class BufferBase {
 public:
 	template<typename T>
-	BufferBase(const std::vector<T>& p_Data, GLenum p_Type) : m_BufferType(p_Type) { 
-		glGenBuffers(1, &m_BufferID); 
-		glBindBuffer(m_BufferType, m_BufferID); 
-		glBufferData(m_BufferType, sizeof(T) * p_Data.size(), p_Data.data(), GL_STATIC_DRAW); 
+	BufferBase(const std::span<T>& p_Data, unsigned int p_Type) : m_BufferType(p_Type) {
+		glGenBuffers(1, &m_BufferID);
+		glBindBuffer(m_BufferType, m_BufferID);
+		glBufferData(m_BufferType, sizeof(T) * p_Data.size(), p_Data.data(), GL_STATIC_DRAW);
 		glBindBuffer(m_BufferType, 0);
 	}
 	~BufferBase();
@@ -23,17 +23,23 @@ public:
 	void Unbind();
 
 	[[nodiscard]] unsigned int GetID() const { return m_BufferID; }
-private:
+protected:
 	unsigned int m_BufferID;
-	GLenum m_BufferType;
+	unsigned int m_BufferType;
 };
 
 class VertexBuffer : public BufferBase {
 public:
-	VertexBuffer(const std::vector<float>& p_Data) : BufferBase(p_Data, GL_ARRAY_BUFFER) {};
+	VertexBuffer(const std::span<float>& p_Data) : BufferBase(p_Data, GL_ARRAY_BUFFER) { }
+private:
 };
 
 class IndexBuffer : public BufferBase {
 public:
-	IndexBuffer(const std::vector<unsigned int>& p_Data) : BufferBase(p_Data, GL_ELEMENT_ARRAY_BUFFER) {};
+	IndexBuffer(const std::span<unsigned int>& p_Data) 
+		: BufferBase(p_Data, GL_ELEMENT_ARRAY_BUFFER)
+		, m_IndexCount(p_Data.size()) { }
+	[[nodiscard]] unsigned int GetCount() const { return m_IndexCount; }
+private:
+	size_t m_IndexCount;
 };

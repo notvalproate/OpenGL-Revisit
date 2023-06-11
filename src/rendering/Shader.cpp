@@ -2,7 +2,6 @@
 #include "GL/glew.h"
 #include <fstream>
 #include <iostream>
-#include <vector>
 #include "../util/ErrorHandling.hpp"
 
 Shader::Shader(std::wstring_view p_VertexPath, std::wstring_view p_FragmentPath) {
@@ -84,18 +83,19 @@ void Shader::CheckCompilationStatus(unsigned int p_Shader) const {
 	if (result == GL_FALSE) {
 		int length;
 		GLCall(glGetShaderiv(p_Shader, GL_INFO_LOG_LENGTH, &length));
-		std::vector<char> message(length);
-		GLCall(glGetShaderInfoLog(p_Shader, length, &length, message.data()));
+		char message[256];
+		GLCall(glGetShaderInfoLog(p_Shader, length, &length, message));
 		GLCall(glDeleteShader(p_Shader));
 
-		throw std::runtime_error("Shader Compilation Error: " + std::string(message.data()));
+		throw std::runtime_error("Shader Compilation Error: " + std::string(message));
 	}
 }
 	
-int Shader::GetUniformLocation(const std::string& p_UniformName) {
-	if (m_UniformCache.find(p_UniformName) != m_UniformCache.end()) {
-		std::cout << "Got " << p_UniformName << " from cache!";
-		return m_UniformCache[p_UniformName];
+int Shader::GetUniformLocation(std::string_view p_UniformName) { 
+	std::string t_Uniform(p_UniformName);
+
+	if (m_UniformCache.find(t_Uniform) != m_UniformCache.end()) {
+		return m_UniformCache[t_Uniform];
 	}
 
 	Bind();
@@ -105,12 +105,12 @@ int Shader::GetUniformLocation(const std::string& p_UniformName) {
 		std::cout << "Warning: Uniform " << p_UniformName << " doesn't exist!" << std::endl;
 	}
 
-	m_UniformCache[p_UniformName] = t_Location;
+	m_UniformCache[t_Uniform] = t_Location;
 	return t_Location;
 }
 
 //UNIFORM SETTERS
 
-void Shader::SetUniform1i(const std::string& p_UniformName, const int p_Value) {
+void Shader::SetUniform1i(std::string_view p_UniformName, const int p_Value) {
 	GLCall(glUniform1i(GetUniformLocation(p_UniformName), p_Value));
 }

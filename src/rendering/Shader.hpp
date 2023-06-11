@@ -18,9 +18,9 @@ public:
 	void Unbind() const;
 
 	[[nodiscard]] unsigned int GetID() const { return m_ShaderID; }
-	[[nodiscard]] int GetUniformLocation(const std::string& p_UniformName);
+	[[nodiscard]] int GetUniformLocation(std::string_view p_UniformName);
 
-	void SetUniform1i(const std::string& p_UniformName, const int p_Value);
+	void SetUniform1i(std::string_view p_UniformName, const int p_Value);
 private:
 	unsigned int m_ShaderID;
 	std::unordered_map<std::string, int> m_UniformCache;

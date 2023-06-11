@@ -1,7 +1,6 @@
 #include "Texture2D.hpp"
 #include <iostream>
 #include <stb_image/stb_image.h>
-#include <cassert>
 #include "ErrorHandling.hpp"
 
 Texture2D::Texture2D(std::string_view p_Path, unsigned int p_ScaleMode, unsigned int p_WrapMode) {
@@ -29,12 +28,11 @@ Texture2D::Texture2D(std::string_view p_Path, unsigned int p_ScaleMode, unsigned
 	Unbind(); 
 }
 
-void Texture2D::Bind(unsigned int p_Slot) const {
-	//assert((p_Slot < 32 && p_Slot >= 0) && "Texture slot should be a value from 0 to 31!");
+void Texture2D::Bind(unsigned int p_Slot) {
 	GLCall(glActiveTexture(GL_TEXTURE0 + p_Slot));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
 }
 
-void Texture2D::Unbind() const {
+void Texture2D::Unbind() {
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }

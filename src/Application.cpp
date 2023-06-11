@@ -10,7 +10,6 @@
 
 #include "util/Texture2D.hpp"
 #include "util/ErrorHandling.hpp"
-#include <unordered_map>
 
 GLFWwindow* InitAll();
 
@@ -59,9 +58,9 @@ int main() {
     
     t_CatTex.Bind(0);
     t_GlobalShader->SetUniform1i("v_Texture1", 0);
+
     t_CattoTex.Bind(1);
     t_GlobalShader->SetUniform1i("v_Texture2", 1);
-
 
     while (!glfwWindowShouldClose(window)) { 
         glClear(GL_COLOR_BUFFER_BIT);

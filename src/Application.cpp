@@ -10,15 +10,18 @@
 
 #include "util/Texture2D.hpp"
 #include "util/ErrorHandling.hpp"
+#include "glm/glm.hpp"
 
 GLFWwindow* InitAll();
 
 int main() {
+    glm::vec3 a = glm::abs(glm::vec3(0.0, 0.1, 0.2)); 
+
     GLFWwindow* window = InitAll();
 
     if(!window) return -1;
 
-    Shader* t_GlobalShader = new Shader(L"src/shaders/global/global.vsh", L"src/shaders/global/global.fsh");
+    Shader* t_GlobalShader = new Shader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader");
     VertexArray* VAO;
     IndexBuffer* IBO;
 
@@ -56,15 +59,21 @@ int main() {
         IBO = new IndexBuffer(t_Indices);
     }
     
+    //Binding texture to a slot and setting the uniform to that slot
     t_CatTex.Bind(0);
     t_GlobalShader->SetUniform1i("v_Texture1", 0);
 
     t_CattoTex.Bind(1);
     t_GlobalShader->SetUniform1i("v_Texture2", 1);
 
-    while (!glfwWindowShouldClose(window)) { 
+    while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
+         
+        t_CatTex.Bind(0);  
+        t_GlobalShader->SetUniform1i("v_Texture1", 0); 
 
+        t_CattoTex.Bind(1); 
+        t_GlobalShader->SetUniform1i("v_Texture2", 1); 
         t_Render(VAO, IBO, t_GlobalShader);
 
         glfwSwapBuffers(window); 

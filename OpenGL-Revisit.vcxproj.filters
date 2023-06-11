@@ -38,8 +38,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\global\global.vsh" />
-    <None Include="src\shaders\global\global.fsh" />
+    <None Include="src\shaders\global\vertex.shader" />
+    <None Include="src\shaders\global\fragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rendering\Shader.hpp">

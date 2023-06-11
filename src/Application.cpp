@@ -8,50 +8,65 @@
 #include "rendering/Buffers.hpp"
 #include "rendering/VertexArray.hpp"
 
+#include "util/Texture2D.hpp"
+#include "util/ErrorHandling.hpp"
+#include <unordered_map>
+
 GLFWwindow* InitAll();
 
 int main() {
     GLFWwindow* window = InitAll();
-    Shader* t_GlobalShader = new Shader("src/shaders/global/vertex.shader", "src/shaders/global/fragment.shader");
-    VertexArray* VAO; 
-    IndexBuffer* IBO;  
+
+    if(!window) return -1;
+
+    Shader* t_GlobalShader = new Shader(L"src/shaders/global/global.vsh", L"src/shaders/global/global.fsh");
+    VertexArray* VAO;
+    IndexBuffer* IBO;
+
+    Texture2D t_CatTex("assets/textures/cat.png");
+    Texture2D t_CattoTex("assets/textures/catto.png");
 
     //Temporary Lambda to render a mesh
-    const auto t_TempRender = [](VertexArray* VAO, IndexBuffer* IBO, Shader* Shdr) {
-        VAO->Bind(); 
-        IBO->Bind(); 
-        Shdr->Bind(); 
-        glDrawElements(GL_TRIANGLES, IBO->GetCount(), GL_UNSIGNED_INT, nullptr); 
-    }; 
+    const auto t_Render = [](VertexArray* VAO, IndexBuffer* IBO, Shader* Shdr) {
+        VAO->Bind();
+        IBO->Bind();
+        Shdr->Bind();
+        GLCall(glDrawElements(GL_TRIANGLES, IBO->GetCount(), GL_UNSIGNED_INT, nullptr));
+    };
 
-    //Temporary scope to show how to initialize a mesh
+    //Temporary scope to show how to initialize vao and ibo in a mesh object
     {
         //All data passed in as parameters
-
         float t_Vertices[] = {
-            //POSITION          //COLOR
-            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-             0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-             0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-             1.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f
+            //POSITION          //TEXCOORD  //COLOR
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+             0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f
         };
 
-        unsigned int t_Layout[] = { 3, 3 };
+        unsigned int t_Layout[] = { 3, 2, 3 };
 
         unsigned int t_Indices[] = {
             0, 1, 2,
-            1, 2, 3,
+            2, 3, 0
         };
 
         VertexBuffer VBO(t_Vertices);
         VAO = new VertexArray(VBO, t_Layout);
         IBO = new IndexBuffer(t_Indices);
     }
+    
+    t_CatTex.Bind(0);
+    t_GlobalShader->SetUniform1i("v_Texture1", 0);
+    t_CattoTex.Bind(1);
+    t_GlobalShader->SetUniform1i("v_Texture2", 1);
+
 
     while (!glfwWindowShouldClose(window)) { 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        t_TempRender(VAO, IBO, t_GlobalShader);
+        t_Render(VAO, IBO, t_GlobalShader);
 
         glfwSwapBuffers(window); 
         glfwPollEvents();  
@@ -81,6 +96,9 @@ GLFWwindow* InitAll() {
         glfwTerminate();
         return nullptr;
     }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     return window;
 }

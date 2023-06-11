@@ -3,9 +3,10 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include "../util/ErrorHandling.hpp"
 
-Shader::Shader(const std::filesystem::path& p_VertexPath, const std::filesystem::path& p_FragmentPath) {
-	m_ShaderID = glCreateProgram();
+Shader::Shader(std::wstring_view p_VertexPath, std::wstring_view p_FragmentPath) {
+	GLCall(m_ShaderID = glCreateProgram());
 	unsigned int t_VertexShader = 0, t_FragmentShader = 0;
 
 	try {
@@ -16,17 +17,17 @@ Shader::Shader(const std::filesystem::path& p_VertexPath, const std::filesystem:
 		std::cout << e.what() << std::endl;
 	}
 
-	glAttachShader(m_ShaderID, t_VertexShader);
-	glAttachShader(m_ShaderID, t_FragmentShader);
-	glLinkProgram(m_ShaderID);
-	glValidateProgram(m_ShaderID);
+	GLCall(glAttachShader(m_ShaderID, t_VertexShader));
+	GLCall(glAttachShader(m_ShaderID, t_FragmentShader));
+	GLCall(glLinkProgram(m_ShaderID));
+	GLCall(glValidateProgram(m_ShaderID));
 
-	glDeleteShader(t_VertexShader);
-	glDeleteShader(t_FragmentShader);
+	GLCall(glDeleteShader(t_VertexShader));
+	GLCall(glDeleteShader(t_FragmentShader));
 }
 
 Shader::~Shader() {
-	glDeleteProgram(m_ShaderID);
+	GLCall(glDeleteProgram(m_ShaderID));
 }
 
 Shader::Shader(Shader&& other) noexcept {
@@ -45,11 +46,11 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 }
 
 void Shader::Bind() const {
-	glUseProgram(m_ShaderID);
+	GLCall(glUseProgram(m_ShaderID));
 }
 
 void Shader::Unbind() const {
-	glUseProgram(0);
+	GLCall(glUseProgram(0));
 }
 
 unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, unsigned int p_ShaderType) const {
@@ -59,10 +60,10 @@ unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, un
 
 	std::string t_Src = GetShaderSrc(p_ShaderPath);
 	const char* t_ShaderSrc = t_Src.c_str();
-	unsigned int t_Shader = glCreateShader(p_ShaderType);
+	GLCall(unsigned int t_Shader = glCreateShader(p_ShaderType));
 
-	glShaderSource(t_Shader, 1, &t_ShaderSrc, NULL);
-	glCompileShader(t_Shader);
+	GLCall(glShaderSource(t_Shader, 1, &t_ShaderSrc, NULL));
+	GLCall(glCompileShader(t_Shader));
 
 	CheckCompilationStatus(t_Shader);
 
@@ -79,14 +80,37 @@ std::string Shader::GetShaderSrc(const std::filesystem::path& p_ShaderPath) cons
 
 void Shader::CheckCompilationStatus(unsigned int p_Shader) const {
 	int result;
-	glGetShaderiv(p_Shader, GL_COMPILE_STATUS, &result);
+	GLCall(glGetShaderiv(p_Shader, GL_COMPILE_STATUS, &result));
 	if (result == GL_FALSE) {
 		int length;
-		glGetShaderiv(p_Shader, GL_INFO_LOG_LENGTH, &length);
+		GLCall(glGetShaderiv(p_Shader, GL_INFO_LOG_LENGTH, &length));
 		std::vector<char> message(length);
-		glGetShaderInfoLog(p_Shader, length, &length, message.data());
-		glDeleteShader(p_Shader);
+		GLCall(glGetShaderInfoLog(p_Shader, length, &length, message.data()));
+		GLCall(glDeleteShader(p_Shader));
 
 		throw std::runtime_error("Shader Compilation Error: " + std::string(message.data()));
 	}
+}
+	
+int Shader::GetUniformLocation(const std::string& p_UniformName) {
+	if (m_UniformCache.find(p_UniformName) != m_UniformCache.end()) {
+		std::cout << "Got " << p_UniformName << " from cache!";
+		return m_UniformCache[p_UniformName];
+	}
+
+	Bind();
+	GLCall(int t_Location = glGetUniformLocation(m_ShaderID, p_UniformName.data()));
+
+	if (t_Location == -1) {
+		std::cout << "Warning: Uniform " << p_UniformName << " doesn't exist!" << std::endl;
+	}
+
+	m_UniformCache[p_UniformName] = t_Location;
+	return t_Location;
+}
+
+//UNIFORM SETTERS
+
+void Shader::SetUniform1i(const std::string& p_UniformName, const int p_Value) {
+	GLCall(glUniform1i(GetUniformLocation(p_UniformName), p_Value));
 }

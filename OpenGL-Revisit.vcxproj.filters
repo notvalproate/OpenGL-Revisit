@@ -27,10 +27,19 @@
     <ClCompile Include="src\rendering\VertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\vendor\stb_image\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Texture2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\ErrorHandling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\global\vertex.shader" />
-    <None Include="src\shaders\global\fragment.shader" />
+    <None Include="src\shaders\global\global.vsh" />
+    <None Include="src\shaders\global\global.fsh" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rendering\Shader.hpp">
@@ -40,6 +49,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\VertexArray.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\stb_image\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\Texture2D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\ErrorHandling.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

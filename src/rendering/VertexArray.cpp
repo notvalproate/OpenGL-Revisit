@@ -1,10 +1,11 @@
 #include "VertexArray.hpp"
 #include <iostream>
 #include <numeric>
+#include "../util/ErrorHandling.hpp"
 
 VertexArray::VertexArray(VertexBuffer& p_VBO, const std::span<unsigned int>& p_Layout) {
-	glGenVertexArrays(1, &m_ArrayID);
-	glBindVertexArray(m_ArrayID);
+	GLCall(glGenVertexArrays(1, &m_ArrayID));
+	GLCall(glBindVertexArray(m_ArrayID));
 	p_VBO.Bind();
 
 	size_t i = 0;
@@ -13,17 +14,17 @@ VertexArray::VertexArray(VertexBuffer& p_VBO, const std::span<unsigned int>& p_L
 	size_t t_Stride = std::accumulate(p_Layout.begin(), p_Layout.end(), 0) * sizeof(float);
 
 	for (const auto t_Element : p_Layout) {
-		glVertexAttribPointer(i, t_Element, GL_FLOAT, GL_FALSE, t_Stride, (const void*)t_Offset); 
-		glEnableVertexAttribArray(i++);
+		GLCall(glVertexAttribPointer(i, t_Element, GL_FLOAT, GL_FALSE, t_Stride, (const void*)t_Offset));
+		GLCall(glEnableVertexAttribArray(i++));
 		t_Offset += t_TypeSize * t_Element; 
 	}
 
-	glBindVertexArray(0);
+	GLCall(glBindVertexArray(0));
 	p_VBO.Unbind();
 }
 
 VertexArray::~VertexArray() {
-	glDeleteVertexArrays(1, &m_ArrayID);
+	GLCall(glDeleteVertexArrays(1, &m_ArrayID));
 }
 
 VertexArray::VertexArray(VertexArray&& other) noexcept {
@@ -41,10 +42,10 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept {
 	return *this;
 }
 
-void VertexArray::Bind() {
-	glBindVertexArray(m_ArrayID);
+void VertexArray::Bind() const {
+	GLCall(glBindVertexArray(m_ArrayID));
 }
 
-void VertexArray::Unbind() {
-	glBindVertexArray(m_ArrayID);
+void VertexArray::Unbind() const {
+	GLCall(glBindVertexArray(0));
 }

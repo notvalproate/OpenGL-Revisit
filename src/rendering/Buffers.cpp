@@ -1,7 +1,7 @@
 #include "Buffers.hpp"
 
 BufferBase::~BufferBase() {
-	glDeleteBuffers(1, &m_BufferID);
+	GLCall(glDeleteBuffers(1, &m_BufferID));
 }
 
 BufferBase::BufferBase(BufferBase&& other) noexcept {
@@ -20,10 +20,10 @@ BufferBase& BufferBase::operator=(BufferBase&& other) noexcept {
 	other.m_BufferType = 0;
 }
 
-void BufferBase::Bind() {
-	glBindBuffer(m_BufferType, m_BufferID);
+void BufferBase::Bind() const {
+	GLCall(glBindBuffer(m_BufferType, m_BufferID));
 }
 
-void BufferBase::Unbind() {
-	glBindBuffer(m_BufferType, 0);
+void BufferBase::Unbind() const {
+	GLCall(glBindBuffer(m_BufferType, 0));
 }

@@ -17,7 +17,7 @@ Texture2D::Texture2D(std::string_view p_Path, unsigned int p_ScaleMode, unsigned
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, p_WrapMode));
 
 	if (t_LocalBuffer) {
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, t_Width, t_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, t_LocalBuffer));
+		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, t_Width, t_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, t_LocalBuffer));
 		GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 	else {

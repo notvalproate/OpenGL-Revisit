@@ -3,7 +3,7 @@
 #include <numeric>
 #include "../util/ErrorHandling.hpp"
 
-VertexArray::VertexArray(VertexBuffer& p_VBO, const std::span<unsigned int>& p_Layout) {
+VertexArray::VertexArray(const VertexBuffer& p_VBO, const std::span<unsigned int>& p_Layout) {
 	GLCall(glGenVertexArrays(1, &m_ArrayID));
 	GLCall(glBindVertexArray(m_ArrayID));
 	p_VBO.Bind();
@@ -13,7 +13,7 @@ VertexArray::VertexArray(VertexBuffer& p_VBO, const std::span<unsigned int>& p_L
 	size_t t_TypeSize = sizeof(float);
 	size_t t_Stride = std::accumulate(p_Layout.begin(), p_Layout.end(), 0) * sizeof(float);
 
-	for (const auto t_Element : p_Layout) {
+	for (const auto& t_Element : p_Layout) {
 		GLCall(glVertexAttribPointer(i, t_Element, GL_FLOAT, GL_FALSE, t_Stride, (const void*)t_Offset));
 		GLCall(glEnableVertexAttribArray(i++));
 		t_Offset += t_TypeSize * t_Element; 

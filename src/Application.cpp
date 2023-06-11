@@ -10,13 +10,16 @@
 
 #include "util/Texture2D.hpp"
 #include "util/ErrorHandling.hpp"
-#include "glm/glm.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#define WINDOW_WIDTH 1600
+#define WINDOW_HEIGHT 900
 
 GLFWwindow* InitAll();
 
 int main() {
-    glm::vec3 a = glm::abs(glm::vec3(0.0, 0.1, 0.2)); 
-
     GLFWwindow* window = InitAll();
 
     if(!window) return -1;
@@ -40,20 +43,49 @@ int main() {
     {
         //All data passed in as parameters
         float t_Vertices[] = {
-            //POSITION          //TEXCOORD  //COLOR
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-             0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f
+            //POSITION           //TEXCOORD   //COLOR
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+
+             0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f
         };
 
         unsigned int t_Layout[] = { 3, 2, 3 };
 
         unsigned int t_Indices[] = {
-            0, 1, 2,
-            2, 3, 0
+            0, 1, 2, 2, 3, 0,
+            4, 7, 6, 6, 5, 4,
+            8, 9, 10, 10, 11, 8,
+            12, 15, 14, 14, 13, 12,
+            16, 17, 18, 18, 19, 16,
+            20, 23, 22, 22, 21, 20
         };
-
+        
         VertexBuffer VBO(t_Vertices);
         VAO = new VertexArray(VBO, t_Layout);
         IBO = new IndexBuffer(t_Indices);
@@ -66,18 +98,30 @@ int main() {
     t_CattoTex.Bind(1);
     t_GlobalShader->SetUniform1i("v_Texture2", 1);
 
+    glm::mat4 t_Model(1.0f);
+    glm::mat4 t_View(1.0f);
+    t_View = glm::translate(t_View, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 t_Projection = glm::perspective(glm::radians(70.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0f, 0.3f, 0.7f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          
         t_CatTex.Bind(0);  
         t_GlobalShader->SetUniform1i("v_Texture1", 0); 
 
         t_CattoTex.Bind(1); 
         t_GlobalShader->SetUniform1i("v_Texture2", 1); 
+        
+        t_Model = glm::rotate(t_Model, glm::radians(0.7f), glm::vec3(0.0f, 1.0f, 1.0f));
+        t_GlobalShader->SetUniformMat4f("u_Model", t_Model);
+        t_GlobalShader->SetUniformMat4f("u_View", t_View);
+        t_GlobalShader->SetUniformMat4f("u_Projection", t_Projection);
+
         t_Render(VAO, IBO, t_GlobalShader);
 
-        glfwSwapBuffers(window); 
-        glfwPollEvents();  
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     glfwTerminate();
@@ -106,7 +150,10 @@ GLFWwindow* InitAll() {
     }
 
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     return window;
 }
+
+//CALLBACKS

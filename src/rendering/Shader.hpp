@@ -2,6 +2,8 @@
 #include <string>
 #include <filesystem>
 #include <unordered_map>
+#include <span>
+#include "glm/glm.hpp"
 
 class Shader {
 public:
@@ -21,6 +23,7 @@ public:
 	[[nodiscard]] int GetUniformLocation(std::string_view p_UniformName);
 
 	void SetUniform1i(std::string_view p_UniformName, const int p_Value);
+	void SetUniformMat4f(std::string_view p_UniformName, const glm::mat4& p_Value);
 private:
 	unsigned int m_ShaderID;
 	std::unordered_map<std::string, int> m_UniformCache;

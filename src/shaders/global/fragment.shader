@@ -12,5 +12,5 @@ void main() {
 	vec4 tex1 = texture(v_Texture1, v_FinalTexCoord);
 	vec4 tex2 = texture(v_Texture2, v_FinalTexCoord);
 
-	output = (tex2.a == 1.0 ? tex2 : mix(tex1, tex2, tex2.a)) * vec4(v_FinalColor, 1.0);
+	output = (tex2.a == 1.0 ? tex2 : mix(tex1, tex2, tex2.a));
 }

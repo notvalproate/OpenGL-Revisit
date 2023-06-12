@@ -14,8 +14,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 900
+int WINDOW_WIDTH = 1600;
+int WINDOW_HEIGHT = 900;
 
 GLFWwindow* InitAll();
 
@@ -28,8 +28,7 @@ int main() {
     VertexArray* VAO;
     IndexBuffer* IBO;
 
-    Texture2D t_CatTex("assets/textures/cat.png");
-    Texture2D t_CattoTex("assets/textures/catto.png");
+    Texture2D t_Tex("assets/textures/catpfp.png");
 
     //Temporary Lambda to render a mesh
     const auto t_Render = [](VertexArray* VAO, IndexBuffer* IBO, Shader* Shdr) {
@@ -85,43 +84,43 @@ int main() {
             16, 17, 18, 18, 19, 16,
             20, 23, 22, 22, 21, 20
         };
-        
+    
         VertexBuffer VBO(t_Vertices);
         VAO = new VertexArray(VBO, t_Layout);
         IBO = new IndexBuffer(t_Indices);
     }
-    
-    //Binding texture to a slot and setting the uniform to that slot
-    t_CatTex.Bind(0);
-    t_GlobalShader->SetUniform1i("v_Texture1", 0);
 
-    t_CattoTex.Bind(1);
-    t_GlobalShader->SetUniform1i("v_Texture2", 1);
-
+    //DIFF FOR EACH MODEL
     glm::mat4 t_Model(1.0f);
+
+    //DIFF FOR EACH CAMERA
     glm::mat4 t_View(1.0f);
     t_View = glm::translate(t_View, glm::vec3(0.0f, 0.0f, -3.0f));
     glm::mat4 t_Projection = glm::perspective(glm::radians(70.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
+    t_GlobalShader->SetUniformMat4f("u_Projection", t_Projection);
 
+    float k = 0.0f;
     while (!glfwWindowShouldClose(window)) {
-        glClearColor(0.0f, 0.3f, 0.7f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          
-        t_CatTex.Bind(0);  
-        t_GlobalShader->SetUniform1i("v_Texture1", 0); 
-
-        t_CattoTex.Bind(1); 
-        t_GlobalShader->SetUniform1i("v_Texture2", 1); 
+        //Binding texture to a slot and setting the uniform to that slot
+        t_Tex.Bind(0);  
+        t_GlobalShader->SetUniform1i("v_Texture", 0); 
         
-        t_Model = glm::rotate(t_Model, glm::radians(0.7f), glm::vec3(0.0f, 1.0f, 1.0f));
+        glm::vec3 moved = glm::vec3(2 * glm::sin(glm::radians(k)), 0.0f, 0.0f);
+         
+        t_View = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f) + moved, glm::vec3(0.0f, 0.0f, -1.0f) + moved, glm::vec3(0.0f, 1.0f, 0.0f));
+
         t_GlobalShader->SetUniformMat4f("u_Model", t_Model);
         t_GlobalShader->SetUniformMat4f("u_View", t_View);
-        t_GlobalShader->SetUniformMat4f("u_Projection", t_Projection);
 
         t_Render(VAO, IBO, t_GlobalShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        k += 1.0f;
+        if (k >= 360) k -= 360;
     }
 
     glfwTerminate();
@@ -143,7 +142,7 @@ GLFWwindow* InitAll() {
 
     glfwSwapInterval(0);
     glfwMakeContextCurrent(window);
-
+    
     if (glewInit() != GLEW_OK) {
         glfwTerminate();
         return nullptr;
@@ -151,6 +150,7 @@ GLFWwindow* InitAll() {
 
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     return window;

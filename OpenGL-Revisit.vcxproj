@@ -152,6 +152,7 @@
     <ClCompile Include="src\rendering\Shader.cpp" />
     <ClCompile Include="src\rendering\VertexArray.cpp" />
     <ClCompile Include="src\scene\Camera.cpp" />
+    <ClCompile Include="src\scene\CameraHandler.cpp" />
     <ClCompile Include="src\textures\TextureLoader.cpp" />
     <ClCompile Include="src\util\ErrorHandling.cpp" />
     <ClCompile Include="src\textures\Texture2D.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="src\rendering\Shader.hpp" />
     <ClInclude Include="src\rendering\VertexArray.hpp" />
     <ClInclude Include="src\scene\Camera.hpp" />
+    <ClInclude Include="src\scene\CameraHandler.hpp" />
     <ClInclude Include="src\textures\TextureLoader.hpp" />
     <ClInclude Include="src\util\ErrorHandling.hpp" />
     <ClInclude Include="src\textures\Texture2D.hpp" />

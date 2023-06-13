@@ -20,4 +20,6 @@ private:
 	float m_Fov;
 	float m_Speed;
 	float m_Sensitivity;
+
+	friend class CameraHandler;
 };

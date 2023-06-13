@@ -14,6 +14,7 @@
 #include "textures/Texture2D.hpp"
 
 #include "scene/Camera.hpp"
+#include "scene/CameraHandler.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -97,12 +98,16 @@ int main() {
     //CAMERA AND TIMER
     Timer t_Timer; 
     Camera t_Camera; 
+    CameraHandler t_CamHandler(t_Camera);
 
     //DIFF FOR EACH MODEL
     glm::mat4 t_Model(1.0f);
 
-    float k = 0.0f;
+    float t_DeltaTime;
+
     while (!glfwWindowShouldClose(window)) {
+        t_DeltaTime = t_Timer.GetDeltaTime();
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Binding texture to a slot and setting the uniform to that slot
@@ -114,15 +119,13 @@ int main() {
 
         //CAMERA UPDATES
         t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
+        t_CamHandler.HandleEvents(window, t_DeltaTime);
 
         //RENDERING
         t_Render(VAO, IBO, t_GlobalShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        k += 1.0f;
-        if (k >= 360) k -= 360;
     }
 
     glfwTerminate();
@@ -135,6 +138,12 @@ GLFWwindow* InitAll() {
     if (!glfwInit()) {
         return nullptr;
     }
+
+    //CHANGE THE CONTEXT_VERSION IF DEVICE DOESNT SUPPORT 4.5
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); 
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
 
     GLFWwindow* window = glfwCreateWindow(1600, 900, "Hello World", NULL, NULL);
     if (!window) {
@@ -150,10 +159,11 @@ GLFWwindow* InitAll() {
         return nullptr;
     }
 
+    //ENABLING OPENGL FLAGS
     glEnable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE); 
 
     return window;
 }

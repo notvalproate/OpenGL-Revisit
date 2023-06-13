@@ -155,6 +155,7 @@
     <ClCompile Include="src\textures\TextureLoader.cpp" />
     <ClCompile Include="src\util\ErrorHandling.cpp" />
     <ClCompile Include="src\textures\Texture2D.cpp" />
+    <ClCompile Include="src\util\Timer.cpp" />
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="src\textures\TextureLoader.hpp" />
     <ClInclude Include="src\util\ErrorHandling.hpp" />
     <ClInclude Include="src\textures\Texture2D.hpp" />
+    <ClInclude Include="src\util\Timer.hpp" />
     <ClInclude Include="src\vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "util/ErrorHandling.hpp"
+#include "util/Timer.hpp"
 
 #include "rendering/Shader.hpp"
 #include "rendering/Buffers.hpp"
@@ -93,30 +94,28 @@ int main() {
         IBO = new IndexBuffer(t_Indices);
     }
 
+    //CAMERA AND TIMER
+    Timer t_Timer; 
+    Camera t_Camera; 
+
     //DIFF FOR EACH MODEL
     glm::mat4 t_Model(1.0f);
-
-    //DIFF FOR EACH CAMERA
-    glm::mat4 t_View(1.0f);
-    t_View = glm::translate(t_View, glm::vec3(0.0f, 0.0f, -3.0f));
-    glm::mat4 t_Projection = glm::perspective(glm::radians(70.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
-    t_GlobalShader->SetUniformMat4f("u_Projection", t_Projection);
 
     float k = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         
+
         //Binding texture to a slot and setting the uniform to that slot
         t_Tex.Bind(0);  
         t_GlobalShader->SetUniform1i("v_Texture", 0); 
-        
-        glm::vec3 moved = glm::vec3(2 * glm::sin(glm::radians(k)), 0.0f, 0.0f);
-         
-        t_View = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f) + moved, glm::vec3(0.0f, 0.0f, -1.0f) + moved, glm::vec3(0.0f, 1.0f, 0.0f));
 
+        //TEMP MODEL MATRIX
         t_GlobalShader->SetUniformMat4f("u_Model", t_Model);
-        t_GlobalShader->SetUniformMat4f("u_View", t_View);
 
+        //CAMERA UPDATES
+        t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
+
+        //RENDERING
         t_Render(VAO, IBO, t_GlobalShader);
 
         glfwSwapBuffers(window);

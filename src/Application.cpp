@@ -153,6 +153,7 @@ GLFWwindow* InitAll() {
 
     glfwSwapInterval(0);
     glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     if (glewInit() != GLEW_OK) {
         glfwTerminate();

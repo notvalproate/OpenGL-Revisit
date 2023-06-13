@@ -1,7 +1,6 @@
 #pragma once
 #include "GL/glew.h"
 #include <string_view>
-#include <vector>
 
 class Texture2D {
 public:

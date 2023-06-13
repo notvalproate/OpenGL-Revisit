@@ -4,12 +4,15 @@
 #include <iostream>
 #include <vector>
 
+#include "util/ErrorHandling.hpp"
+
 #include "rendering/Shader.hpp"
 #include "rendering/Buffers.hpp"
 #include "rendering/VertexArray.hpp"
 
-#include "util/Texture2D.hpp"
-#include "util/ErrorHandling.hpp"
+#include "textures/Texture2D.hpp"
+
+#include "scene/Camera.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

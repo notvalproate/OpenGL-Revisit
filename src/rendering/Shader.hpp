@@ -23,6 +23,7 @@ public:
 	[[nodiscard]] int GetUniformLocation(std::string_view p_UniformName);
 
 	void SetUniform1i(std::string_view p_UniformName, const int p_Value);
+	void SetUniform1f(std::string_view p_UniformName, const float p_Value);
 	void SetUniformMat4f(std::string_view p_UniformName, const glm::mat4& p_Value);
 private:
 	unsigned int m_ShaderID;

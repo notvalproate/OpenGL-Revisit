@@ -6,7 +6,7 @@ Camera::Camera()
 	, m_Speed(2.0f)
 	, m_SpeedMultiplier(2.0f)
 	, m_Sensitivity(0.1f)
-	, m_Yaw(0.0)
+	, m_Yaw(-90.0)
 	, m_Pitch(0.0)
 
 	, m_Position(0.0f, 0.0f, 3.0f)

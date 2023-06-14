@@ -35,6 +35,11 @@ int main() {
 
     Texture2D t_Tex("assets/textures/catpfp.png");
 
+    Timer t_Timer;
+    Camera t_Camera;
+    CameraHandler t_CamHandler(t_Camera);
+
+
     //Temporary Lambda to render a mesh
     const auto t_Render = [](VertexArray* VAO, IndexBuffer* IBO, Shader* Shdr) {
         VAO->Bind();
@@ -48,35 +53,35 @@ int main() {
         //All data passed in as parameters
         float t_Vertices[] = {
             //POSITION           //TEXCOORD   //COLOR
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
 
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
 
-             0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+             0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
 
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
 
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
 
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f
         };
 
         unsigned int t_Layout[] = { 3, 2, 3 };
@@ -95,35 +100,29 @@ int main() {
         IBO = new IndexBuffer(t_Indices);
     }
 
-    //CAMERA AND TIMER
-    Timer t_Timer; 
-    Camera t_Camera; 
-    CameraHandler t_CamHandler(t_Camera);
-
     //DIFF FOR EACH MODEL
-    glm::mat4 t_Model(1.0f);
+    glm::mat4 t_Model = glm::scale(glm::mat4(1.0f), glm::vec3(1.1f));
+    glm::mat4 t_Model1(1.0f);
 
     float t_DeltaTime;
-
+    float k = 0.5f;
     while (!glfwWindowShouldClose(window)) {
         t_DeltaTime = t_Timer.GetDeltaTime();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Binding texture to a slot and setting the uniform to that slot
-        t_Tex.Bind(0);  
-        t_GlobalShader->SetUniform1i("v_Texture", 0); 
-
-        //TEMP MODEL MATRIX
-        t_GlobalShader->SetUniformMat4f("u_Model", t_Model);
+        t_Tex.Bind(0); 
+        t_GlobalShader->SetUniform1i("u_Texture", 0); 
 
         //CAMERA UPDATES
         t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
         t_CamHandler.HandleEvents(window, t_DeltaTime);
-
-        //RENDERING
+    
+        t_Model = glm::rotate(t_Model, glm::radians(k), glm::vec3(0.0f, 1.0f, 0.0f)); 
+        t_GlobalShader->SetUniformMat4f("u_Model", t_Model);  
         t_Render(VAO, IBO, t_GlobalShader);
-
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

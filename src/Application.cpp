@@ -21,8 +21,10 @@
 
 int WINDOW_WIDTH = 1600;
 int WINDOW_HEIGHT = 900;
+bool g_Resized = false;
 
 GLFWwindow* InitAll();
+void c_OnResize(GLFWwindow* window, int width, int height);
 
 int main() {
     GLFWwindow* window = InitAll();
@@ -30,15 +32,15 @@ int main() {
     if(!window) return -1;
 
     Shader* t_GlobalShader = new Shader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader");
+
+    //BASIC MESH WITH TEXTURE
     VertexArray* VAO;
     IndexBuffer* IBO;
-
     Texture2D t_Tex("assets/textures/catpfp.png");
 
     Timer t_Timer;
     Camera t_Camera;
     CameraHandler t_CamHandler(t_Camera);
-
 
     //Temporary Lambda to render a mesh
     const auto t_Render = [](VertexArray* VAO, IndexBuffer* IBO, Shader* Shdr) {
@@ -106,24 +108,26 @@ int main() {
 
     float t_DeltaTime;
     float k = 0.5f;
+ 
     while (!glfwWindowShouldClose(window)) {
+        if (g_Resized) t_Camera.ResetProjectionMat(WINDOW_WIDTH, WINDOW_HEIGHT);
         t_DeltaTime = t_Timer.GetDeltaTime();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //CAMERA UPDATES 
+        t_CamHandler.HandleEvents(window, t_DeltaTime);
+        t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
 
         //Binding texture to a slot and setting the uniform to that slot
         t_Tex.Bind(0); 
         t_GlobalShader->SetUniform1i("u_Texture", 0); 
 
-        //CAMERA UPDATES
-        t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
-        t_CamHandler.HandleEvents(window, t_DeltaTime);
-    
         t_Model = glm::rotate(t_Model, glm::radians(k), glm::vec3(0.0f, 1.0f, 0.0f)); 
         t_GlobalShader->SetUniformMat4f("u_Model", t_Model);  
         t_Render(VAO, IBO, t_GlobalShader);
-        
-        glfwSwapBuffers(window);
+
+        glfwSwapBuffers(window); 
         glfwPollEvents();
     }
 
@@ -134,15 +138,16 @@ int main() {
 //SMALL ABSTRACTIONS
 
 GLFWwindow* InitAll() {
+
     if (!glfwInit()) {
         return nullptr;
     }
 
     //CHANGE THE CONTEXT_VERSION IF DEVICE DOESNT SUPPORT 4.5
     glfwWindowHint(GLFW_SAMPLES, 8);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); 
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(1600, 900, "Hello World", NULL, NULL);
     if (!window) {
@@ -150,9 +155,11 @@ GLFWwindow* InitAll() {
         return nullptr;
     }
 
-    glfwSwapInterval(0);
-    glfwMakeContextCurrent(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetFramebufferSizeCallback(window, c_OnResize);
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
     
     if (glewInit() != GLEW_OK) {
         glfwTerminate();
@@ -160,12 +167,19 @@ GLFWwindow* InitAll() {
     }
 
     //ENABLING OPENGL FLAGS
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE); 
 
     return window;
-}
+}   
 
 //CALLBACKS
+
+void c_OnResize(GLFWwindow* window, int width, int height) {
+    WINDOW_WIDTH = width;
+    WINDOW_HEIGHT = height;
+    g_Resized = true;
+    glViewport(0, 0, width, height);
+}

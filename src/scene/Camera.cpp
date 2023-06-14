@@ -29,3 +29,7 @@ void Camera::UpdateUniforms(std::string_view p_View, std::string_view p_Projecti
 	p_Shader.SetUniformMat4f(p_View, m_View);
 	p_Shader.SetUniformMat4f(p_Projection, m_Projection);
 }
+
+void Camera::ResetProjectionMat(int p_Width, int p_Height) {
+	m_Projection = glm::perspective(glm::radians(m_Fov), (float)p_Width / (float)p_Height, 0.1f, 100.0f);
+}

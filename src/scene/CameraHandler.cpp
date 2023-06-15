@@ -22,35 +22,35 @@ void CameraHandler::HandleEvents(GLFWwindow* p_Window, const float p_DeltaTime) 
 	HandleMouseInput(p_Window);
 }
 
-void CameraHandler::HandleKeyboardInput(GLFWwindow* p_Window, const float p_DeltaTime) {
+void CameraHandler::HandleKeyboardInput(GLFWwindow* p_Window, const float p_DeltaTime) const {
 	const auto f_Pressed = [&p_Window](unsigned int p_Key) {
 		return glfwGetKey(p_Window, p_Key) == GLFW_PRESS;
 	};
 
 	float t_Mul = 1.0f;
-	if (f_Pressed(m_KeyBindings[KeyBind::SPRINT])) {
+	if (f_Pressed(m_KeyBindings.at(KeyBind::SPRINT))) {
 		t_Mul = m_Cam.m_SpeedMultiplier;
 	}
 	
 	//WASD
-	if (f_Pressed(m_KeyBindings[KeyBind::FORWARD])) {
+	if (f_Pressed(m_KeyBindings.at(KeyBind::FORWARD))) {
 		m_Cam.m_Position += m_Cam.m_Direction * m_Cam.m_Speed * t_Mul * p_DeltaTime;
 	}
-	if (f_Pressed(m_KeyBindings[KeyBind::BACKWARD])) {
+	if (f_Pressed(m_KeyBindings.at(KeyBind::BACKWARD))) { 
 		m_Cam.m_Position -= m_Cam.m_Direction * m_Cam.m_Speed * t_Mul * p_DeltaTime;
 	}
-	if (f_Pressed(m_KeyBindings[KeyBind::LEFT])) {           //RIGHT VECTOR
+	if (f_Pressed(m_KeyBindings.at(KeyBind::LEFT))) {            //RIGHT VECTOR
 		m_Cam.m_Position -= glm::normalize(glm::cross(m_Cam.m_Direction, m_Cam.m_Up)) * m_Cam.m_Speed * t_Mul * p_DeltaTime;
 	}
-	if (f_Pressed(m_KeyBindings[KeyBind::RIGHT])) {
+	if (f_Pressed(m_KeyBindings.at(KeyBind::RIGHT))) {
 		m_Cam.m_Position += glm::normalize(glm::cross(m_Cam.m_Direction, m_Cam.m_Up)) * m_Cam.m_Speed * t_Mul * p_DeltaTime;
 	}
 
 	//SPACE AND SHIFT FOR UP AND DOWN
-	if (f_Pressed(m_KeyBindings[KeyBind::UP])) { 
+	if (f_Pressed(m_KeyBindings.at(KeyBind::UP))) { 
 		m_Cam.m_Position += glm::vec3(0.0f, 1.0f, 0.0f) * m_Cam.m_Speed * t_Mul * p_DeltaTime;
 	}
-	if (f_Pressed(m_KeyBindings[KeyBind::DOWN])) { 
+	if (f_Pressed(m_KeyBindings.at(KeyBind::DOWN))) { 
 		m_Cam.m_Position -= glm::vec3(0.0f, 1.0f, 0.0f) * m_Cam.m_Speed * t_Mul * p_DeltaTime;
 	}
 }

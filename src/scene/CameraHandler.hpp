@@ -22,9 +22,9 @@ public:
 private:
 	Camera& m_Cam;	
 	std::unordered_map<KeyBind, unsigned int> m_KeyBindings;
-	double m_LastPosX, m_LastPosY;
+	double m_LastPosX{}, m_LastPosY{};
 	bool m_FirstMouse;
 
-	void HandleKeyboardInput(GLFWwindow* p_Window, const float p_DeltaTime);
+	void HandleKeyboardInput(GLFWwindow* p_Window, const float p_DeltaTime) const;
 	void HandleMouseInput(GLFWwindow* p_Window);
 };

@@ -36,19 +36,20 @@ int main() {
     Shader t_GlobalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
     Shader t_LightSrcShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
 
+    Timer t_Timer; 
+    Camera t_Camera; 
+    CameraHandler t_CamHandler(t_Camera); 
+
     //BASIC MESH WITH DIFF AND SPEC MAP
     VertexArray* VAO; 
     IndexBuffer* IBO; 
     Texture2D t_Tex("assets/textures/catpfp.png");
-    Texture2D t_Spec("assets/textures/testspec.png");
+    Texture2D t_Spec("assets/textures/catpfp.png");
  
     //MESH FOR LIGHTCUBE
     VertexArray* VAOL;
 
-    Timer t_Timer;
-    Camera t_Camera;
-    CameraHandler t_CamHandler(t_Camera);
-
+    //LIGHTING
     PointLight* t_Light;
     glm::mat4 t_ModelL;
 
@@ -151,10 +152,10 @@ int main() {
 
         //LIGHTING
         glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f); 
-        glm::vec3 t_Color(1.0f, 1.0f, 1.0f);
+        glm::vec3 t_Color(1.0f, 0.7f, 0.8f);
 
         t_Light = new PointLight(t_LightPos, t_Color, 1.0f);
-        t_Light->SetUniforms(t_GlobalShader);
+        t_Light->UpdateUniforms(t_GlobalShader);
 
         //LIGHT CUBE MODEL
         t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
@@ -200,13 +201,19 @@ int main() {
         t_GlobalShader.SetUniform1i("u_SpecMap", 1);
 
         //Rendering box at all positions
+        float i = 10.0f;
         for (const auto& pos : t_BoxPositions) {
-            t_Model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(k), pos), pos);
+            t_Model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos);
             t_GlobalShader.SetUniformMat4f("u_Model", t_Model); 
             t_Render(*VAO, *IBO, t_GlobalShader);
+            i += 30.0f;
         }
 
         //Render the light source box
+        glm::vec3 test = glm::vec3(10 * glm::sin(glm::radians(k)), 0.0f, 4.0f);
+        t_Light->SetPosition(test, t_GlobalShader);
+        t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), test), glm::vec3(0.2f));
+        t_LightSrcShader.SetUniformMat4f("u_Model", t_ModelL);
         t_Render(*VAOL, *IBO, t_LightSrcShader);
         
         glfwSwapBuffers(window); 
@@ -215,6 +222,8 @@ int main() {
         k += 0.5f;
         if (k >= 360.0f) k -= 360.0f;
     }
+
+    delete VAO, IBO, VAOL, t_Light;
 
     glfwTerminate();
     return 0;

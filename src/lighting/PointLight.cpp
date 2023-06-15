@@ -1,4 +1,5 @@
 #include "PointLight.hpp"
+#include <iostream>
 
 PointLight::PointLight(const glm::vec3& p_Position, const glm::vec3& p_Color, float p_Brightness)
 	: m_Position(p_Position)
@@ -7,7 +8,7 @@ PointLight::PointLight(const glm::vec3& p_Position, const glm::vec3& p_Color, fl
     , m_Specular(p_Color)
     , m_Brightness(p_Brightness) { }
 
-void PointLight::SetUniforms(Shader& p_Shader) {
+void PointLight::UpdateUniforms(Shader& p_Shader) {
     p_Shader.SetUniform3fv("u_PointLight.Position", m_Position);
     p_Shader.SetUniform3fv("u_PointLight.Ambient", m_Ambient);
     p_Shader.SetUniform3fv("u_PointLight.Diffuse", m_Diffusion);
@@ -23,9 +24,10 @@ void PointLight::SetPosition(const glm::vec3& p_Position, Shader& p_Shader) {
     p_Shader.SetUniform3fv("u_PointLight.Position", m_Position);
 }
 
-void PointLight::Translate(const glm::vec3& p_Translation) {
+void PointLight::Translate(const glm::vec3& p_Translation, Shader& p_Shader) {
     m_Position += p_Translation;
-}
+    p_Shader.SetUniform3fv("u_PointLight.Position", m_Position);
+} 
 
 void PointLight::SetColor(const glm::vec3& p_Color) {
     m_Ambient = 0.2f * p_Color;

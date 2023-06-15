@@ -6,10 +6,10 @@ class PointLight {
 public:
 	PointLight(const glm::vec3& p_Position, const glm::vec3& p_Color, float p_Brightness);
 
-	void SetUniforms(Shader& p_Shader);
+	void UpdateUniforms(Shader& p_Shader);
 
 	void SetPosition(const glm::vec3& p_Position, Shader& p_Shader);
-	void Translate(const glm::vec3& p_Translation);
+	void Translate(const glm::vec3& p_Translation, Shader& p_Shader);
 
 	void SetColor(const glm::vec3& p_Color);
 	void SetAttenuation(float p_Constant, float p_Linear, float p_Quadratic);

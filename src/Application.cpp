@@ -31,12 +31,16 @@ int main() {
 
     if(!window) return -1;
 
-    Shader* t_GlobalShader = new Shader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader");
+    Shader* t_GlobalShader = new Shader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
+    Shader* t_LightSrcShader = new Shader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
 
     //BASIC MESH WITH TEXTURE
-    VertexArray* VAO;
-    IndexBuffer* IBO;
+    VertexArray* VAO; 
+    IndexBuffer* IBO; 
     Texture2D t_Tex("assets/textures/catpfp.png");
+
+    //MESH FOR LIGHTCUBE
+    VertexArray* VAOL;
 
     Timer t_Timer;
     Camera t_Camera;
@@ -54,38 +58,38 @@ int main() {
     {
         //All data passed in as parameters
         float t_Vertices[] = {
-            //POSITION           //TEXCOORD   //COLOR
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
-
-             0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-             0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
-
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
-
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f,
-
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f, 1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f
+            //POSITION           //TEXCOORD  //NORMALS
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
+             0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,  0.0f,  1.0f,
+                                             		 	    
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, -1.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  0.0f, -1.0f,
+                                             		 	    
+             0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+             0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+                                             		 	    
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+                                             			    
+            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  1.0f,  0.0f,
+                                             			    
+            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
+             0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
+             0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -1.0f,  0.0f
         };
-
+        
         unsigned int t_Layout[] = { 3, 2, 3 };
 
         unsigned int t_Indices[] = {
@@ -100,11 +104,69 @@ int main() {
         VertexBuffer VBO(t_Vertices);
         VAO = new VertexArray(VBO, t_Layout);
         IBO = new IndexBuffer(t_Indices);
+
+        float t_VerticesL[] = {
+            //POSITION          
+            -0.5f, -0.5f,  0.5f,
+             0.5f, -0.5f,  0.5f,
+             0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+
+            -0.5f, -0.5f, -0.5f,
+             0.5f, -0.5f, -0.5f,
+             0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+
+             0.5f, -0.5f,  0.5f,
+             0.5f, -0.5f, -0.5f,
+             0.5f,  0.5f, -0.5f,
+             0.5f,  0.5f,  0.5f,
+
+            -0.5f, -0.5f,  0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f,  0.5f,
+
+            -0.5f,  0.5f,  0.5f,
+             0.5f,  0.5f,  0.5f,
+             0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+
+            -0.5f, -0.5f,  0.5f,
+             0.5f, -0.5f,  0.5f,
+             0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f
+        };
+
+        unsigned int t_LayoutL[] = { 3 };
+
+        VertexBuffer VBOL(t_VerticesL);
+        VAOL = new VertexArray(VBOL, t_LayoutL);
     }
 
+    //LIGHT POSITION
+    glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f);
+    t_GlobalShader->SetUniform3fv("u_LightPos", t_LightPos);
+
+    //LIGHT MODEL
+    glm::mat4 t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
+    t_LightSrcShader->SetUniformMat4f("u_Model", t_ModelL);
+
     //DIFF FOR EACH MODEL
-    glm::mat4 t_Model = glm::scale(glm::mat4(1.0f), glm::vec3(1.1f));
-    glm::mat4 t_Model1(1.0f);
+    glm::mat4 t_Model(1.0f);
+
+    //Temp positions to render multiple boxes
+    glm::vec3 t_BoxPositions[] = {
+        glm::vec3(0.1f, 0.0f, 0.0f),
+        glm::vec3(5.0f, 4.0f, -1.0f),
+        glm::vec3(-2.0f, 7.0f, 3.0f),
+        glm::vec3(6.0f, -3.0f, 6.0f),
+        glm::vec3(2.0f, -6.0f, -3.0f), 
+        glm::vec3(8.0f, 3.0f, -10.0f),
+        glm::vec3(-8.0f, 2.0f, 6.0f), 
+        glm::vec3(3.0f, -5.0f, 8.0f), 
+        glm::vec3(9.0f, 8.0f, -2.0f) 
+    };
 
     float t_DeltaTime;
     float k = 0.5f;
@@ -113,22 +175,39 @@ int main() {
         if (g_Resized) t_Camera.ResetProjectionMat(WINDOW_WIDTH, WINDOW_HEIGHT);
         t_DeltaTime = t_Timer.GetDeltaTime();
 
+        glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+       
 
         //CAMERA UPDATES 
         t_CamHandler.HandleEvents(window, t_DeltaTime);
         t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
+        t_Camera.UpdateUniforms("u_View", "u_Projection", *t_LightSrcShader);
 
         //Binding texture to a slot and setting the uniform to that slot
         t_Tex.Bind(0); 
         t_GlobalShader->SetUniform1i("u_Texture", 0); 
 
-        t_Model = glm::rotate(t_Model, glm::radians(k), glm::vec3(0.0f, 1.0f, 0.0f)); 
-        t_GlobalShader->SetUniformMat4f("u_Model", t_Model);  
-        t_Render(VAO, IBO, t_GlobalShader);
+        //Rendering box at all positions
+        for (const auto& pos : t_BoxPositions) {
+            t_Model = glm::translate(glm::mat4(1.0f), pos);
+            t_GlobalShader->SetUniformMat4f("u_Model", t_Model); 
+            t_Render(VAO, IBO, t_GlobalShader);
+        }
 
+        //Render the light source box
+        glm::mat4 t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(3 * glm::sin(glm::radians(k)), 0.5f, 4.0f)), glm::vec3(0.2f));
+        t_LightSrcShader->SetUniformMat4f("u_Model", t_ModelL);
+        t_LightPos = glm::vec3(5 * glm::sin(glm::radians(k)), 0.5f, 4.0f);
+        t_GlobalShader->SetUniform3fv("u_LightPos", t_LightPos);
+        t_Render(VAOL, IBO, t_LightSrcShader);
+        
         glfwSwapBuffers(window); 
         glfwPollEvents();
+
+        k += 0.5f;
+        if (k >= 360.0f) k -= 360.0f;
     }
 
     glfwTerminate();
@@ -145,8 +224,8 @@ GLFWwindow* InitAll() {
 
     //CHANGE THE CONTEXT_VERSION IF DEVICE DOESNT SUPPORT 4.5
     glfwWindowHint(GLFW_SAMPLES, 8);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); 
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(1600, 900, "Hello World", NULL, NULL);

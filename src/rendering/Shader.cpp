@@ -59,6 +59,7 @@ unsigned int Shader::CompileShader(const std::filesystem::path& p_ShaderPath, un
 
 	std::string t_Src = GetShaderSrc(p_ShaderPath);
 	const char* t_ShaderSrc = t_Src.c_str();
+
 	GLCall(unsigned int t_Shader = glCreateShader(p_ShaderType));
 
 	GLCall(glShaderSource(t_Shader, 1, &t_ShaderSrc, NULL));
@@ -92,11 +93,7 @@ void Shader::CheckCompilationStatus(unsigned int p_Shader) const {
 }
 	
 int Shader::GetUniformLocation(std::string_view p_UniformName) { 
-	std::string t_Uniform(p_UniformName);
 
-	if (m_UniformCache.find(t_Uniform) != m_UniformCache.end()) {
-		return m_UniformCache[t_Uniform];
-	}
 
 	Bind();
 	GLCall(int t_Location = glGetUniformLocation(m_ShaderID, p_UniformName.data()));
@@ -105,7 +102,6 @@ int Shader::GetUniformLocation(std::string_view p_UniformName) {
 		std::cout << "Warning: Uniform " << p_UniformName << " doesn't exist!" << std::endl;
 	}
 
-	m_UniformCache[t_Uniform] = t_Location;
 	return t_Location;
 }
 
@@ -117,6 +113,10 @@ void Shader::SetUniform1i(std::string_view p_UniformName, const int p_Value) {
 
 void Shader::SetUniform1f(std::string_view p_UniformName, const float p_Value) {
 	GLCall(glUniform1f(GetUniformLocation(p_UniformName), p_Value));
+}
+
+void Shader::SetUniform3fv(std::string_view p_UniformName, const glm::vec3 p_Value) {
+	GLCall(glUniform3fv(GetUniformLocation(p_UniformName), 1, &p_Value[0]));
 }
 
 void Shader::SetUniformMat4f(std::string_view p_UniformName, const glm::mat4& p_Value) {

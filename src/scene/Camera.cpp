@@ -3,7 +3,7 @@
 
 Camera::Camera()
 	: m_Fov(70.0f)
-	, m_Speed(2.0f)
+	, m_Speed(4.0f)
 	, m_SpeedMultiplier(2.0f)
 	, m_Sensitivity(0.1f)
 	, m_Yaw(-90.0)

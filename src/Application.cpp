@@ -191,7 +191,7 @@ int main() {
 
         //Rendering box at all positions
         for (const auto& pos : t_BoxPositions) {
-            t_Model = glm::translate(glm::mat4(1.0f), pos);
+            t_Model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(k), pos), pos);
             t_GlobalShader->SetUniformMat4f("u_Model", t_Model); 
             t_Render(VAO, IBO, t_GlobalShader);
         }
@@ -201,6 +201,7 @@ int main() {
         t_LightSrcShader->SetUniformMat4f("u_Model", t_ModelL);
         t_LightPos = glm::vec3(5 * glm::sin(glm::radians(k)), 0.5f, 4.0f);
         t_GlobalShader->SetUniform3fv("u_LightPos", t_LightPos);
+        t_GlobalShader->SetUniform3fv("u_ViewPos", t_Camera.GetPos());
         t_Render(VAOL, IBO, t_LightSrcShader);
         
         glfwSwapBuffers(window); 

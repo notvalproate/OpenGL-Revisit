@@ -10,6 +10,8 @@ public:
 
 	void UpdateUniforms(std::string_view p_View, std::string_view p_Projection, Shader& p_Shader);
 	void ResetProjectionMat(int p_Width, int p_Height);
+
+	[[nodiscard]] glm::vec3 GetPos() const { return m_Position; }
 private:
 	glm::vec3 m_Position;
 	glm::vec3 m_Direction;

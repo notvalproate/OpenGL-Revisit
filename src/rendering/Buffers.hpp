@@ -12,7 +12,7 @@ public:
 		GLCall(glBufferData(m_BufferType, sizeof(T) * p_Data.size(), p_Data.data(), GL_STATIC_DRAW));
 		GLCall(glBindBuffer(m_BufferType, 0));
 	}
-	~BufferBase();
+	virtual ~BufferBase();
 
 	BufferBase(const BufferBase& other) = delete;
 	BufferBase& operator=(const BufferBase& other) = delete;

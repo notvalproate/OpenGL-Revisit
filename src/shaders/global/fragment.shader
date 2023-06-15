@@ -6,7 +6,7 @@ in vec2 v_TexCoord;
 in vec3 v_Normal;
 in vec3 v_FragPos;
 
-uniform sampler2D u_Texture;
+uniform sampler2D u_Texture; 
 uniform sampler2D u_SpecMap;
 
 struct PointLight {

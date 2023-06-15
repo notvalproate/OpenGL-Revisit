@@ -16,6 +16,8 @@
 #include "scene/Camera.hpp"
 #include "scene/CameraHandler.hpp"
 
+#include "lighting/PointLight.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -47,8 +49,11 @@ int main() {
     Camera t_Camera;
     CameraHandler t_CamHandler(t_Camera);
 
+    PointLight* t_Light;
+    glm::mat4 t_ModelL;
+
     //Temporary Lambda to render a mesh
-    const auto t_Render = [](VertexArray& VAO, IndexBuffer& IBO, Shader& Shdr) {
+    const auto t_Render = [](const VertexArray& VAO, const IndexBuffer& IBO, const Shader& Shdr) {
         VAO.Bind();
         IBO.Bind(); 
         Shdr.Bind();
@@ -143,50 +148,43 @@ int main() {
 
         VertexBuffer VBOL(t_VerticesL);
         VAOL = new VertexArray(VBOL, t_LayoutL);
+
+        //LIGHTING
+        glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f); 
+        glm::vec3 t_Color(1.0f, 1.0f, 1.0f);
+
+        t_Light = new PointLight(t_LightPos, t_Color, 1.0f);
+        t_Light->SetUniforms(t_GlobalShader);
+
+        //LIGHT CUBE MODEL
+        t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
+        t_LightSrcShader.SetUniformMat4f("u_Model", t_ModelL);
+        t_LightSrcShader.SetUniform3fv("u_Color", t_Color);
     }
 
-    //LIGHT POSITION
-    glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f);
-    glm::vec3 t_Ambient(0.2f, 0.2f, 0.2f);
-    glm::vec3 t_Diffuse(1.0f, 1.0f, 1.0f);
-    glm::vec3 t_Specular(1.0f, 0.1f, 0.1f);
-    t_GlobalShader.SetUniform3fv("u_PointLight.Position", t_LightPos); 
-    t_GlobalShader.SetUniform3fv("u_PointLight.Ambient", t_Ambient); 
-    t_GlobalShader.SetUniform3fv("u_PointLight.Diffuse", t_Diffuse); 
-    t_GlobalShader.SetUniform3fv("u_PointLight.Specular", t_Specular); 
-    t_GlobalShader.SetUniform1f("u_PointLight.Kc", 1.0f);
-    t_GlobalShader.SetUniform1f("u_PointLight.Kl", 0.09f);
-    t_GlobalShader.SetUniform1f("u_PointLight.Kq", 0.016f);
-    t_GlobalShader.SetUniform1f("u_PointLight.Brightness", 1.0f);
-    t_LightSrcShader.SetUniform3fv("u_Color", t_Diffuse * t_Specular);
-
-    //LIGHT MODEL
-    glm::mat4 t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
-    t_LightSrcShader.SetUniformMat4f("u_Model", t_ModelL);
-
-    //DIFF FOR EACH MODEL
+    //DIFF FOR EACH BOX MODEL
     glm::mat4 t_Model(1.0f);
 
     //Temp positions to render multiple boxes
-    glm::vec3 t_BoxPositions[] = {
+    const glm::vec3 t_BoxPositions[] = {
         glm::vec3(0.1f, 0.0f, 0.0f),
         glm::vec3(5.0f, 4.0f, -1.0f),
         glm::vec3(-2.0f, 7.0f, 3.0f),
         glm::vec3(6.0f, -3.0f, 6.0f),
-        glm::vec3(2.0f, -6.0f, -3.0f), 
+        glm::vec3(2.0f, -6.0f, -3.0f),
         glm::vec3(8.0f, 3.0f, -10.0f),
-        glm::vec3(-8.0f, 2.0f, 6.0f), 
-        glm::vec3(3.0f, -5.0f, 8.0f), 
-        glm::vec3(9.0f, 8.0f, -2.0f) 
+        glm::vec3(-8.0f, 2.0f, 6.0f),
+        glm::vec3(3.0f, -5.0f, 8.0f),
+        glm::vec3(9.0f, 8.0f, -2.0f)
     };
 
     float t_DeltaTime;
     float k = 0.5f;
  
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window)) { 
         if (g_Resized) t_Camera.ResetProjectionMat(WINDOW_WIDTH, WINDOW_HEIGHT);
         t_DeltaTime = t_Timer.GetDeltaTime();
-
+        
         glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
@@ -209,7 +207,7 @@ int main() {
         }
 
         //Render the light source box
-        //t_Render(*VAOL, *IBO, t_LightSrcShader);
+        t_Render(*VAOL, *IBO, t_LightSrcShader);
         
         glfwSwapBuffers(window); 
         glfwPollEvents();

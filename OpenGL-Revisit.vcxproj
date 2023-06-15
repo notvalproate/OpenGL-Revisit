@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\lighting\PointLight.cpp" />
     <ClCompile Include="src\rendering\Buffers.cpp" />
     <ClCompile Include="src\rendering\Shader.cpp" />
     <ClCompile Include="src\rendering\VertexArray.cpp" />
@@ -166,6 +167,7 @@
     <None Include="src\shaders\light_source\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\lighting\PointLight.hpp" />
     <ClInclude Include="src\rendering\Buffers.hpp" />
     <ClInclude Include="src\rendering\Shader.hpp" />
     <ClInclude Include="src\rendering\VertexArray.hpp" />

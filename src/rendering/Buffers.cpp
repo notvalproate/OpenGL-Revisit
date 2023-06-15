@@ -18,6 +18,8 @@ BufferBase& BufferBase::operator=(BufferBase&& other) noexcept {
 
 	other.m_BufferID = 0;
 	other.m_BufferType = 0;
+
+	return *this;
 }
 
 void BufferBase::Bind() const {

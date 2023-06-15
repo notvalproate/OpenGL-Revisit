@@ -31,14 +31,15 @@ int main() {
 
     if(!window) return -1;
 
-    Shader* t_GlobalShader = new Shader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
-    Shader* t_LightSrcShader = new Shader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
+    Shader t_GlobalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
+    Shader t_LightSrcShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
 
-    //BASIC MESH WITH TEXTURE
+    //BASIC MESH WITH DIFF AND SPEC MAP
     VertexArray* VAO; 
     IndexBuffer* IBO; 
     Texture2D t_Tex("assets/textures/catpfp.png");
-
+    Texture2D t_Spec("assets/textures/testspec.png");
+ 
     //MESH FOR LIGHTCUBE
     VertexArray* VAOL;
 
@@ -47,11 +48,11 @@ int main() {
     CameraHandler t_CamHandler(t_Camera);
 
     //Temporary Lambda to render a mesh
-    const auto t_Render = [](VertexArray* VAO, IndexBuffer* IBO, Shader* Shdr) {
-        VAO->Bind();
-        IBO->Bind();
-        Shdr->Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, IBO->GetCount(), GL_UNSIGNED_INT, nullptr));
+    const auto t_Render = [](VertexArray& VAO, IndexBuffer& IBO, Shader& Shdr) {
+        VAO.Bind();
+        IBO.Bind(); 
+        Shdr.Bind();
+        GLCall(glDrawElements(GL_TRIANGLES, IBO.GetCount(), GL_UNSIGNED_INT, nullptr));
     };
 
     //Temporary scope to show how to initialize vao and ibo in a mesh object
@@ -137,7 +138,7 @@ int main() {
              0.5f, -0.5f, -0.5f,
             -0.5f, -0.5f, -0.5f
         };
-
+     
         unsigned int t_LayoutL[] = { 3 };
 
         VertexBuffer VBOL(t_VerticesL);
@@ -146,19 +147,22 @@ int main() {
 
     //LIGHT POSITION
     glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f);
-    glm::vec3 t_LightColor(1.0f, 1.0f, 1.0f);
-    t_GlobalShader->SetUniform3fv("u_PointLight.Position", t_LightPos); 
-    t_GlobalShader->SetUniform3fv("u_PointLight.Color", t_LightColor);
-    t_GlobalShader->SetUniform1f("u_PointLight.AmbientStrength", 0.2); 
-    t_GlobalShader->SetUniform1f("u_PointLight.SpecularStrength", 0.5);
-    t_GlobalShader->SetUniform1f("u_PointLight.Kc", 1.0);
-    t_GlobalShader->SetUniform1f("u_PointLight.Kl", 0.09);
-    t_GlobalShader->SetUniform1f("u_PointLight.Kq", 0.016);
-    t_GlobalShader->SetUniform1f("u_PointLight.Brightness", 1.0);
+    glm::vec3 t_Ambient(0.2f, 0.2f, 0.2f);
+    glm::vec3 t_Diffuse(1.0f, 1.0f, 1.0f);
+    glm::vec3 t_Specular(1.0f, 0.1f, 0.1f);
+    t_GlobalShader.SetUniform3fv("u_PointLight.Position", t_LightPos); 
+    t_GlobalShader.SetUniform3fv("u_PointLight.Ambient", t_Ambient); 
+    t_GlobalShader.SetUniform3fv("u_PointLight.Diffuse", t_Diffuse); 
+    t_GlobalShader.SetUniform3fv("u_PointLight.Specular", t_Specular); 
+    t_GlobalShader.SetUniform1f("u_PointLight.Kc", 1.0f);
+    t_GlobalShader.SetUniform1f("u_PointLight.Kl", 0.09f);
+    t_GlobalShader.SetUniform1f("u_PointLight.Kq", 0.016f);
+    t_GlobalShader.SetUniform1f("u_PointLight.Brightness", 1.0f);
+    t_LightSrcShader.SetUniform3fv("u_Color", t_Diffuse * t_Specular);
 
     //LIGHT MODEL
     glm::mat4 t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
-    t_LightSrcShader->SetUniformMat4f("u_Model", t_ModelL);
+    t_LightSrcShader.SetUniformMat4f("u_Model", t_ModelL);
 
     //DIFF FOR EACH MODEL
     glm::mat4 t_Model(1.0f);
@@ -188,22 +192,24 @@ int main() {
        
         //CAMERA UPDATES 
         t_CamHandler.HandleEvents(window, t_DeltaTime);
-        t_Camera.UpdateUniforms("u_View", "u_Projection", "u_ViewPos", * t_GlobalShader);
-        t_Camera.UpdateUniforms("u_View", "u_Projection", *t_LightSrcShader);
+        t_Camera.UpdateUniforms("u_View", "u_Projection", "u_ViewPos", t_GlobalShader);
+        t_Camera.UpdateUniforms("u_View", "u_Projection", t_LightSrcShader);
 
         //Binding texture to a slot and setting the uniform to that slot
         t_Tex.Bind(0); 
-        t_GlobalShader->SetUniform1i("u_Texture", 0); 
+        t_GlobalShader.SetUniform1i("u_Texture", 0); 
+        t_Spec.Bind(1);
+        t_GlobalShader.SetUniform1i("u_SpecMap", 1);
 
         //Rendering box at all positions
         for (const auto& pos : t_BoxPositions) {
             t_Model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(k), pos), pos);
-            t_GlobalShader->SetUniformMat4f("u_Model", t_Model); 
-            t_Render(VAO, IBO, t_GlobalShader);
+            t_GlobalShader.SetUniformMat4f("u_Model", t_Model); 
+            t_Render(*VAO, *IBO, t_GlobalShader);
         }
 
         //Render the light source box
-        t_Render(VAOL, IBO, t_LightSrcShader);
+        //t_Render(*VAOL, *IBO, t_LightSrcShader);
         
         glfwSwapBuffers(window); 
         glfwPollEvents();

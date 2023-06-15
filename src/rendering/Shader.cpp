@@ -93,15 +93,18 @@ void Shader::CheckCompilationStatus(unsigned int p_Shader) const {
 }
 	
 int Shader::GetUniformLocation(std::string_view p_UniformName) { 
-
-
 	Bind();
+	if (m_UniformCache.find(std::string(p_UniformName)) != m_UniformCache.end()) {
+		return m_UniformCache.at(std::string(p_UniformName));
+	}
+
 	GLCall(int t_Location = glGetUniformLocation(m_ShaderID, p_UniformName.data()));
 
 	if (t_Location == -1) {
 		std::cout << "Warning: Uniform " << p_UniformName << " doesn't exist!" << std::endl;
 	}
 
+	m_UniformCache[std::string(p_UniformName)] = t_Location;
 	return t_Location;
 }
 

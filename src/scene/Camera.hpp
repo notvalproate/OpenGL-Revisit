@@ -9,6 +9,7 @@ public:
 	Camera(const float p_Speed, const float p_Sensitivity, const float p_Fov);
 
 	void UpdateUniforms(std::string_view p_View, std::string_view p_Projection, Shader& p_Shader);
+	void UpdateUniforms(std::string_view p_View, std::string_view p_Projection, std::string_view p_ViewPos, Shader& p_Shader);
 	void ResetProjectionMat(int p_Width, int p_Height);
 
 	[[nodiscard]] glm::vec3 GetPos() const { return m_Position; }

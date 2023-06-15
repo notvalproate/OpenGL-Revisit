@@ -146,7 +146,15 @@ int main() {
 
     //LIGHT POSITION
     glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f);
-    t_GlobalShader->SetUniform3fv("u_LightPos", t_LightPos);
+    glm::vec3 t_LightColor(1.0f, 1.0f, 1.0f);
+    t_GlobalShader->SetUniform3fv("u_PointLight.Position", t_LightPos); 
+    t_GlobalShader->SetUniform3fv("u_PointLight.Color", t_LightColor);
+    t_GlobalShader->SetUniform1f("u_PointLight.AmbientStrength", 0.2); 
+    t_GlobalShader->SetUniform1f("u_PointLight.SpecularStrength", 0.5);
+    t_GlobalShader->SetUniform1f("u_PointLight.Kc", 1.0);
+    t_GlobalShader->SetUniform1f("u_PointLight.Kl", 0.09);
+    t_GlobalShader->SetUniform1f("u_PointLight.Kq", 0.016);
+    t_GlobalShader->SetUniform1f("u_PointLight.Brightness", 1.0);
 
     //LIGHT MODEL
     glm::mat4 t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
@@ -177,12 +185,10 @@ int main() {
 
         glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
        
-
         //CAMERA UPDATES 
         t_CamHandler.HandleEvents(window, t_DeltaTime);
-        t_Camera.UpdateUniforms("u_View", "u_Projection", *t_GlobalShader);
+        t_Camera.UpdateUniforms("u_View", "u_Projection", "u_ViewPos", * t_GlobalShader);
         t_Camera.UpdateUniforms("u_View", "u_Projection", *t_LightSrcShader);
 
         //Binding texture to a slot and setting the uniform to that slot
@@ -197,11 +203,6 @@ int main() {
         }
 
         //Render the light source box
-        glm::mat4 t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(3 * glm::sin(glm::radians(k)), 0.5f, 4.0f)), glm::vec3(0.2f));
-        t_LightSrcShader->SetUniformMat4f("u_Model", t_ModelL);
-        t_LightPos = glm::vec3(5 * glm::sin(glm::radians(k)), 0.5f, 4.0f);
-        t_GlobalShader->SetUniform3fv("u_LightPos", t_LightPos);
-        t_GlobalShader->SetUniform3fv("u_ViewPos", t_Camera.GetPos());
         t_Render(VAOL, IBO, t_LightSrcShader);
         
         glfwSwapBuffers(window); 

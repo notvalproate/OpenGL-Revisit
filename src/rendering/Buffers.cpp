@@ -22,10 +22,10 @@ BufferBase& BufferBase::operator=(BufferBase&& other) noexcept {
 	return *this;
 }
 
-void BufferBase::Bind() const {
+void BufferBase::bind() const {
 	GLCall(glBindBuffer(m_BufferType, m_BufferID));
 }
 
-void BufferBase::Unbind() const {
+void BufferBase::unbind() const {
 	GLCall(glBindBuffer(m_BufferType, 0));
 }

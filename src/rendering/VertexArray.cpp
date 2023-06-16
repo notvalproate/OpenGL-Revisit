@@ -3,24 +3,24 @@
 #include <numeric>
 #include "../util/ErrorHandling.hpp"
 
-VertexArray::VertexArray(const VertexBuffer& p_VBO, const std::span<unsigned int>& p_Layout) {
+VertexArray::VertexArray(const VertexBuffer& a_VBO, const std::span<unsigned int>& a_Layout) {
 	GLCall(glGenVertexArrays(1, &m_ArrayID));
 	GLCall(glBindVertexArray(m_ArrayID));
-	p_VBO.Bind();
+	a_VBO.bind();
 
 	size_t i = 0;
-	size_t t_Offset = 0;
-	size_t t_TypeSize = sizeof(float);
-	size_t t_Stride = std::accumulate(p_Layout.begin(), p_Layout.end(), 0) * sizeof(float);
+	size_t offset = 0;
+	size_t typeSize = sizeof(float);
+	size_t stride = std::accumulate(a_Layout.begin(), a_Layout.end(), 0) * sizeof(float);
 
-	for (const auto& t_Element : p_Layout) {
-		GLCall(glVertexAttribPointer(i, t_Element, GL_FLOAT, GL_FALSE, t_Stride, (const void*)t_Offset));
+	for (const auto& element : a_Layout) {
+		GLCall(glVertexAttribPointer(i, element, GL_FLOAT, GL_FALSE, stride, (const void*)offset));
 		GLCall(glEnableVertexAttribArray(i++));
-		t_Offset += t_TypeSize * t_Element; 
+		offset += typeSize * element; 
 	}
 
 	GLCall(glBindVertexArray(0));
-	p_VBO.Unbind();
+	a_VBO.unbind();
 }
 
 VertexArray::~VertexArray() {
@@ -42,10 +42,10 @@ VertexArray& VertexArray::operator=(VertexArray&& other) noexcept {
 	return *this;
 }
 
-void VertexArray::Bind() const {
+void VertexArray::bind() const {
 	GLCall(glBindVertexArray(m_ArrayID));
 }
 
-void VertexArray::Unbind() const {
+void VertexArray::unbind() const {
 	GLCall(glBindVertexArray(0));
 }

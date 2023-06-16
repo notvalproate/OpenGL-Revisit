@@ -15,16 +15,16 @@ enum class KeyBind : unsigned short {
 
 class CameraHandler {
 public:
-	CameraHandler(Camera& p_Camera);
+	CameraHandler(Camera& a_Camera);
 
-	void HandleEvents(GLFWwindow* p_Window, const float p_DeltaTime);
-	void SetKeybind(KeyBind p_Control, unsigned int p_Key);
+	void handleEvents(GLFWwindow* a_Window, const float a_DeltaTime);
+	void setKeybind(KeyBind a_Control, unsigned int a_Key);
 private:
-	Camera& m_Cam;	
+	Camera& m_Camera;	
 	std::unordered_map<KeyBind, unsigned int> m_KeyBindings;
-	double m_LastPosX{}, m_LastPosY{};
+	double m_LastX{}, m_LastY{};
 	bool m_FirstMouse;
 
-	void HandleKeyboardInput(GLFWwindow* p_Window, const float p_DeltaTime) const;
-	void HandleMouseInput(GLFWwindow* p_Window);
+	void handleKeyboardInput(GLFWwindow* a_Window, const float a_DeltaTime) const;
+	void handleMouseInput(GLFWwindow* a_Window);
 };

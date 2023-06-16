@@ -6,10 +6,10 @@
 class BufferBase {
 public:
 	template<typename T>
-	BufferBase(const std::span<T>& p_Data, unsigned int p_Type) : m_BufferType(p_Type) {
+	BufferBase(const std::span<T>& data, unsigned int type) : m_BufferType(type) {
 		GLCall(glGenBuffers(1, &m_BufferID));
 		GLCall(glBindBuffer(m_BufferType, m_BufferID));
-		GLCall(glBufferData(m_BufferType, sizeof(T) * p_Data.size(), p_Data.data(), GL_STATIC_DRAW));
+		GLCall(glBufferData(m_BufferType, sizeof(T) * data.size(), data.data(), GL_STATIC_DRAW));
 		GLCall(glBindBuffer(m_BufferType, 0));
 	}
 	virtual ~BufferBase();
@@ -20,10 +20,10 @@ public:
 	BufferBase(BufferBase&& other) noexcept;
 	BufferBase& operator=(BufferBase&& other) noexcept;
 
-	void Bind() const;
-	void Unbind() const;
+	void bind() const;
+	void unbind() const;
 
-	[[nodiscard]] unsigned int GetID() const { return m_BufferID; }
+	[[nodiscard]] unsigned int getID() const { return m_BufferID; }
 private:
 	unsigned int m_BufferID;
 	unsigned int m_BufferType;
@@ -31,16 +31,16 @@ private:
 
 class VertexBuffer : public BufferBase {
 public:
-	VertexBuffer(const std::span<float>& p_Data) : BufferBase(p_Data, GL_ARRAY_BUFFER) { }
+	VertexBuffer(const std::span<float>& data) : BufferBase(data, GL_ARRAY_BUFFER) { }
 };
 
 class IndexBuffer : public BufferBase {
 public:
-	IndexBuffer(const std::span<unsigned int>& p_Data) 
-		: BufferBase(p_Data, GL_ELEMENT_ARRAY_BUFFER)
-		, m_IndexCount(p_Data.size()) { }
+	IndexBuffer(const std::span<unsigned int>& data) 
+		: BufferBase(data, GL_ELEMENT_ARRAY_BUFFER)
+		, m_IndexCount(data.size()) { }
 
-	[[nodiscard]] unsigned int GetCount() const { return m_IndexCount; }
+	[[nodiscard]] unsigned int getCount() const { return m_IndexCount; }
 private:
 	size_t m_IndexCount;
 };

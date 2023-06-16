@@ -21,50 +21,68 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-int WINDOW_WIDTH = 1600;
-int WINDOW_HEIGHT = 900;
+/*
+CHANGED NAMING SCHEMES THAT I USE: 
+
+Functions:
+    - in lower Camel Case
+Namespaces:
+    - in lower case
+Variables:
+    - in lower Camel Case
+Variable Prefixes:
+    - Local Variables  : none
+    - Private Members  : m_
+    - Global Variables : g_
+    - Static Variables : s_
+    - Arguments        : a_
+*/
+
+
+int g_WindowWidth = 1600;
+int g_WindowHeight = 900;
 bool g_Resized = false;
 
-GLFWwindow* InitAll();
-void c_OnResize(GLFWwindow* window, int width, int height);
+GLFWwindow* initializeAll();
+void onResize(GLFWwindow* window, int width, int height);
 
 int main() {
-    GLFWwindow* window = InitAll();
+    GLFWwindow* window = initializeAll();
 
     if(!window) return -1;
 
-    Shader t_GlobalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
-    Shader t_LightSrcShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
+    Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
+    Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
 
-    Timer t_Timer; 
-    Camera t_Camera; 
-    CameraHandler t_CamHandler(t_Camera); 
+    Timer timer; 
+    Camera camera; 
+    CameraHandler camHandler(camera); 
 
     //BASIC MESH WITH DIFF AND SPEC MAP
-    VertexArray* VAO; 
-    IndexBuffer* IBO; 
-    Texture2D t_Tex("assets/textures/catpfp.png");
-    Texture2D t_Spec("assets/textures/catpfp.png");
+    VertexArray* vao; 
+    IndexBuffer* ibo; 
+    Texture2D diffuseMap("assets/textures/catpfp.png");
+    Texture2D specularMap("assets/textures/catpfp.png");
  
     //MESH FOR LIGHTCUBE
-    VertexArray* VAOL;
+    VertexArray* vaol;
 
     //LIGHTING
-    PointLight* t_Light;
-    glm::mat4 t_ModelL;
+    PointLight* pointLight;
+    glm::mat4 lightModel;
 
     //Temporary Lambda to render a mesh
-    const auto t_Render = [](const VertexArray& VAO, const IndexBuffer& IBO, const Shader& Shdr) {
-        VAO.Bind();
-        IBO.Bind(); 
-        Shdr.Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, IBO.GetCount(), GL_UNSIGNED_INT, nullptr));
+    const auto renderMesh = [](const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) {
+        vao.bind();
+        ibo.bind(); 
+        shader.bind();
+        GLCall(glDrawElements(GL_TRIANGLES, ibo.getCount(), GL_UNSIGNED_INT, nullptr));
     };
 
     //Temporary scope to show how to initialize vao and ibo in a mesh object
     {
         //All data passed in as parameters
-        float t_Vertices[] = {
+        float vertices[] = {
             //POSITION           //TEXCOORD  //NORMALS
             -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
              0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f,  1.0f,
@@ -97,9 +115,9 @@ int main() {
             -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -1.0f,  0.0f
         };
         
-        unsigned int t_Layout[] = { 3, 2, 3 };
+        unsigned int layout[] = { 3, 2, 3 };
 
-        unsigned int t_Indices[] = {
+        unsigned int indices[] = {
             0, 1, 2, 2, 3, 0,
             4, 7, 6, 6, 5, 4,
             8, 9, 10, 10, 11, 8,
@@ -108,11 +126,11 @@ int main() {
             20, 23, 22, 22, 21, 20
         };
     
-        VertexBuffer VBO(t_Vertices);
-        VAO = new VertexArray(VBO, t_Layout);
-        IBO = new IndexBuffer(t_Indices);
+        VertexBuffer VBO(vertices);
+        vao = new VertexArray(VBO, layout);
+        ibo = new IndexBuffer(indices);
 
-        float t_VerticesL[] = {
+        float lightVertices[] = {
             //POSITION          
             -0.5f, -0.5f,  0.5f,
              0.5f, -0.5f,  0.5f,
@@ -145,29 +163,29 @@ int main() {
             -0.5f, -0.5f, -0.5f
         };
      
-        unsigned int t_LayoutL[] = { 3 };
+        unsigned int lightLayout[] = { 3 };
 
-        VertexBuffer VBOL(t_VerticesL);
-        VAOL = new VertexArray(VBOL, t_LayoutL);
+        VertexBuffer vbol(lightVertices);
+        vaol = new VertexArray(vbol, lightLayout);
 
         //LIGHTING
-        glm::vec3 t_LightPos(3.0f, 0.0f, 4.0f); 
-        glm::vec3 t_Color(1.0f, 0.7f, 0.8f);
+        glm::vec3 lightPos(3.0f, 0.0f, 4.0f); 
+        glm::vec3 color(1.0f, 0.7f, 0.8f);
 
-        t_Light = new PointLight(t_LightPos, t_Color, 1.0f);
-        t_Light->UpdateUniforms(t_GlobalShader);
+        pointLight = new PointLight(lightPos, color, 1.0f);
+        pointLight->UpdateUniforms(globalShader);
 
         //LIGHT CUBE MODEL
-        t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), t_LightPos), glm::vec3(0.2f));
-        t_LightSrcShader.SetUniformMat4f("u_Model", t_ModelL);
-        t_LightSrcShader.SetUniform3fv("u_Color", t_Color);
+        lightModel = glm::scale(glm::translate(glm::mat4(1.0f), lightPos), glm::vec3(0.2f));
+        lightSourceShader.setUniformMat4f("u_Model", lightModel);
+        lightSourceShader.setUniform3fv("u_Color", color);
     }
 
     //DIFF FOR EACH BOX MODEL
-    glm::mat4 t_Model(1.0f);
+    glm::mat4 model(1.0f);
 
     //Temp positions to render multiple boxes
-    const glm::vec3 t_BoxPositions[] = {
+    const glm::vec3 boxPositions[] = {
         glm::vec3(0.1f, 0.0f, 0.0f),
         glm::vec3(5.0f, 4.0f, -1.0f),
         glm::vec3(-2.0f, 7.0f, 3.0f),
@@ -179,42 +197,41 @@ int main() {
         glm::vec3(9.0f, 8.0f, -2.0f)
     };
 
-    float t_DeltaTime;
+
     float k = 0.5f;
- 
     while (!glfwWindowShouldClose(window)) { 
-        if (g_Resized) t_Camera.ResetProjectionMat(WINDOW_WIDTH, WINDOW_HEIGHT);
-        t_DeltaTime = t_Timer.GetDeltaTime();
+        if (g_Resized) camera.resetViewport(g_WindowWidth, g_WindowHeight);
+        float deltaTime = timer.getDeltaTime();
         
         glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
         //CAMERA UPDATES 
-        t_CamHandler.HandleEvents(window, t_DeltaTime);
-        t_Camera.UpdateUniforms("u_View", "u_Projection", "u_ViewPos", t_GlobalShader);
-        t_Camera.UpdateUniforms("u_View", "u_Projection", t_LightSrcShader);
+        camHandler.handleEvents(window, deltaTime);
+        camera.updateUniforms("u_View", "u_Projection", "u_ViewPos", globalShader);
+        camera.updateUniforms("u_View", "u_Projection", lightSourceShader);
 
         //Binding texture to a slot and setting the uniform to that slot
-        t_Tex.Bind(0); 
-        t_GlobalShader.SetUniform1i("u_Texture", 0); 
-        t_Spec.Bind(1);
-        t_GlobalShader.SetUniform1i("u_SpecMap", 1);
+        diffuseMap.bind(0); 
+        globalShader.setUniform1i("u_Texture", 0); 
+        specularMap.bind(1);
+        globalShader.setUniform1i("u_SpecMap", 1);
 
         //Rendering box at all positions
         float i = 10.0f;
-        for (const auto& pos : t_BoxPositions) {
-            t_Model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos);
-            t_GlobalShader.SetUniformMat4f("u_Model", t_Model); 
-            t_Render(*VAO, *IBO, t_GlobalShader);
+        for (const auto& pos : boxPositions) {
+            model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos);
+            globalShader.setUniformMat4f("u_Model", model); 
+            renderMesh(*vao, *ibo, globalShader);
             i += 30.0f;
         }
 
         //Render the light source box
         glm::vec3 test = glm::vec3(10 * glm::sin(glm::radians(k)), 0.0f, 4.0f);
-        t_Light->SetPosition(test, t_GlobalShader);
-        t_ModelL = glm::scale(glm::translate(glm::mat4(1.0f), test), glm::vec3(0.2f));
-        t_LightSrcShader.SetUniformMat4f("u_Model", t_ModelL);
-        t_Render(*VAOL, *IBO, t_LightSrcShader);
+        pointLight->SetPosition(test, globalShader);
+        lightModel = glm::scale(glm::translate(glm::mat4(1.0f), test), glm::vec3(0.2f));
+        lightSourceShader.setUniformMat4f("u_Model", lightModel);
+        renderMesh(*vaol, *ibo, lightSourceShader);
         
         glfwSwapBuffers(window); 
         glfwPollEvents();
@@ -223,7 +240,7 @@ int main() {
         if (k >= 360.0f) k -= 360.0f;
     }
 
-    delete VAO, IBO, VAOL, t_Light;
+    delete vao, ibo, vaol, pointLight;
 
     glfwTerminate();
     return 0;
@@ -231,7 +248,7 @@ int main() {
 
 //SMALL ABSTRACTIONS
 
-GLFWwindow* InitAll() {
+GLFWwindow* initializeAll() {
 
     if (!glfwInit()) {
         return nullptr;
@@ -250,7 +267,7 @@ GLFWwindow* InitAll() {
     }
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetFramebufferSizeCallback(window, c_OnResize);
+    glfwSetFramebufferSizeCallback(window, onResize);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
@@ -271,9 +288,9 @@ GLFWwindow* InitAll() {
 
 //CALLBACKS
 
-void c_OnResize(GLFWwindow* window, int width, int height) {
-    WINDOW_WIDTH = width;
-    WINDOW_HEIGHT = height;
+void onResize(GLFWwindow* window, int width, int height) {
+    g_WindowWidth = width;
+    g_WindowHeight = height;
     g_Resized = true;
     glViewport(0, 0, width, height);
 }

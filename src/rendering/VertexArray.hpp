@@ -4,7 +4,7 @@
 
 class VertexArray {
 public:
-	VertexArray(const VertexBuffer& p_VBO, const std::span<unsigned int>& p_Layout);
+	VertexArray(const VertexBuffer& a_VBO, const std::span<unsigned int>& a_Layout);
 	~VertexArray();
 
 	VertexArray(const VertexArray& other) = delete;
@@ -13,8 +13,8 @@ public:
 	VertexArray(VertexArray&& other) noexcept;
 	VertexArray& operator=(VertexArray&& other) noexcept;
 
-	void Bind() const;
-	void Unbind() const;
+	void bind() const;
+	void unbind() const;
 private:
 	unsigned int m_ArrayID;
 };

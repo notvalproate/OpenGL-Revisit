@@ -9,24 +9,24 @@ PointLight::PointLight(const glm::vec3& p_Position, const glm::vec3& p_Color, fl
     , m_Brightness(p_Brightness) { }
 
 void PointLight::UpdateUniforms(Shader& p_Shader) {
-    p_Shader.SetUniform3fv("u_PointLight.Position", m_Position);
-    p_Shader.SetUniform3fv("u_PointLight.Ambient", m_Ambient);
-    p_Shader.SetUniform3fv("u_PointLight.Diffuse", m_Diffusion);
-    p_Shader.SetUniform3fv("u_PointLight.Specular", m_Specular);
-    p_Shader.SetUniform1f("u_PointLight.Kc", Kc);
-    p_Shader.SetUniform1f("u_PointLight.Kl", Kl);
-    p_Shader.SetUniform1f("u_PointLight.Kq", Kq);
-    p_Shader.SetUniform1f("u_PointLight.Brightness", m_Brightness);
+    p_Shader.setUniform3fv("u_PointLight.Position", m_Position);
+    p_Shader.setUniform3fv("u_PointLight.Ambient", m_Ambient);
+    p_Shader.setUniform3fv("u_PointLight.Diffuse", m_Diffusion);
+    p_Shader.setUniform3fv("u_PointLight.Specular", m_Specular);
+    p_Shader.setUniform1f("u_PointLight.Kc", Kc);
+    p_Shader.setUniform1f("u_PointLight.Kl", Kl);
+    p_Shader.setUniform1f("u_PointLight.Kq", Kq);
+    p_Shader.setUniform1f("u_PointLight.Brightness", m_Brightness);
 }
 
 void PointLight::SetPosition(const glm::vec3& p_Position, Shader& p_Shader) {
     m_Position = p_Position;
-    p_Shader.SetUniform3fv("u_PointLight.Position", m_Position);
+    p_Shader.setUniform3fv("u_PointLight.Position", m_Position);
 }
 
 void PointLight::Translate(const glm::vec3& p_Translation, Shader& p_Shader) {
     m_Position += p_Translation;
-    p_Shader.SetUniform3fv("u_PointLight.Position", m_Position);
+    p_Shader.setUniform3fv("u_PointLight.Position", m_Position);
 } 
 
 void PointLight::SetColor(const glm::vec3& p_Color) {

@@ -6,11 +6,11 @@
 class Camera {
 public:
 	Camera();
-	Camera(const float p_Speed, const float p_Sensitivity, const float p_Fov);
+	Camera(const float a_Speed, const float a_Sensitivity, const float a_Fov);
 
-	void UpdateUniforms(std::string_view p_View, std::string_view p_Projection, Shader& p_Shader);
-	void UpdateUniforms(std::string_view p_View, std::string_view p_Projection, std::string_view p_ViewPos, Shader& p_Shader);
-	void ResetProjectionMat(int p_Width, int p_Height);
+	void updateUniforms(std::string_view a_View, std::string_view a_Projection, Shader& a_Shader);
+	void updateUniforms(std::string_view a_View, std::string_view a_Projection, std::string_view a_ViewPos, Shader& a_Shader);
+	void resetViewport(int a_Width, int a_Height);
 
 	[[nodiscard]] glm::vec3 GetPos() const { return m_Position; }
 private:

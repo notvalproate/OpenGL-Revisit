@@ -29,7 +29,7 @@ Functions:
 Namespaces:
     - in lower case
 Variables:
-    - in lower Camel Case
+    - in lower Camel Case, Pascal Case if prefixed
 Variable Prefixes:
     - Local Variables  : none
     - Private Members  : m_
@@ -37,7 +37,6 @@ Variable Prefixes:
     - Static Variables : s_
     - Arguments        : a_
 */
-
 
 int g_WindowWidth = 1600;
 int g_WindowHeight = 900;
@@ -61,8 +60,6 @@ int main() {
     //BASIC MESH WITH DIFF AND SPEC MAP
     VertexArray* vao; 
     IndexBuffer* ibo; 
-    Texture2D diffuseMap("assets/textures/crate.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
-    Texture2D specularMap("assets/textures/crate_spec.png", GL_NEAREST, GL_CLAMP_TO_EDGE); 
  
     //MESH FOR LIGHTCUBE
     VertexArray* vaol;
@@ -83,39 +80,39 @@ int main() {
     {
         //All data passed in as parameters
         float vertices[] = {
-            //POSITION           //TEXCOORD  //NORMALS
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-             0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  0.0f,  1.0f,
-             0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f,  0.0f,  1.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 0.0f,  0.0f,  1.0f,
-                                             		 	    
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  0.0f, -1.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  0.0f, -1.0f,
-                                             		 	    
-             0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f,  0.0f,  0.0f,
-             0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
-                                             		 	    
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-            -0.5f,  0.5f,  0.5f, 0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-                                             			    
-            -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 0.0f,  1.0f,  0.0f,
-             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 0.0f,  1.0f,  0.0f,
-            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  1.0f,  0.0f,
-                                             			    
-            -0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-             0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-             0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f, -1.0f,  0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -1.0f,  0.0f
+            //POSITION         //TEXCOORD  //NORMALS         //TEX INDEX
+            -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+             0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+             0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+            -0.5f,-0.5f,-0.5f, 0.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+             0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+             0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+            -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+
+             0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+             0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+             0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                                           			   
+            -0.5f,-0.5f, 0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f,-0.5f,-0.5f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f,-0.5f, 1.0f, 1.0f,-1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 0.0f,
+
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+             0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+             0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+            -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
+             0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
+             0.5f,-0.5f,-0.5f, 1.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f,
+            -0.5f,-0.5f,-0.5f, 0.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f
         };
         
-        unsigned int layout[] = { 3, 2, 3 };
+        unsigned int layout[] = { 3, 2, 3, 1 };
 
         unsigned int indices[] = {
             0, 1, 2, 2, 3, 0,
@@ -197,8 +194,11 @@ int main() {
         glm::vec3(9.0f, 8.0f, -2.0f)
     };
 
+    Texture2D diffuseMap("assets/textures/crate.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
+    Texture2D specularMap("assets/textures/crate_spec.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
+
     float k = 0.5f;
-    while (!glfwWindowShouldClose(window)) { 
+    while (!glfwWindowShouldClose(window)) {
         if (g_Resized) camera.resetViewport(g_WindowWidth, g_WindowHeight);
         float deltaTime = timer.getDeltaTime();
         
@@ -211,16 +211,17 @@ int main() {
         camera.updateUniforms("u_View", "u_Projection", lightSourceShader);
 
         //Binding texture to a slot and setting the uniform to that slot
-        diffuseMap.bind(0); 
-        globalShader.setUniform1i("u_Texture", 0); 
+        diffuseMap.bind(0);
+        globalShader.setUniform1i("u_Materials[0].diffusion", 0);
         specularMap.bind(1);
-        globalShader.setUniform1i("u_SpecMap", 1);
+        globalShader.setUniform1i("u_Materials[0].specular", 1);
+        globalShader.setUniform1f("u_Materials[0].shininess", 32.0f);
 
         //Rendering box at all positions
         float i = 10.0f;
         for (const auto& pos : boxPositions) {
             model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos);
-            globalShader.setUniformMat4f("u_Model", model); 
+            globalShader.setUniformMat4f("u_Model", model);
             renderMesh(*vao, *ibo, globalShader);
             i += 30.0f;
         }
@@ -230,11 +231,11 @@ int main() {
         pointLights.setLightPosition(0, glm::vec3(test, 0.0f, 4.0f));
         renderMesh(*vaol, *ibo, lightSourceShader);
         pointLights.setLightPosition(1, glm::vec3(3.0f, test, -8.0f));
-        renderMesh(*vaol, *ibo, lightSourceShader); 
-        pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test)); 
+        renderMesh(*vaol, *ibo, lightSourceShader);
+        pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
         renderMesh(*vaol, *ibo, lightSourceShader);
 
-        glfwSwapBuffers(window); 
+        glfwSwapBuffers(window);
         glfwPollEvents();
 
         k += 0.5f;
@@ -257,8 +258,8 @@ GLFWwindow* initializeAll() {
 
     //CHANGE THE CONTEXT_VERSION IF DEVICE DOESNT SUPPORT 4.5
     glfwWindowHint(GLFW_SAMPLES, 8);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(1600, 900, "Hello World", NULL, NULL);

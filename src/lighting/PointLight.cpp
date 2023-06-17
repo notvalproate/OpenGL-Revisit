@@ -41,7 +41,7 @@ void PointLight::setPosition(const glm::vec3& a_Position, Shader* a_Shader) {
     a_Shader->setUniform3fv(m_Index + "Position", a_Position);
 }
 
-PointLightList PointLightList::m_Instance;
+PointLightList PointLightList::s_Instance;
 
 void PointLightList::addLight(unsigned short a_Index, const glm::vec3& a_Position, const glm::vec3& a_Color, float a_Brightness, Shader* a_ModelShader) {
     if (a_Index >= 50) {

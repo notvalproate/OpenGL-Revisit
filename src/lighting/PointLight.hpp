@@ -26,7 +26,7 @@ public:
 	PointLightList(const PointLightList& other) = delete;
 
 	static PointLightList& getList() {
-		return m_Instance;
+		return s_Instance;
 	}
 
 	void addLight(unsigned short a_Index, const glm::vec3& a_Position, const glm::vec3& a_Color, float a_Brightness, Shader* a_ModelShader);
@@ -37,7 +37,7 @@ public:
 private:
 	PointLightList() : m_PointLights({}), m_Shader(nullptr) {}
 
-	static PointLightList m_Instance;
+	static PointLightList s_Instance;
 	std::unordered_map<unsigned short, PointLight*> m_PointLights;
 	Shader* m_Shader;
 };

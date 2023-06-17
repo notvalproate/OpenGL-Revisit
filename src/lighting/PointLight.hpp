@@ -1,25 +1,43 @@
 #pragma once
-#include <glm/glm.hpp>
+#include <unordered_map>
+#include <string>
 #include "../rendering/Shader.hpp"
+#include <glm/glm.hpp>
 
 class PointLight {
-public:
-	PointLight(const glm::vec3& p_Position, const glm::vec3& p_Color, float p_Brightness);
-
-	void UpdateUniforms(Shader& p_Shader);
-
-	void SetPosition(const glm::vec3& p_Position, Shader& p_Shader);
-	void Translate(const glm::vec3& p_Translation, Shader& p_Shader);
-
-	void SetColor(const glm::vec3& p_Color);
-	void SetAttenuation(float p_Constant, float p_Linear, float p_Quadratic);
 private:
-	glm::vec3 m_Position;
+	PointLight(unsigned short a_Index, const glm::vec3& a_Position, const glm::vec3& a_Color, float a_Brightness, Shader* a_Shader, Shader* a_ModelShader);
 
-	glm::vec3 m_Ambient;
-	glm::vec3 m_Diffusion; 
-	glm::vec3 m_Specular;  
+	//Temporary until mesh/model class is implemented
+	glm::mat4 m_Model;
+	glm::vec3 m_ModelColor;
 
-	float Kc = 1.0f, Kl = 0.14f, Kq = 0.07f;
-	float m_Brightness;
+	Shader* m_ModelShader;
+	std::string m_Index;
+
+	void resetUniforms(Shader* a_Shader);
+	void setPosition(const glm::vec3& a_Position, Shader* a_Shader);
+
+	friend class PointLightList;
+};
+
+class PointLightList {
+public:
+	PointLightList(const PointLightList& other) = delete;
+
+	static PointLightList& getList() {
+		return m_Instance;
+	}
+
+	void addLight(unsigned short a_Index, const glm::vec3& a_Position, const glm::vec3& a_Color, float a_Brightness, Shader* a_ModelShader);
+	void removeLight(unsigned short a_Index);
+
+	void setShader(Shader* a_Shader);
+	void setLightPosition(unsigned short a_Index, const glm::vec3& a_Position);
+private:
+	PointLightList() : m_PointLights({}), m_Shader(nullptr) {}
+
+	static PointLightList m_Instance;
+	std::unordered_map<unsigned short, PointLight*> m_PointLights;
+	Shader* m_Shader;
 };

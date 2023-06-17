@@ -9,7 +9,7 @@ in vec3 v_FragPos;
 uniform sampler2D u_Texture; 
 uniform sampler2D u_SpecMap;
 
-struct PointLight {
+struct pointlight {
 	vec3 Position;
 
 	vec3 Ambient;
@@ -21,57 +21,62 @@ struct PointLight {
 	float Brightness;
 };
 
-uniform PointLight u_PointLight;
+uniform pointlight u_PointLight[50];
 
 uniform vec3 u_ViewPos;
 
-vec4 GetAmbience(const vec3 p_LightColor, const vec4 p_DiffuseMap);
-vec4 GetDiffusion(const vec3 p_LightColor, const vec3 p_LightDir, const vec4 p_DiffuseMap);
-vec4 GetSpecular(const vec3 p_LightColor, const vec3 p_LightDir, const vec4 p_SpecularMap);
+vec4 getAmbience(const vec3 a_LightColor, const vec4 a_DiffuseMap);
+vec4 getDiffusion(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_DiffuseMap);
+vec4 getSpecular(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_SpecularMap);
 
-vec4 GetPointLight(const PointLight p_PointLight, const vec4 p_DiffuseMap, const vec4 p_SpecularMap);
+vec4 getPointLight(const pointlight a_PointLight, const vec4 a_DiffuseMap, const vec4 a_SpecularMap);
 
 void main() {
 	vec4 tex = texture(u_Texture, v_TexCoord);
 	vec4 spec = texture(u_SpecMap, v_TexCoord);
+	vec4 final = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	vec4 final = GetPointLight(u_PointLight, tex, spec);
+	for (int i = 0; i < 50; i += 1) {
+		if (u_PointLight[i].Brightness != 0) {
+			final += getPointLight(u_PointLight[i], tex, spec);
+		}
+	}
 
-	color = final;
+	color = vec4(final.r, final.g, final.b, tex.a);
 }
 
 //GET AMB DIFF AND SPEC
-vec4 GetAmbience(const vec3 p_LightColor, const vec4 p_DiffuseMap) {
-	return vec4(p_LightColor, 1.0) * p_DiffuseMap;
+vec4 getAmbience(const vec3 a_LightColor, const vec4 a_DiffuseMap) {
+	return vec4(a_LightColor, 1.0) * a_DiffuseMap;
 }
 
-vec4 GetDiffusion(const vec3 p_LightColor, const vec3 p_LightDir, const vec4 p_DiffuseMap) {
-	float t_DiffStrength = max(dot(v_Normal, p_LightDir), 0.0);
+vec4 getDiffusion(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_DiffuseMap) {
+	float diffStrength = max(dot(v_Normal, a_LightDir), 0.0);
 
-	return vec4(p_LightColor, 1.0) * (t_DiffStrength * p_DiffuseMap);
+	return vec4(a_LightColor, 1.0) * (diffStrength * a_DiffuseMap);
 }
 
-vec4 GetSpecular(const vec3 p_LightColor, const vec3 p_LightDir, const vec4 p_SpecularMap) {
-	vec3 t_ViewDir = normalize(u_ViewPos - v_FragPos);
-	vec3 t_ReflectDir = reflect(-p_LightDir, v_Normal);
+vec4 getSpecular(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_SpecularMap) {
+	vec3 ViewDir = normalize(u_ViewPos - v_FragPos);
+	vec3 ReflectDir = reflect(-a_LightDir, v_Normal);
 
-	float t_SpecStrength = pow(max(dot(t_ViewDir, t_ReflectDir), 0.0), 32);
+	float SpecStrength = pow(max(dot(ViewDir, ReflectDir), 0.0), 32);
 
-	return vec4(p_LightColor, 1.0) * (t_SpecStrength * p_SpecularMap);
+	return vec4(a_LightColor, 1.0) * (SpecStrength * a_SpecularMap);
 }
 
 //GET POINT LIGHT
-vec4 GetPointLight(const PointLight p_PointLight, const vec4 p_DiffuseMap, const vec4 p_SpecularMap) {
-	vec3 t_LightDir = normalize(p_PointLight.Position - v_FragPos);
+vec4 getPointLight(const pointlight a_PointLight, const vec4 a_DiffuseMap, const vec4 a_SpecularMap) {
+	vec3 lightDir = normalize(a_PointLight.Position - v_FragPos);
 
-	float t_Distance = length(p_PointLight.Position - v_FragPos);
-	float t_Att = 1.0 / (p_PointLight.Kc + (p_PointLight.Kl * t_Distance) + (p_PointLight.Kq * t_Distance * t_Distance));
+	float distance = length(a_PointLight.Position - v_FragPos);
+	float attenuation = 1.0 / (a_PointLight.Kc + (a_PointLight.Kl * distance) + (a_PointLight.Kq * distance * distance));
 
-	vec4 ambient = GetAmbience(p_PointLight.Ambient, p_DiffuseMap);
+	vec4 ambient = getAmbience(a_PointLight.Ambient, a_DiffuseMap);
 
-	vec4 diffuse = t_Att * GetDiffusion(p_PointLight.Diffuse, t_LightDir, p_DiffuseMap);
+	vec4 diffuse = getDiffusion(a_PointLight.Diffuse, lightDir, a_DiffuseMap);
 
-	vec4 specular = t_Att * GetSpecular(p_PointLight.Specular, t_LightDir, p_SpecularMap);
+	vec4 specular = getSpecular(a_PointLight.Specular, lightDir, a_SpecularMap);
 
-	return p_PointLight.Brightness * (ambient + diffuse + specular);
+	return a_PointLight.Brightness * attenuation *(ambient + diffuse + specular);
 }

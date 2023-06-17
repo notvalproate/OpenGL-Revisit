@@ -94,7 +94,7 @@ void Shader::checkCompilationStatus(unsigned int a_Shader) const {
 	
 int Shader::getUniformLocation(std::string_view a_UniformName) { 
 	bind();
-	if (m_UniformCache.find(std::string(a_UniformName)) != m_UniformCache.end()) {
+	if (m_UniformCache.contains(std::string(a_UniformName))) {
 		return m_UniformCache.at(std::string(a_UniformName));
 	}
 

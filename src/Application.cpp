@@ -61,15 +61,15 @@ int main() {
     //BASIC MESH WITH DIFF AND SPEC MAP
     VertexArray* vao; 
     IndexBuffer* ibo; 
-    Texture2D diffuseMap("assets/textures/catpfp.png");
-    Texture2D specularMap("assets/textures/catpfp.png");
+    Texture2D diffuseMap("assets/textures/crate.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
+    Texture2D specularMap("assets/textures/crate_spec.png", GL_NEAREST, GL_CLAMP_TO_EDGE); 
  
     //MESH FOR LIGHTCUBE
     VertexArray* vaol;
 
     //LIGHTING
-    PointLight* pointLight;
-    glm::mat4 lightModel;
+    PointLightList& pointLights = PointLightList::getList();
+    pointLights.setShader(&globalShader);
 
     //Temporary Lambda to render a mesh
     const auto renderMesh = [](const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) {
@@ -170,15 +170,15 @@ int main() {
 
         //LIGHTING
         glm::vec3 lightPos(3.0f, 0.0f, 4.0f); 
-        glm::vec3 color(1.0f, 0.7f, 0.8f);
+        glm::vec3 color(1.0f, 1.0f, 1.0f);
 
-        pointLight = new PointLight(lightPos, color, 1.0f);
-        pointLight->UpdateUniforms(globalShader);
+        pointLights.addLight(0, lightPos, color, 1.0f, &lightSourceShader);
 
-        //LIGHT CUBE MODEL
-        lightModel = glm::scale(glm::translate(glm::mat4(1.0f), lightPos), glm::vec3(0.2f));
-        lightSourceShader.setUniformMat4f("u_Model", lightModel);
-        lightSourceShader.setUniform3fv("u_Color", color);
+        color = glm::vec3(1.0f, 0.1f, 0.1f);
+        pointLights.addLight(1, lightPos, color, 1.0f, &lightSourceShader);
+        
+        color = glm::vec3(0.0f, 0.5f, 1.0f);
+        pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader);
     }
 
     //DIFF FOR EACH BOX MODEL
@@ -197,7 +197,6 @@ int main() {
         glm::vec3(9.0f, 8.0f, -2.0f)
     };
 
-
     float k = 0.5f;
     while (!glfwWindowShouldClose(window)) { 
         if (g_Resized) camera.resetViewport(g_WindowWidth, g_WindowHeight);
@@ -206,7 +205,7 @@ int main() {
         glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        
-        //CAMERA UPDATES 
+        //CAMERA UPDATES
         camHandler.handleEvents(window, deltaTime);
         camera.updateUniforms("u_View", "u_Projection", "u_ViewPos", globalShader);
         camera.updateUniforms("u_View", "u_Projection", lightSourceShader);
@@ -226,13 +225,15 @@ int main() {
             i += 30.0f;
         }
 
-        //Render the light source box
-        glm::vec3 test = glm::vec3(10 * glm::sin(glm::radians(k)), 0.0f, 4.0f);
-        pointLight->SetPosition(test, globalShader);
-        lightModel = glm::scale(glm::translate(glm::mat4(1.0f), test), glm::vec3(0.2f));
-        lightSourceShader.setUniformMat4f("u_Model", lightModel);
+        //Render the lights
+        float test = 8.0f * glm::sin(glm::radians(k));
+        pointLights.setLightPosition(0, glm::vec3(test, 0.0f, 4.0f));
         renderMesh(*vaol, *ibo, lightSourceShader);
-        
+        pointLights.setLightPosition(1, glm::vec3(3.0f, test, -8.0f));
+        renderMesh(*vaol, *ibo, lightSourceShader); 
+        pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test)); 
+        renderMesh(*vaol, *ibo, lightSourceShader);
+
         glfwSwapBuffers(window); 
         glfwPollEvents();
 
@@ -240,7 +241,7 @@ int main() {
         if (k >= 360.0f) k -= 360.0f;
     }
 
-    delete vao, ibo, vaol, pointLight;
+    delete vao, ibo, vaol;
 
     glfwTerminate();
     return 0;

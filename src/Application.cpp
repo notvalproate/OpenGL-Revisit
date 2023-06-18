@@ -1,8 +1,4 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include <iostream>
-#include <vector>
+#include "OpenGLApp.hpp"
 
 #include "util/ErrorHandling.hpp"
 #include "util/Timer.hpp"
@@ -22,27 +18,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "OpenGLApp.hpp"
-
-/*
-CHANGED NAMING SCHEMES THAT I USE: 
-
-Functions:
-    - in lower Camel Case
-Namespaces:
-    - in lower case
-Variables:
-    - in lower Camel Case, Pascal Case if prefixed
-Variable Prefixes:
-    - Local Variables and Arguments  : none
-    - Private Members  : m_
-    - Static Variables : s_
-*/
-
-class Game : public OpenGLApp {
+class App : public OpenGLApp {
 public:
-    Game(GLFWwindow* window, int width, int height) : OpenGLApp(window, width, height) {};
-
     void run() override {
         Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader");
         Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
@@ -61,7 +38,7 @@ public:
         //LIGHTING
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);
-            
+
         PointLightList& pointLights = PointLightList::getList();
         pointLights.setShader(&globalShader);
 
@@ -79,19 +56,19 @@ public:
             float vertices[] = {
                 //POSITION         //TEXCOORD  //NORMALS         //TEX INDEX
                 -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                    0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
                 -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
                 -0.5f,-0.5f,-0.5f, 0.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+                    0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+                    0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
                 -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
 
-                 0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
 
                 -0.5f,-0.5f, 0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
                 -0.5f,-0.5f,-0.5f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
@@ -99,13 +76,13 @@ public:
                 -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 0.0f,
 
                 -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
                 -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
                 -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f,
+                    0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
+                    0.5f,-0.5f,-0.5f, 1.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f,
                 -0.5f,-0.5f,-0.5f, 0.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f
             };
 
@@ -127,19 +104,19 @@ public:
             float lightVertices[] = {
                 //POSITION          
                 -0.5f, -0.5f,  0.5f,
-                 0.5f, -0.5f,  0.5f,
-                 0.5f,  0.5f,  0.5f,
+                    0.5f, -0.5f,  0.5f,
+                    0.5f,  0.5f,  0.5f,
                 -0.5f,  0.5f,  0.5f,
 
                 -0.5f, -0.5f, -0.5f,
-                 0.5f, -0.5f, -0.5f,
-                 0.5f,  0.5f, -0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    0.5f,  0.5f, -0.5f,
                 -0.5f,  0.5f, -0.5f,
 
-                 0.5f, -0.5f,  0.5f,
-                 0.5f, -0.5f, -0.5f,
-                 0.5f,  0.5f, -0.5f,
-                 0.5f,  0.5f,  0.5f,
+                    0.5f, -0.5f,  0.5f,
+                    0.5f, -0.5f, -0.5f,
+                    0.5f,  0.5f, -0.5f,
+                    0.5f,  0.5f,  0.5f,
 
                 -0.5f, -0.5f,  0.5f,
                 -0.5f, -0.5f, -0.5f,
@@ -147,13 +124,13 @@ public:
                 -0.5f,  0.5f,  0.5f,
 
                 -0.5f,  0.5f,  0.5f,
-                 0.5f,  0.5f,  0.5f,
-                 0.5f,  0.5f, -0.5f,
+                    0.5f,  0.5f,  0.5f,
+                    0.5f,  0.5f, -0.5f,
                 -0.5f,  0.5f, -0.5f,
 
                 -0.5f, -0.5f,  0.5f,
-                 0.5f, -0.5f,  0.5f,
-                 0.5f, -0.5f, -0.5f,
+                    0.5f, -0.5f,  0.5f,
+                    0.5f, -0.5f, -0.5f,
                 -0.5f, -0.5f, -0.5f
             };
 
@@ -230,17 +207,17 @@ public:
             float test = 8.0f * glm::sin(glm::radians(k));
             float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
 
-            pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f)); 
+            pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));
             renderMesh(*vaol, *ibo, lightSourceShader);
             pointLights.setLightPosition(1, glm::vec3(3.0f, test, -8.0f));
             renderMesh(*vaol, *ibo, lightSourceShader);
-            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test2)); 
+            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test2));
             renderMesh(*vaol, *ibo, lightSourceShader);
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();
-
-            k += 0.5f;
+            
+            k += 120.0f * deltaTime;
             if (k >= 360.0f) k -= 360.0f;
         }
 
@@ -250,50 +227,11 @@ public:
     }
 };
 
-void glfwResizeCallback(GLFWwindow* window, int width, int height);
-GLFWwindow* initializeWindow(int width, int height);
-
 int main() {
-    const int windowWidth = 1600, windowHeight = 900;
+    App app; 
 
-    GLFWwindow* window = initializeWindow(windowWidth, windowHeight);
-
-    Game game(window, windowWidth, windowHeight); 
-
-    glfwSetWindowUserPointer(window, &game);
-    glfwSetFramebufferSizeCallback(window, glfwResizeCallback);
-
-    game.run();
+    app.initialize(1980, 1080);
+    app.run();
 
     return 0;
-}
-
-
-//CALLBACKS AND UTIL
-
-GLFWwindow* initializeWindow(int width, int height) {
-    if (!glfwInit()) {
-        std::cout << "GLFW initialization failed!\n"; 
-        __debugbreak(); 
-    }
-
-    glfwWindowHint(GLFW_SAMPLES, 8); 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); 
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
-     
-    GLFWwindow* window = glfwCreateWindow(1600, 900, "Hello World", NULL, NULL); 
-
-    if (!window) {
-        glfwTerminate(); 
-        std::cout << "GLFW window initialization failed!\n";
-        __debugbreak(); 
-    }
-
-    return window;
-}
-
-void glfwResizeCallback(GLFWwindow* window, int width, int height) {
-    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-    game->onResize(width, height);
 }

@@ -10,12 +10,16 @@ struct WindowData {
 
 class OpenGLApp {
 public:
-    OpenGLApp(GLFWwindow* window, int windowWidth, int windowHeight);
+    OpenGLApp();
 
-    void onResize(int width, int height);
-
+    void initialize(int windowWidth, int windowHeight);
     virtual void run() = 0;
+
 protected:
     GLFWwindow* m_Window;
     WindowData m_WindowData;
+
+
+    static void glfwResizeCallback(GLFWwindow* window, int width, int height);
+    void onResize(GLFWwindow* window, int width, int height);
 };

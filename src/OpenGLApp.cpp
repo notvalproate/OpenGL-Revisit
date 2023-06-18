@@ -1,9 +1,34 @@
 #include "OpenGLApp.hpp"
 #include <iostream>
 
-OpenGLApp::OpenGLApp(GLFWwindow* window, int windowWidth, int windowHeight) : m_WindowData({ windowWidth, windowHeight, false }) {
-    m_Window = window;
+OpenGLApp::OpenGLApp() : m_Window(nullptr), m_WindowData({ 0, 0, false }) { }
+
+void OpenGLApp::initialize(int width, int height) {
+    m_WindowData.width = width;
+    m_WindowData.height = height;
+
+    if (!glfwInit()) {
+        std::cout << "GLFW initialization failed!\n";
+        __debugbreak();
+    }
+
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  
+    m_Window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+
+    if (!m_Window) {
+        glfwTerminate();
+        std::cout << "GLFW window initialization failed!\n";
+        __debugbreak();
+    }
+
+
     glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetWindowUserPointer(m_Window, this);
+    glfwSetFramebufferSizeCallback(m_Window, &OpenGLApp::glfwResizeCallback);
 
     glfwMakeContextCurrent(m_Window);
     glfwSwapInterval(1);
@@ -20,7 +45,12 @@ OpenGLApp::OpenGLApp(GLFWwindow* window, int windowWidth, int windowHeight) : m_
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void OpenGLApp::onResize(int width, int height) {
+void OpenGLApp::glfwResizeCallback(GLFWwindow* window, int width, int height) {
+    OpenGLApp* app = static_cast<OpenGLApp*>(glfwGetWindowUserPointer(window));
+    app->onResize(window, width, height);
+}
+
+void OpenGLApp::onResize(GLFWwindow* window, int width, int height) {
     m_WindowData.width = width;
     m_WindowData.height = height;
     m_WindowData.resized = true;

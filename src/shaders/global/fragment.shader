@@ -39,7 +39,7 @@ struct Pointlight {
 //UNIFORMS
 uniform Material u_Materials[32];
 
-uniform DirecionalLight u_DirectionalLight;
+uniform DirectionalLight u_DirectionalLight;
 uniform Pointlight u_PointLight[50];
 
 uniform vec3 u_ViewPos;
@@ -50,6 +50,7 @@ vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuse
 vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specularMap, const float shininess);
 
 vec4 getPointLight(const Pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
+vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 
 void main() {
 	int index = int(v_TexIndex);
@@ -57,15 +58,17 @@ void main() {
 	vec4 spec = texture(u_Materials[index].specular, v_TexCoord);
 	float shininess = u_Materials[index].shininess;
 
-	vec4 final = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	color += getDirectionalLight(tex, spec, shininess);
 
 	for (int i = 0; i < 50; i += 1) {
 		if (u_PointLight[i].Brightness != 0) {
-			final += getPointLight(u_PointLight[i], tex, spec, shininess);
+			color += getPointLight(u_PointLight[i], tex, spec, shininess);
 		}
 	}
 
-	color = vec4(final.rgb, tex.a);
+	color = vec4(color.rgb, tex.a);
 }
 
 //GET AMBIENCE DIFFUSION AND SPECULAR VECTORS
@@ -86,6 +89,19 @@ vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specular
 	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
 	return vec4(lightColor, 1.0) * (specStrength * specularMap);
+}
+
+//GET DIRECTIONAL LIGHT VECTOR
+vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
+	vec3 lightDir = normalize(-u_DirectionalLight.Direction);
+
+	vec4 ambient = getAmbience(u_DirectionalLight.Ambient, diffuseMap);
+
+	vec4 diffuse = getDiffusion(u_DirectionalLight.Diffuse, lightDir, diffuseMap);
+
+	vec4 specular = getSpecular(u_DirectionalLight.Specular, lightDir, specularMap, shininess);
+
+	return u_DirectionalLight.Brightness * (ambient + diffuse + specular);
 }
 
 //GET POINT LIGHT VECTOR

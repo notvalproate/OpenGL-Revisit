@@ -17,6 +17,7 @@
 #include "scene/CameraHandler.hpp"
 
 #include "lighting/PointLight.hpp"
+#include "lighting/DirectionalLight.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -58,6 +59,9 @@ public:
         VertexArray* vaol;
 
         //LIGHTING
+        DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
+        directionalLight.setShader(&globalShader);
+            
         PointLightList& pointLights = PointLightList::getList();
         pointLights.setShader(&globalShader);
 
@@ -159,6 +163,9 @@ public:
             vaol = new VertexArray(vbol, lightLayout);
 
             //LIGHTING
+
+            directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.9f, 0.58f, 0.19f), 0.5f);
+
             glm::vec3 lightPos(3.0f, 0.0f, 4.0f);
             glm::vec3 color(1.0f, 1.0f, 1.0f);
 
@@ -167,7 +174,7 @@ public:
             color = glm::vec3(1.0f, 0.1f, 0.1f);
             pointLights.addLight(1, lightPos, color, 1.0f, &lightSourceShader);
 
-            color = glm::vec3(0.0f, 0.5f, 1.0f);
+            color = glm::vec3(0.1f, 1.0f, 0.0f);
             pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader);
         }
 
@@ -221,11 +228,13 @@ public:
 
             //Render the lights
             float test = 8.0f * glm::sin(glm::radians(k));
-            pointLights.setLightPosition(0, glm::vec3(test, 0.0f, 4.0f));
+            float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
+
+            pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f)); 
             renderMesh(*vaol, *ibo, lightSourceShader);
             pointLights.setLightPosition(1, glm::vec3(3.0f, test, -8.0f));
             renderMesh(*vaol, *ibo, lightSourceShader);
-            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
+            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test2)); 
             renderMesh(*vaol, *ibo, lightSourceShader);
 
             glfwSwapBuffers(m_Window);

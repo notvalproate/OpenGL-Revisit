@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\lighting\DirectionalLight.cpp" />
     <ClCompile Include="src\lighting\PointLight.cpp" />
     <ClCompile Include="src\OpenGLApp.cpp" />
     <ClCompile Include="src\rendering\Buffers.cpp" />
@@ -168,6 +169,7 @@
     <None Include="src\shaders\light_source\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\lighting\DirectionalLight.hpp" />
     <ClInclude Include="src\lighting\PointLight.hpp" />
     <ClInclude Include="src\OpenGLApp.hpp" />
     <ClInclude Include="src\rendering\Buffers.hpp" />

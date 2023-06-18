@@ -245,9 +245,11 @@ void glfwResizeCallback(GLFWwindow* window, int width, int height);
 GLFWwindow* initializeWindow(int width, int height);
 
 int main() {
-    GLFWwindow* window = initializeWindow(1600, 900);
+    const int windowWidth = 1600, windowHeight = 900;
 
-    Game game(window, 1600, 900);
+    GLFWwindow* window = initializeWindow(windowWidth, windowHeight);
+
+    Game game(window, windowWidth, windowHeight); 
 
     glfwSetWindowUserPointer(window, &game);
     glfwSetFramebufferSizeCallback(window, glfwResizeCallback);

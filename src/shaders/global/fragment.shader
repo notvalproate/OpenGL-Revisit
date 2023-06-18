@@ -7,15 +7,24 @@ in float v_TexIndex;
 in vec3 v_Normal;
 in vec3 v_FragPos;
 
+//STRUCTURES
 struct Material {
 	sampler2D diffusion;
 	sampler2D specular;
 	float shininess;
 };
 
-uniform Material u_Materials[32];
+struct DirectionalLight {
+	vec3 Direction;
+	
+	vec3 Ambient;
+	vec3 Diffuse;
+	vec3 Specular;
 
-struct pointlight {
+	float Brightness;
+};
+
+struct Pointlight {
 	vec3 Position;
 
 	vec3 Ambient;
@@ -27,15 +36,20 @@ struct pointlight {
 	float Brightness;
 };
 
-uniform pointlight u_PointLight[50];
+//UNIFORMS
+uniform Material u_Materials[32];
+
+uniform DirecionalLight u_DirectionalLight;
+uniform Pointlight u_PointLight[50];
 
 uniform vec3 u_ViewPos;
 
+//FUNCTION DECLARATIONS
 vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap);
 vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuseMap);
 vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specularMap, const float shininess);
 
-vec4 getPointLight(const pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
+vec4 getPointLight(const Pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 
 void main() {
 	int index = int(v_TexIndex);
@@ -51,10 +65,10 @@ void main() {
 		}
 	}
 
-	color = vec4(final.r, final.g, final.b, tex.a);
+	color = vec4(final.rgb, tex.a);
 }
 
-//GET AMB DIFF AND SPEC
+//GET AMBIENCE DIFFUSION AND SPECULAR VECTORS
 vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap) {
 	return vec4(lightColor, 1.0) * diffuseMap;
 }
@@ -74,8 +88,8 @@ vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specular
 	return vec4(lightColor, 1.0) * (specStrength * specularMap);
 }
 
-//GET POINT LIGHT
-vec4 getPointLight(const pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
+//GET POINT LIGHT VECTOR
+vec4 getPointLight(const Pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
 	vec3 lightDir = normalize(pointLight.Position - v_FragPos);
 
 	float distance = length(pointLight.Position - v_FragPos);
@@ -87,5 +101,5 @@ vec4 getPointLight(const pointlight pointLight, const vec4 diffuseMap, const vec
 
 	vec4 specular = getSpecular(pointLight.Specular, lightDir, specularMap, shininess);
 
-	return pointLight.Brightness * attenuation *(ambient + diffuse + specular);
+	return pointLight.Brightness * attenuation * (ambient + diffuse + specular);
 }

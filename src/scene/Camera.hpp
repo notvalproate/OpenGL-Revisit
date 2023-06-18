@@ -6,7 +6,8 @@
 class Camera {
 public:
 	Camera();
-	Camera(const float speed, const float sensitivity, const float fov);
+	Camera(const int viewportWidth, const int viewportHeight); 
+	Camera(const int viewportWidth, const int viewportHeight, const float speed, const float sensitivity, const float fov);
 
 	void updateUniforms(std::string_view view, std::string_view projection, Shader& shader);
 	void updateUniforms(std::string_view view, std::string_view projection, std::string_view viewPos, Shader& shader);

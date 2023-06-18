@@ -17,11 +17,15 @@ Camera::Camera()
 	m_View = glm::lookAt(m_Position, m_Position + m_Direction, m_Up);
 }
 
-Camera::Camera(const float speed, const float sensitivity, const float fov) : Camera() {
+Camera::Camera(const int viewportWidth, const int viewportHeight) : Camera() {
+	m_Projection = glm::perspective(glm::radians(m_Fov), (float)viewportWidth / (float)viewportHeight, 0.1f, 100.0f);
+}
+
+Camera::Camera(const int viewportWidth, const int viewportHeight, const float speed, const float sensitivity, const float fov) : Camera() {
 	m_Fov = fov;
 	m_Speed = speed;
 	m_Sensitivity = sensitivity;
-	m_Projection = glm::perspective(glm::radians(m_Fov), (float)16 / (float)9, 0.1f, 100.0f);
+	m_Projection = glm::perspective(glm::radians(m_Fov), (float)viewportWidth / (float)viewportHeight, 0.1f, 100.0f);
 }
 
 void Camera::updateUniforms(std::string_view view, std::string_view projection, Shader& shader) {

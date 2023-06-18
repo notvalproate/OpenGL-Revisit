@@ -9,8 +9,8 @@ in vec3 v_FragPos;
 
 //STRUCTURES
 struct Material {
-	sampler2D diffusion;
-	sampler2D specular;
+	sampler2D diffusion[16];
+	sampler2D specular[16];
 	float shininess;
 };
 
@@ -24,7 +24,7 @@ struct DirectionalLight {
 	float Brightness;
 };
 
-struct Pointlight {
+struct PointLight {
 	vec3 Position;
 
 	vec3 Ambient;
@@ -36,11 +36,26 @@ struct Pointlight {
 	float Brightness;
 };
 
+struct SpotLight {
+	vec3 Position;
+	vec3 Direction;
+
+	vec3 Ambient;
+	vec3 Diffuse;
+	vec3 Specular;
+
+	float InnerCutOff;
+	float OuterCutOff;
+
+	float Brightness;
+};
+
 //UNIFORMS
-uniform Material u_Materials[32];
+uniform Material u_Material;
 
 uniform DirectionalLight u_DirectionalLight;
-uniform Pointlight u_PointLight[50];
+uniform PointLight u_PointLight[50];
+uniform SpotLight u_SpotLight;
 
 uniform vec3 u_ViewPos;
 
@@ -49,14 +64,14 @@ vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap);
 vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuseMap);
 vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specularMap, const float shininess);
 
-vec4 getPointLight(const Pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
+vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 
 void main() {
 	int index = int(v_TexIndex);
-	vec4 tex = texture(u_Materials[index].diffusion, v_TexCoord);
-	vec4 spec = texture(u_Materials[index].specular, v_TexCoord);
-	float shininess = u_Materials[index].shininess;
+	vec4 tex = texture(u_Material.diffusion[index], v_TexCoord);
+	vec4 spec = texture(u_Material.specular[index], v_TexCoord);
+	float shininess = u_Material.shininess;
 
 	color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -105,7 +120,7 @@ vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap, const fl
 }
 
 //GET POINT LIGHT VECTOR
-vec4 getPointLight(const Pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
+vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
 	vec3 lightDir = normalize(pointLight.Position - v_FragPos);
 
 	float distance = length(pointLight.Position - v_FragPos);

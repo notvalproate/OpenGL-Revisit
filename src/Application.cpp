@@ -212,10 +212,10 @@ public:
 
             //Binding texture to a slot and setting the uniform to that slot
             diffuseMap.bind(0);
-            globalShader.setUniform1i("u_Materials[0].diffusion", 0);
+            globalShader.setUniform1i("u_Material.diffusion[0]", 0);
             specularMap.bind(1);
-            globalShader.setUniform1i("u_Materials[0].specular", 1);
-            globalShader.setUniform1f("u_Materials[0].shininess", 76.8f);
+            globalShader.setUniform1i("u_Material.specular[0]", 1);
+            globalShader.setUniform1f("u_Material.shininess", 76.8f);
 
             //Rendering box at all positions
             float i = 10.0f;

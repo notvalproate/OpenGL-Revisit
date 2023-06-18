@@ -25,7 +25,7 @@ public:
         Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
 
         Timer timer;
-        Camera camera(m_WindowData.width, m_WindowData.height, 5.0f, 0.1f, 70.0f);
+        Camera camera(m_WindowData.width, m_WindowData.height);
         CameraHandler camHandler(camera);
 
         //BASIC MESH WITH DIFF AND SPEC MAP

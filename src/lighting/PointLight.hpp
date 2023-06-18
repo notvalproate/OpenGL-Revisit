@@ -6,7 +6,7 @@
 
 class PointLight {
 private:
-	PointLight(unsigned short a_Index, const glm::vec3& a_Position, const glm::vec3& a_Color, float a_Brightness, Shader* a_Shader, Shader* a_ModelShader);
+	PointLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness, Shader* shader, Shader* modelShader);
 
 	//Temporary until mesh/model class is implemented
 	glm::mat4 m_Model;
@@ -15,8 +15,8 @@ private:
 	Shader* m_ModelShader;
 	std::string m_Index;
 
-	void resetUniforms(Shader* a_Shader);
-	void setPosition(const glm::vec3& a_Position, Shader* a_Shader);
+	void resetUniforms(Shader* shader);
+	void setPosition(const glm::vec3& position, Shader* shader);
 
 	friend class PointLightList;
 };
@@ -29,11 +29,11 @@ public:
 		return s_Instance;
 	}
 
-	void addLight(unsigned short a_Index, const glm::vec3& a_Position, const glm::vec3& a_Color, float a_Brightness, Shader* a_ModelShader);
-	void removeLight(unsigned short a_Index);
+	void addLight(unsigned short Index, const glm::vec3& Position, const glm::vec3& Color, float Brightness, Shader* ModelShader);
+	void removeLight(unsigned short Index);
 
-	void setShader(Shader* a_Shader);
-	void setLightPosition(unsigned short a_Index, const glm::vec3& a_Position);
+	void setShader(Shader* Shader);
+	void setLightPosition(unsigned short Index, const glm::vec3& Position);
 private:
 	PointLightList() : m_PointLights({}), m_Shader(nullptr) {}
 

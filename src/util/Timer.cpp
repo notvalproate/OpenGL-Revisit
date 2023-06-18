@@ -1,9 +1,9 @@
 #include "Timer.hpp"
 #include <iostream>
 
-void Timer::setStartTime(const float a_Time) {
-	glfwSetTime(a_Time);
-	m_LastFrame = a_Time;
+void Timer::setStartTime(const float time) {
+	glfwSetTime(time);
+	m_LastFrame = time;
 }
 
 [[nodiscard]]

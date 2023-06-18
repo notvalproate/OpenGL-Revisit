@@ -3,24 +3,24 @@
 #include <numeric>
 #include "../util/ErrorHandling.hpp"
 
-VertexArray::VertexArray(const VertexBuffer& a_VBO, const std::span<unsigned int>& a_Layout) {
+VertexArray::VertexArray(const VertexBuffer& VBO, const std::span<unsigned int>& layout) {
 	GLCall(glGenVertexArrays(1, &m_ArrayID));
 	GLCall(glBindVertexArray(m_ArrayID));
-	a_VBO.bind();
+	VBO.bind();
 
-	size_t i = 0;
-	size_t offset = 0;
-	size_t typeSize = sizeof(float);
-	size_t stride = std::accumulate(a_Layout.begin(), a_Layout.end(), 0) * sizeof(float);
+	std::size_t i = 0;
+	std::size_t offset = 0;
+	std::size_t typeSize = sizeof(float);
+	std::size_t stride = std::accumulate(layout.begin(), layout.end(), 0) * sizeof(float);
 
-	for (const auto& element : a_Layout) {
+	for (const auto& element : layout) {
 		GLCall(glVertexAttribPointer(i, element, GL_FLOAT, GL_FALSE, stride, (const void*)offset));
 		GLCall(glEnableVertexAttribArray(i++));
 		offset += typeSize * element; 
 	}
 
 	GLCall(glBindVertexArray(0));
-	a_VBO.unbind();
+	VBO.unbind();
 }
 
 VertexArray::~VertexArray() {

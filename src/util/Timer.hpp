@@ -3,7 +3,7 @@
 
 class Timer {
 public:
-	void setStartTime(const float a_Time);
+	void setStartTime(const float time);
 	[[nodiscard]] float getDeltaTime();
 private:
 	float m_CurrentFrame{};

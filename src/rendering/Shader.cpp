@@ -4,13 +4,13 @@
 #include <iostream>
 #include "../util/ErrorHandling.hpp"
 
-Shader::Shader(std::wstring_view a_VertexPath, std::wstring_view a_FragmentPath) {
+Shader::Shader(std::wstring_view vertexPath, std::wstring_view fragmentPath) {
 	GLCall(m_ShaderID = glCreateProgram());
 	unsigned int vertexShader = 0, fragmentShader = 0;
 
 	try {
-		vertexShader = compileShader(a_VertexPath, GL_VERTEX_SHADER);
-		fragmentShader = compileShader(a_FragmentPath, GL_FRAGMENT_SHADER);
+		vertexShader = compileShader(vertexPath, GL_VERTEX_SHADER);
+		fragmentShader = compileShader(fragmentPath, GL_FRAGMENT_SHADER);
 	}
 	catch (const std::runtime_error& e) {
 		std::cout << e.what() << std::endl;
@@ -52,15 +52,15 @@ void Shader::unbind() const {
 	GLCall(glUseProgram(0));
 }
 
-unsigned int Shader::compileShader(const std::filesystem::path& a_ShaderPath, unsigned int a_ShaderType) const {
-	if (!std::filesystem::is_regular_file(a_ShaderPath)) {
-		throw std::runtime_error("Shader Path Not found or not a regular file! Path: " + a_ShaderPath.string());
+unsigned int Shader::compileShader(const std::filesystem::path& shaderPath, unsigned int shaderType) const {
+	if (!std::filesystem::is_regular_file(shaderPath)) {
+		throw std::runtime_error("Shader Path Not found or not a regular file! Path: " + shaderPath.string());
 	}
 
-	std::string sourceString = getShaderSource(a_ShaderPath);
+	std::string sourceString = getShaderSource(shaderPath);
 	const char* sourceCString = sourceString.c_str();
 
-	GLCall(unsigned int shaderID = glCreateShader(a_ShaderType));
+	GLCall(unsigned int shaderID = glCreateShader(shaderType));
 
 	GLCall(glShaderSource(shaderID, 1, &sourceCString, NULL));
 	GLCall(glCompileShader(shaderID));
@@ -70,58 +70,58 @@ unsigned int Shader::compileShader(const std::filesystem::path& a_ShaderPath, un
 	return shaderID;
 }
 
-std::string Shader::getShaderSource(const std::filesystem::path& a_ShaderPath) const {
-	std::ifstream fileStream(a_ShaderPath);
+std::string Shader::getShaderSource(const std::filesystem::path& shaderPath) const {
+	std::ifstream fileStream(shaderPath);
 	if (!fileStream) {
-		throw std::runtime_error("Failed to open shader file: " + a_ShaderPath.string());
+		throw std::runtime_error("Failed to open shader file: " + shaderPath.string());
 	}
 	return std::string((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
 }
 
-void Shader::checkCompilationStatus(unsigned int a_Shader) const {
+void Shader::checkCompilationStatus(unsigned int shader) const {
 	int result;
-	GLCall(glGetShaderiv(a_Shader, GL_COMPILE_STATUS, &result));
+	GLCall(glGetShaderiv(shader, GL_COMPILE_STATUS, &result));
 	if (result == GL_FALSE) {
 		int length;
-		GLCall(glGetShaderiv(a_Shader, GL_INFO_LOG_LENGTH, &length));
+		GLCall(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
 		char message[256];
-		GLCall(glGetShaderInfoLog(a_Shader, length, &length, message));
-		GLCall(glDeleteShader(a_Shader));
+		GLCall(glGetShaderInfoLog(shader, length, &length, message));
+		GLCall(glDeleteShader(shader));
 
 		throw std::runtime_error("Shader Compilation Error: " + std::string(message));
 	}
 }
 	
-int Shader::getUniformLocation(std::string_view a_UniformName) { 
+int Shader::getUniformLocation(std::string_view uniformName) { 
 	bind();
-	if (m_UniformCache.contains(std::string(a_UniformName))) {
-		return m_UniformCache.at(std::string(a_UniformName));
+	if (m_UniformCache.contains(std::string(uniformName))) {
+		return m_UniformCache.at(std::string(uniformName));
 	}
 
-	GLCall(int location = glGetUniformLocation(m_ShaderID, a_UniformName.data()));
+	GLCall(int location = glGetUniformLocation(m_ShaderID, uniformName.data()));
 
 	if (location == -1) {
-		std::cout << "Warning: Uniform " << a_UniformName << " doesn't exist!" << std::endl;
+		std::cout << "Warning: Uniform " << uniformName << " doesn't exist!" << std::endl;
 	}
 
-	m_UniformCache[std::string(a_UniformName)] = location;
+	m_UniformCache[std::string(uniformName)] = location;
 	return location;
 }
 
 //UNIFORM SETTERS
 
-void Shader::setUniform1i(std::string_view a_UniformName, const int a_Value) {
-	GLCall(glUniform1i(getUniformLocation(a_UniformName), a_Value));
+void Shader::setUniform1i(std::string_view uniformName, const int value) {
+	GLCall(glUniform1i(getUniformLocation(uniformName), value));
 }
 
-void Shader::setUniform1f(std::string_view a_UniformName, const float a_Value) {
-	GLCall(glUniform1f(getUniformLocation(a_UniformName), a_Value));
+void Shader::setUniform1f(std::string_view uniformName, const float value) {
+	GLCall(glUniform1f(getUniformLocation(uniformName), value));
 }
 
-void Shader::setUniform3fv(std::string_view a_UniformName, const glm::vec3 a_Value) {
-	GLCall(glUniform3fv(getUniformLocation(a_UniformName), 1, &a_Value[0]));
+void Shader::setUniform3fv(std::string_view uniformName, const glm::vec3 value) {
+	GLCall(glUniform3fv(getUniformLocation(uniformName), 1, &value[0]));
 }
 
-void Shader::setUniformMat4f(std::string_view a_UniformName, const glm::mat4& a_Value) {
-	glUniformMatrix4fv(getUniformLocation(a_UniformName), 1, GL_FALSE, &a_Value[0][0]);
+void Shader::setUniformMat4f(std::string_view uniformName, const glm::mat4& value) {
+	glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, &value[0][0]);
 }

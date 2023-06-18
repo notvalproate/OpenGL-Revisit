@@ -4,9 +4,9 @@
 
 class Texture2D {
 public:
-	Texture2D(std::string_view a_Path, unsigned int a_ScaleMode = GL_LINEAR, unsigned int a_WrapMode = GL_REPEAT);
+	Texture2D(std::string_view Path, unsigned int ScaleMode = GL_LINEAR, unsigned int WrapMode = GL_REPEAT);
 
-	void bind(unsigned int a_Slot = 0);
+	void bind(unsigned int Slot = 0);
 	void unbind();
 
 	[[nodiscard]] unsigned int getID() const { return m_TextureID; }

@@ -4,7 +4,7 @@
 
 class VertexArray {
 public:
-	VertexArray(const VertexBuffer& a_VBO, const std::span<unsigned int>& a_Layout);
+	VertexArray(const VertexBuffer& VBO, const std::span<unsigned int>& layout);
 	~VertexArray();
 
 	VertexArray(const VertexArray& other) = delete;

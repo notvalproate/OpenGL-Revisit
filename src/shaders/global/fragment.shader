@@ -31,11 +31,11 @@ uniform pointlight u_PointLight[50];
 
 uniform vec3 u_ViewPos;
 
-vec4 getAmbience(const vec3 a_LightColor, const vec4 a_DiffuseMap);
-vec4 getDiffusion(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_DiffuseMap);
-vec4 getSpecular(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_SpecularMap, const float a_Shininess);
+vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap);
+vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuseMap);
+vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specularMap, const float shininess);
 
-vec4 getPointLight(const pointlight a_PointLight, const vec4 a_DiffuseMap, const vec4 a_SpecularMap, const float a_Shininess);
+vec4 getPointLight(const pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 
 void main() {
 	int index = int(v_TexIndex);
@@ -55,37 +55,37 @@ void main() {
 }
 
 //GET AMB DIFF AND SPEC
-vec4 getAmbience(const vec3 a_LightColor, const vec4 a_DiffuseMap) {
-	return vec4(a_LightColor, 1.0) * a_DiffuseMap;
+vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap) {
+	return vec4(lightColor, 1.0) * diffuseMap;
 }
 
-vec4 getDiffusion(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_DiffuseMap) {
-	float diffStrength = max(dot(v_Normal, a_LightDir), 0.0);
+vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuseMap) {
+	float diffStrength = max(dot(v_Normal, lightDir), 0.0);
 
-	return vec4(a_LightColor, 1.0) * (diffStrength * a_DiffuseMap);
+	return vec4(lightColor, 1.0) * (diffStrength * diffuseMap);
 }
 
-vec4 getSpecular(const vec3 a_LightColor, const vec3 a_LightDir, const vec4 a_SpecularMap, const float a_Shininess) {
-	vec3 ViewDir = normalize(u_ViewPos - v_FragPos);
-	vec3 ReflectDir = reflect(-a_LightDir, v_Normal);
+vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specularMap, const float shininess) {
+	vec3 viewDir = normalize(u_ViewPos - v_FragPos);
+	vec3 reflectDir = reflect(-lightDir, v_Normal);
 
-	float SpecStrength = pow(max(dot(ViewDir, ReflectDir), 0.0), a_Shininess);
+	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
-	return vec4(a_LightColor, 1.0) * (SpecStrength * a_SpecularMap);
+	return vec4(lightColor, 1.0) * (specStrength * specularMap);
 }
 
 //GET POINT LIGHT
-vec4 getPointLight(const pointlight a_PointLight, const vec4 a_DiffuseMap, const vec4 a_SpecularMap, const float a_Shininess) {
-	vec3 lightDir = normalize(a_PointLight.Position - v_FragPos);
+vec4 getPointLight(const pointlight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
+	vec3 lightDir = normalize(pointLight.Position - v_FragPos);
 
-	float distance = length(a_PointLight.Position - v_FragPos);
-	float attenuation = 1.0 / (a_PointLight.Kc + (a_PointLight.Kl * distance) + (a_PointLight.Kq * distance * distance));
+	float distance = length(pointLight.Position - v_FragPos);
+	float attenuation = 1.0 / (pointLight.Kc + (pointLight.Kl * distance) + (pointLight.Kq * distance * distance));
 
-	vec4 ambient = getAmbience(a_PointLight.Ambient, a_DiffuseMap);
+	vec4 ambient = getAmbience(pointLight.Ambient, diffuseMap);
 
-	vec4 diffuse = getDiffusion(a_PointLight.Diffuse, lightDir, a_DiffuseMap);
+	vec4 diffuse = getDiffusion(pointLight.Diffuse, lightDir, diffuseMap);
 
-	vec4 specular = getSpecular(a_PointLight.Specular, lightDir, a_SpecularMap, a_Shininess);
+	vec4 specular = getSpecular(pointLight.Specular, lightDir, specularMap, shininess);
 
-	return a_PointLight.Brightness * attenuation *(ambient + diffuse + specular);
+	return pointLight.Brightness * attenuation *(ambient + diffuse + specular);
 }

@@ -17,24 +17,24 @@ Camera::Camera()
 	m_View = glm::lookAt(m_Position, m_Position + m_Direction, m_Up);
 }
 
-Camera::Camera(const float a_Speed, const float a_Sensitivity, const float a_Fov) : Camera() {
-	m_Fov = a_Fov;
-	m_Speed = a_Speed;
-	m_Sensitivity = a_Sensitivity;
+Camera::Camera(const float speed, const float sensitivity, const float fov) : Camera() {
+	m_Fov = fov;
+	m_Speed = speed;
+	m_Sensitivity = sensitivity;
 	m_Projection = glm::perspective(glm::radians(m_Fov), (float)16 / (float)9, 0.1f, 100.0f);
 }
 
-void Camera::updateUniforms(std::string_view a_View, std::string_view a_Projection, Shader& a_Shader) {
+void Camera::updateUniforms(std::string_view view, std::string_view projection, Shader& shader) {
 	m_View = glm::lookAt(m_Position, m_Position + m_Direction, m_Up);
-	a_Shader.setUniformMat4f(a_View, m_View);
-	a_Shader.setUniformMat4f(a_Projection, m_Projection);
+	shader.setUniformMat4f(view, m_View);
+	shader.setUniformMat4f(projection, m_Projection);
 }
 
-void Camera::updateUniforms(std::string_view a_View, std::string_view a_Projection, std::string_view a_ViewPos, Shader& a_Shader) {
-	updateUniforms(a_View, a_Projection, a_Shader);
-	a_Shader.setUniform3fv(a_ViewPos, m_Position);
+void Camera::updateUniforms(std::string_view view, std::string_view projection, std::string_view viewPos, Shader& shader) {
+	updateUniforms(view, projection, shader);
+	shader.setUniform3fv(viewPos, m_Position);
 }
 
-void Camera::resetViewport(int a_Width, int a_Height) {
-	m_Projection = glm::perspective(glm::radians(m_Fov), (float)a_Width / (float)a_Height, 0.1f, 100.0f);
+void Camera::resetViewport(int width, int height) {
+	m_Projection = glm::perspective(glm::radians(m_Fov), (float)width / (float)height, 0.1f, 100.0f);
 }

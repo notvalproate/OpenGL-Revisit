@@ -14,6 +14,7 @@
 
 #include "lighting/PointLight.hpp"
 #include "lighting/DirectionalLight.hpp"
+#include "lighting/FlashLight.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -41,6 +42,9 @@ public:
 
         PointLightList& pointLights = PointLightList::getList();
         pointLights.setShader(&globalShader);
+
+        //FlashLight& flashLight = FlashLight::getFlashLight();
+        //flashLight.setShaderAndCamera(&globalShader, &camera);
 
         //Temporary Lambda to render a mesh
         const auto renderMesh = [](const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) {
@@ -140,6 +144,7 @@ public:
             vaol = new VertexArray(vbol, lightLayout);
 
             //LIGHTING
+            //flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.1f), 12.5f, 17.5f, 1.0f);
 
             directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.9f, 0.58f, 0.19f), 0.5f);
 
@@ -173,6 +178,7 @@ public:
 
         Texture2D diffuseMap("assets/textures/crate.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
         Texture2D specularMap("assets/textures/crate_spec.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
+        
 
         float k = 0.5f;
         while (!glfwWindowShouldClose(m_Window)) {
@@ -209,10 +215,12 @@ public:
 
             pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));
             renderMesh(*vaol, *ibo, lightSourceShader);
-            pointLights.setLightPosition(1, glm::vec3(3.0f, test, -8.0f));
+            pointLights.setLightPosition(1, glm::vec3(3.0f, test2, -8.0f));
             renderMesh(*vaol, *ibo, lightSourceShader);
-            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test2));
+            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
             renderMesh(*vaol, *ibo, lightSourceShader);
+             
+            //flashLight.update();
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

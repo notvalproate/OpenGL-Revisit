@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\lighting\DirectionalLight.cpp" />
+    <ClCompile Include="src\lighting\FlashLight.cpp" />
     <ClCompile Include="src\lighting\PointLight.cpp" />
     <ClCompile Include="src\OpenGLApp.cpp" />
     <ClCompile Include="src\rendering\Buffers.cpp" />
@@ -170,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lighting\DirectionalLight.hpp" />
+    <ClInclude Include="src\lighting\FlashLight.hpp" />
     <ClInclude Include="src\lighting\PointLight.hpp" />
     <ClInclude Include="src\OpenGLApp.hpp" />
     <ClInclude Include="src\rendering\Buffers.hpp" />

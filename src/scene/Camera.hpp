@@ -13,7 +13,8 @@ public:
 	void updateUniforms(std::string_view view, std::string_view projection, std::string_view viewPos, Shader& shader);
 	void resetViewport(int width, int height);
 
-	[[nodiscard]] glm::vec3 GetPos() const { return m_Position; }
+	[[nodiscard]] glm::vec3 GetPosition() const { return m_Position; }
+	[[nodiscard]] glm::vec3 GetDirection() const { return m_Direction; }
 private:
 	glm::vec3 m_Position;
 	glm::vec3 m_Direction;

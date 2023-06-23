@@ -57,6 +57,9 @@
     <ClCompile Include="src\lighting\DirectionalLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\lighting\FlashLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\global\vertex.shader" />
@@ -102,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\lighting\DirectionalLight.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lighting\FlashLight.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

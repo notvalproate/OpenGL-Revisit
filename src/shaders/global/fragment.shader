@@ -47,6 +47,8 @@ struct SpotLight {
 	float InnerCutOff;
 	float OuterCutOff;
 
+	float Kc, Kl, Kq;
+
 	float Brightness;
 };
 
@@ -64,8 +66,9 @@ vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap);
 vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuseMap);
 vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specularMap, const float shininess);
 
-vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap, const float shininess);
+vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
+vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess);
 
 void main() {
 	int index = int(v_TexIndex);
@@ -82,6 +85,8 @@ void main() {
 			color += getPointLight(u_PointLight[i], tex, spec, shininess);
 		}
 	}
+
+	//color += getSpotLight(u_SpotLight, tex, spec, shininess);
 
 	color = vec4(color.rgb, tex.a);
 }
@@ -133,4 +138,24 @@ vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec
 	vec4 specular = getSpecular(pointLight.Specular, lightDir, specularMap, shininess);
 
 	return pointLight.Brightness * attenuation * (ambient + diffuse + specular);
+}
+
+//GET POINT LIGHT VECTOR
+vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 specularMap, const float shininess) {
+	vec3 lightDir = normalize(spotLight.Position - v_FragPos);
+
+	float distance = length(spotLight.Position - v_FragPos);
+	float attenuation = 1.0 / (spotLight.Kc + (spotLight.Kl * distance) + (spotLight.Kq * distance * distance));
+
+	float theta = dot(lightDir, normalize(-spotLight.Direction));
+	float epsilon = spotLight.InnerCutOff - spotLight.OuterCutOff;
+	float intensity = clamp((theta - spotLight.OuterCutOff) / epsilon, 0.0, 1.0);
+
+	vec4 ambient = getAmbience(spotLight.Ambient, diffuseMap);
+
+	vec4 diffuse = intensity * getDiffusion(spotLight.Diffuse, lightDir, diffuseMap);
+
+	vec4 specular = intensity * getSpecular(spotLight.Specular, lightDir, specularMap, shininess);
+
+	return spotLight.Brightness * attenuation * (ambient + diffuse + specular);
 }

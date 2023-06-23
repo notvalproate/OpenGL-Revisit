@@ -86,7 +86,7 @@ void main() {
 		}
 	}
 
-	//color += getSpotLight(u_SpotLight, tex, spec, shininess);
+	color += getSpotLight(u_SpotLight, tex, spec, shininess);
 
 	color = vec4(color.rgb, tex.a);
 }

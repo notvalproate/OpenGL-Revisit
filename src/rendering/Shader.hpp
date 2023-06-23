@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <filesystem>
 #include <unordered_map>
 #include <span>
@@ -7,7 +6,7 @@
 
 class Shader {
 public:
-	Shader(std::wstring_view vertexPath, std::wstring_view fragmentPath);
+	Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath);
 	~Shader();
 
 	Shader(const Shader& other) = delete;

@@ -43,8 +43,8 @@ public:
         PointLightList& pointLights = PointLightList::getList();
         pointLights.setShader(&globalShader);
 
-        //FlashLight& flashLight = FlashLight::getFlashLight();
-        //flashLight.setShaderAndCamera(&globalShader, &camera);
+        FlashLight& flashLight = FlashLight::getFlashLight();
+        flashLight.setShaderAndCamera(&globalShader, &camera);
 
         //Temporary Lambda to render a mesh
         const auto renderMesh = [](const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) {
@@ -144,7 +144,7 @@ public:
             vaol = new VertexArray(vbol, lightLayout);
 
             //LIGHTING
-            //flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.1f), 12.5f, 17.5f, 1.0f);
+            flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
 
             directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.9f, 0.58f, 0.19f), 0.5f);
 
@@ -220,7 +220,7 @@ public:
             pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
             renderMesh(*vaol, *ibo, lightSourceShader);
              
-            //flashLight.update();
+            flashLight.update();
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

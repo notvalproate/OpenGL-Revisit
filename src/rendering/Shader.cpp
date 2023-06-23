@@ -4,7 +4,7 @@
 #include <iostream>
 #include "../util/ErrorHandling.hpp"
 
-Shader::Shader(std::wstring_view vertexPath, std::wstring_view fragmentPath) {
+Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath) {
 	GLCall(m_ShaderID = glCreateProgram());
 	unsigned int vertexShader = 0, fragmentShader = 0;
 

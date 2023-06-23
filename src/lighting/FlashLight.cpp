@@ -16,7 +16,7 @@ void FlashLight::setShaderAndCamera(Shader* shader, Camera* camera) {
 void FlashLight::setFlashLight(glm::vec3 color, float innerCutOff, float outerCutOff, float brightess) {
     m_Shader->setUniform3fv("u_SpotLight.Position", m_Camera->GetPosition());  
     m_Shader->setUniform3fv("u_SpotLight.Direction", m_Camera->GetDirection()); 
-    m_Shader->setUniform3fv("u_SpotLight.Ambient", 0.2f * color);
+    m_Shader->setUniform3fv("u_SpotLight.Ambient", 0.1f * color);
     m_Shader->setUniform3fv("u_SpotLight.Diffuse", color);
     m_Shader->setUniform3fv("u_SpotLight.Specular", 0.5f * color);
     m_Shader->setUniform1f("u_SpotLight.InnerCutOff", glm::cos(glm::radians(innerCutOff)));

@@ -31,10 +31,11 @@ public:
         Camera camera(m_WindowData.width, m_WindowData.height);
         CameraHandler camHandler(camera);
 
-        //BASIC MESH
-        Mesh* boxMesh, *lightMesh;
+
+
 
         //LIGHTING
+
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);
 
@@ -44,7 +45,12 @@ public:
         FlashLight& flashLight = FlashLight::getFlashLight();
         flashLight.setShaderAndCamera(&globalShader, &camera);
 
+
+
+
+
         //Temporary Lambda to render a mesh
+
         const auto renderMesh = [](const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) {
             vao.bind();
             ibo.bind();
@@ -52,8 +58,15 @@ public:
             GLCall(glDrawElements(GL_TRIANGLES, ibo.getCount(), GL_UNSIGNED_INT, nullptr));
         };
 
+
+
+
+        //BASIC MESHES
+
+        Mesh* boxMesh, * lightMesh;
         //Temporary scope to show how to initialize vao and ibo in a mesh object
         {
+            //SETTING VERTEX LAYOUTS FOR EACH SHADER
             std::vector<unsigned int> layout = { 3, 3, 2, 1 };
             globalShader.setLayout(layout);
 
@@ -110,6 +123,9 @@ public:
 
             boxMesh = new Mesh(vertices, indices, textures, &globalShader);
 
+
+
+
             float lightVertices[] = {
                 //POSITION          
                 -0.5f, -0.5f,  0.5f,
@@ -147,6 +163,8 @@ public:
 
             lightMesh = new Mesh(lightVertices, indices, temp, &lightSourceShader);
 
+
+
             //LIGHTING
             flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
 
@@ -164,7 +182,11 @@ public:
             pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader);
         }
 
+
+
+
         //Temp positions to render multiple boxes
+
         const glm::vec3 boxPositions[] = {
             glm::vec3(0.1f, 0.0f, 0.0f),
             glm::vec3(5.0f, 4.0f, -1.0f),
@@ -177,8 +199,10 @@ public:
             glm::vec3(9.0f, 8.0f, -2.0f)
         };
 
-        Texture2D diffuseMap("assets/textures/crate.png", TextureType::DIFFUSE,GL_NEAREST, GL_CLAMP_TO_EDGE); 
-        Texture2D specularMap("assets/textures/crate_spec.png", TextureType::SPECULAR, GL_NEAREST, GL_CLAMP_TO_EDGE); 
+
+
+
+        //MAIN GAME LOOP
 
         float k = 0.5f;
         while (!glfwWindowShouldClose(m_Window)) {
@@ -211,13 +235,12 @@ public:
 
             pointLights.setLightPosition(1, glm::vec3(3.0f, test2, -8.0f));
             lightMesh->setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, test2, -8.0f)), glm::vec3(0.2)));
-            lightMesh->draw(); 
+            lightMesh->draw();
 
             pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));           
             lightMesh->setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -2.0f, test)), glm::vec3(0.2)));
-            lightMesh->draw(); 
+            lightMesh->draw();
 
-             
             flashLight.update();
 
             glfwSwapBuffers(m_Window);

@@ -20,6 +20,28 @@ Mesh::~Mesh() {
 	delete m_IBO;
 }
 
+Mesh::Mesh(Mesh&& other) noexcept {
+	*this = std::move(other);
+}
+
+Mesh& Mesh::operator=(Mesh&& other) noexcept {
+	if (this == &other) {
+		return *this;
+	}
+
+	m_VAO = other.m_VAO;
+	m_IBO = other.m_IBO;
+	m_Shader = other.m_Shader;
+	m_Model = std::move(other.m_Model);
+	m_Textures = std::move(other.m_Textures);
+
+	other.m_VAO = nullptr;
+	other.m_IBO = nullptr;
+	other.m_Shader = nullptr;
+
+	return *this;
+}
+
 void Mesh::setModelMatrix(const glm::mat4& model) { 
 	m_Model = model;
 }

@@ -13,6 +13,12 @@ public:
 	Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::vector<Texture2D>& textures, Shader* shader);
 	~Mesh();
 
+	Mesh(const Mesh& other) = delete;
+	Mesh& operator=(const Mesh& other) = delete;
+
+	Mesh(Mesh&& other) noexcept;
+	Mesh& operator=(Mesh&& other) noexcept;
+
 	void setModelMatrix(const glm::mat4& model);
 	void draw() const;
 private:

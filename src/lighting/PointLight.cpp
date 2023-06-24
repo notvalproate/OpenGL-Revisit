@@ -41,7 +41,6 @@ void PointLight::setPosition(const glm::vec3& position, Shader* shader) {
     shader->setUniform3fv(m_Index + "Position", position);
 }
 
-
 PointLightList PointLightList::s_Instance;
 
 PointLightList& PointLightList::getList() {

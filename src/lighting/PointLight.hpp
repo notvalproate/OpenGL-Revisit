@@ -9,10 +9,10 @@ private:
 	PointLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness, Shader* shader, Shader* modelShader);
 
 	//Temporary until mesh/model class is implemented
-	glm::mat4 m_Model;
+	glm::mat4 m_Model; 
 	glm::vec3 m_ModelColor;
 
-	Shader* m_ModelShader;
+	Shader* m_ModelShader; 
 	std::string m_Index;
 
 	void resetUniforms(Shader* shader);

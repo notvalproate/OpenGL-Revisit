@@ -3,7 +3,7 @@
 #include <numeric>
 #include "../util/ErrorHandling.hpp"
 
-VertexArray::VertexArray(const VertexBuffer& VBO, const std::span<unsigned int>& layout) {
+VertexArray::VertexArray(const VertexBuffer& VBO, const std::span<const unsigned int>& layout) {
 	GLCall(glGenVertexArrays(1, &m_ArrayID));
 	GLCall(glBindVertexArray(m_ArrayID));
 	VBO.bind();

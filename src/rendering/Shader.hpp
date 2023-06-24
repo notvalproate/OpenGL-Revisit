@@ -15,10 +15,13 @@ public:
 	Shader(Shader&& other) noexcept;
 	Shader& operator=(Shader&& other) noexcept;
 
+	void setLayout(std::vector<unsigned int>& layout);
+
 	void bind() const;
 	void unbind() const;
 
 	[[nodiscard]] unsigned int getID() const { return m_ShaderID; }
+	[[nodiscard]] std::vector<unsigned int> getLayout() const { return m_Layout; }
 	[[nodiscard]] int getUniformLocation(std::string_view UniformName);
 
 	void setUniform1i(std::string_view uniformName, const int value);
@@ -27,7 +30,8 @@ public:
 	void setUniformMat4f(std::string_view uniformName, const glm::mat4& value);
 private:
 	unsigned int m_ShaderID;
-	std::unordered_map<std::string, int> m_UniformCache;
+	std::vector<unsigned int> m_Layout{};
+	std::unordered_map<std::string, int> m_UniformCache{};
 
 	unsigned int compileShader(const std::filesystem::path& shaderPath, unsigned int shaderType) const;
 	std::string getShaderSource(const std::filesystem::path& shaderPath) const;

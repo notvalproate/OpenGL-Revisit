@@ -16,6 +16,8 @@
 #include "lighting/DirectionalLight.hpp"
 #include "lighting/FlashLight.hpp"
 
+#include "modeling/Mesh.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -29,12 +31,8 @@ public:
         Camera camera(m_WindowData.width, m_WindowData.height);
         CameraHandler camHandler(camera);
 
-        //BASIC MESH WITH DIFF AND SPEC MAP
-        VertexArray* vao;
-        IndexBuffer* ibo;
-
-        //MESH FOR LIGHTCUBE
-        VertexArray* vaol;
+        //BASIC MESH
+        Mesh* boxMesh, *lightMesh;
 
         //LIGHTING
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
@@ -56,41 +54,45 @@ public:
 
         //Temporary scope to show how to initialize vao and ibo in a mesh object
         {
+            std::vector<unsigned int> layout = { 3, 3, 2, 1 };
+            globalShader.setLayout(layout);
+
+            std::vector<unsigned int> lightLayout = { 3 };
+            lightSourceShader.setLayout(lightLayout);
+
             //All data passed in as parameters
             float vertices[] = {
-                //POSITION         //TEXCOORD  //NORMALS         //TEX INDEX
-                -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                //POSITION         //NORMALS         //TEXCOORD  //TEX INDEX
+                -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                 0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
 
-                -0.5f,-0.5f,-0.5f, 0.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f,
-                0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
-                -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f,
+                -0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
+                 0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 0.0f, 0.0f,
+                 0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
 
-                 0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                 0.5f, 0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-                -0.5f,-0.5f, 0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
-                -0.5f,-0.5f,-0.5f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
-                -0.5f, 0.5f,-0.5f, 1.0f, 1.0f,-1.0f, 0.0f, 0.0f, 0.0f,
-                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 0.0f,
+                -0.5f,-0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                -0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-                -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                 0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-                -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-                -0.5f,-0.5f,-0.5f, 0.0f, 1.0f, 0.0f,-1.0f, 0.0f, 0.0f
+                -0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                 0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                 0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                -0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f
             };
-
-            unsigned int layout[] = { 3, 2, 3, 1 };
 
             unsigned int indices[] = {
                 0, 1, 2, 2, 3, 0,
@@ -101,9 +103,12 @@ public:
                 20, 23, 22, 22, 21, 20
             };
 
-            VertexBuffer VBO(vertices);
-            vao = new VertexArray(VBO, layout);
-            ibo = new IndexBuffer(indices);
+            std::vector<Texture2D> textures = {
+                Texture2D("assets/textures/crate.png", TextureType::DIFFUSE,GL_NEAREST, GL_CLAMP_TO_EDGE),
+                Texture2D("assets/textures/crate_spec.png", TextureType::SPECULAR, GL_NEAREST, GL_CLAMP_TO_EDGE)
+            };
+
+            boxMesh = new Mesh(vertices, indices, textures, &globalShader);
 
             float lightVertices[] = {
                 //POSITION          
@@ -138,10 +143,9 @@ public:
                 -0.5f, -0.5f, -0.5f
             };
 
-            unsigned int lightLayout[] = { 3 };
+            std::vector<Texture2D> temp {};
 
-            VertexBuffer vbol(lightVertices);
-            vaol = new VertexArray(vbol, lightLayout);
+            lightMesh = new Mesh(lightVertices, indices, temp, &lightSourceShader);
 
             //LIGHTING
             flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
@@ -160,9 +164,6 @@ public:
             pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader);
         }
 
-        //DIFF FOR EACH BOX MODEL
-        glm::mat4 model(1.0f);
-
         //Temp positions to render multiple boxes
         const glm::vec3 boxPositions[] = {
             glm::vec3(0.1f, 0.0f, 0.0f),
@@ -176,9 +177,8 @@ public:
             glm::vec3(9.0f, 8.0f, -2.0f)
         };
 
-        Texture2D diffuseMap("assets/textures/crate.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
-        Texture2D specularMap("assets/textures/crate_spec.png", GL_NEAREST, GL_CLAMP_TO_EDGE);
-        
+        Texture2D diffuseMap("assets/textures/crate.png", TextureType::DIFFUSE,GL_NEAREST, GL_CLAMP_TO_EDGE); 
+        Texture2D specularMap("assets/textures/crate_spec.png", TextureType::SPECULAR, GL_NEAREST, GL_CLAMP_TO_EDGE); 
 
         float k = 0.5f;
         while (!glfwWindowShouldClose(m_Window)) {
@@ -193,19 +193,11 @@ public:
             camera.updateUniforms("u_View", "u_Projection", "u_ViewPos", globalShader);
             camera.updateUniforms("u_View", "u_Projection", lightSourceShader);
 
-            //Binding texture to a slot and setting the uniform to that slot
-            diffuseMap.bind(0);
-            globalShader.setUniform1i("u_Material.diffusion[0]", 0);
-            specularMap.bind(1);
-            globalShader.setUniform1i("u_Material.specular[0]", 1);
-            globalShader.setUniform1f("u_Material.shininess", 76.8f);
-
             //Rendering box at all positions
             float i = 10.0f;
             for (const auto& pos : boxPositions) {
-                model = glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos);
-                globalShader.setUniformMat4f("u_Model", model);
-                renderMesh(*vao, *ibo, globalShader);
+                boxMesh->setModelMatrix(glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos));
+                boxMesh->draw();
                 i += 30.0f;
             }
 
@@ -214,11 +206,17 @@ public:
             float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
 
             pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));
-            renderMesh(*vaol, *ibo, lightSourceShader);
+            lightMesh->setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(test2, 0.0f, 4.0f)), glm::vec3(0.2)));
+            lightMesh->draw();
+
             pointLights.setLightPosition(1, glm::vec3(3.0f, test2, -8.0f));
-            renderMesh(*vaol, *ibo, lightSourceShader);
-            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
-            renderMesh(*vaol, *ibo, lightSourceShader);
+            lightMesh->setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, test2, -8.0f)), glm::vec3(0.2)));
+            lightMesh->draw(); 
+
+            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));           
+            lightMesh->setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, -2.0f, test)), glm::vec3(0.2)));
+            lightMesh->draw(); 
+
              
             flashLight.update();
 
@@ -228,8 +226,6 @@ public:
             k += 120.0f * deltaTime;
             if (k >= 360.0f) k -= 360.0f;
         }
-
-        delete vao, ibo, vaol;
 
         glfwTerminate();
     }

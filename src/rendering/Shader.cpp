@@ -44,6 +44,10 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 	return *this;
 }
 
+void Shader::setLayout(std::vector<unsigned int>& layout) {
+	m_Layout = std::move(layout);
+}
+
 void Shader::bind() const {
 	GLCall(glUseProgram(m_ShaderID));
 }
@@ -101,10 +105,6 @@ int Shader::getUniformLocation(std::string_view uniformName) {
 	}
 
 	GLCall(int location = glGetUniformLocation(m_ShaderID, uniformName.data()));
-
-	if (location == -1) {
-		std::cout << "Warning: Uniform " << uniformName << " doesn't exist!" << std::endl;
-	}
 
 	iterator->second = location;
 	return location;

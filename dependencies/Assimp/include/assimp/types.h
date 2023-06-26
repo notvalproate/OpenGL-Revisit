@@ -75,7 +75,7 @@ typedef uint32_t ai_uint32;
 
 #ifdef ASSIMP_USE_HUNTER
 #   include <utf8.h>
-#else
+#elif __cplusplus < 199711L
 #   include "../contrib/utf8cpp/source/utf8.h"
 #endif
 

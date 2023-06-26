@@ -17,6 +17,7 @@
 #include "lighting/FlashLight.hpp"
 
 #include "modeling/Mesh.hpp"
+#include "modeling/Model.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,9 +32,6 @@ public:
         Camera camera(m_WindowData.width, m_WindowData.height);
         CameraHandler camHandler(camera);
 
-
-
-
         //LIGHTING
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
@@ -45,25 +43,9 @@ public:
         FlashLight& flashLight = FlashLight::getFlashLight();
         flashLight.setShaderAndCamera(&globalShader, &camera);
 
-
-
-
-
-        //Temporary Lambda to render a mesh
-
-        const auto renderMesh = [](const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) {
-            vao.bind();
-            ibo.bind();
-            shader.bind();
-            GLCall(glDrawElements(GL_TRIANGLES, ibo.getCount(), GL_UNSIGNED_INT, nullptr));
-        };
-
-
-
-
         //BASIC MESHES
 
-        Mesh* boxMesh, * lightMesh;
+        Mesh* lightMesh;
         //Temporary scope to show how to initialize vao and ibo in a mesh object
         {
             //SETTING VERTEX LAYOUTS FOR EACH SHADER
@@ -73,40 +55,7 @@ public:
             std::vector<unsigned int> lightLayout = { 3 };
             lightSourceShader.setLayout(lightLayout);
 
-            //All data passed in as parameters
-            float vertices[] = {
-                //POSITION         //NORMALS         //TEXCOORD  //TEX INDEX
-                -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-
-                -0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 1.0f, 0.0f,
-                -0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-
-                 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-                -0.5f,-0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                -0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.5f, 0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                -0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-                -0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                 0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                -0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f
-            };
-
+           
             unsigned int indices[] = {
                 0, 1, 2, 2, 3, 0,
                 4, 7, 6, 6, 5, 4,
@@ -115,16 +64,6 @@ public:
                 16, 17, 18, 18, 19, 16,
                 20, 23, 22, 22, 21, 20
             };
-
-            std::vector<Texture2D> textures = {
-                Texture2D("assets/textures/crate.png", TextureType::DIFFUSE,GL_NEAREST, GL_CLAMP_TO_EDGE),
-                Texture2D("assets/textures/crate_spec.png", TextureType::SPECULAR, GL_NEAREST, GL_CLAMP_TO_EDGE)
-            };
-
-            boxMesh = new Mesh(vertices, indices, textures, &globalShader);
-
-
-
 
             float lightVertices[] = {
                 //POSITION          
@@ -163,8 +102,6 @@ public:
 
             lightMesh = new Mesh(lightVertices, indices, temp, &lightSourceShader);
 
-
-
             //LIGHTING
             flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
 
@@ -182,25 +119,9 @@ public:
             pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader);
         }
 
+        //MODELS
 
-
-
-        //Temp positions to render multiple boxes
-
-        const glm::vec3 boxPositions[] = {
-            glm::vec3(0.1f, 0.0f, 0.0f),
-            glm::vec3(5.0f, 4.0f, -1.0f),
-            glm::vec3(-2.0f, 7.0f, 3.0f),
-            glm::vec3(6.0f, -3.0f, 6.0f),
-            glm::vec3(2.0f, -6.0f, -3.0f),
-            glm::vec3(8.0f, 3.0f, -10.0f),
-            glm::vec3(-8.0f, 2.0f, 6.0f),
-            glm::vec3(3.0f, -5.0f, 8.0f),
-            glm::vec3(9.0f, 8.0f, -2.0f)
-        };
-
-
-
+        Model backpack("assets/models/backpack/backpack.obj", &globalShader);
 
         //MAIN GAME LOOP
 
@@ -217,13 +138,8 @@ public:
             camera.updateUniforms("u_View", "u_Projection", "u_ViewPos", globalShader);
             camera.updateUniforms("u_View", "u_Projection", lightSourceShader);
 
-            //Rendering box at all positions
-            float i = 10.0f;
-            for (const auto& pos : boxPositions) {
-                boxMesh->setModelMatrix(glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(i), pos), pos));
-                boxMesh->draw();
-                i += 30.0f;
-            }
+            //Render backpack
+            backpack.draw();
 
             //Render the lights
             float test = 8.0f * glm::sin(glm::radians(k));

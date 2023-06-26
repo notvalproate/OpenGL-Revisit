@@ -16,12 +16,12 @@ public:
 
 	void draw();
 private:
-	std::vector<Mesh> m_Meshes{};
+	std::vector<Mesh*> m_Meshes;
 	std::filesystem::path m_Directory;
 	Shader* m_Shader;
 
 	void loadModel(const std::filesystem::path modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
-	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-	std::vector<Texture2D> loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName);
+	Mesh* processMesh(aiMesh* mesh, const aiScene* scene);
+	std::vector<Texture2D> loadMaterialTextures(aiMaterial* material, aiTextureType type, TextureType typeName);
 };

@@ -24,6 +24,7 @@ VertexArray::VertexArray(const VertexBuffer& VBO, const std::span<const unsigned
 }
 
 VertexArray::~VertexArray() {
+	std::cout << "vertex array deleted";
 	GLCall(glDeleteVertexArrays(1, &m_ArrayID));
 }
 

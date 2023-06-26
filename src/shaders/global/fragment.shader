@@ -121,7 +121,7 @@ vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap, const fl
 
 	vec4 specular = getSpecular(u_DirectionalLight.Specular, lightDir, specularMap, shininess);
 
-	return u_DirectionalLight.Brightness * (ambient + diffuse + specular);
+	return u_DirectionalLight.Brightness * (ambient + diffuse);
 }
 
 //GET POINT LIGHT VECTOR
@@ -137,7 +137,7 @@ vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec
 
 	vec4 specular = getSpecular(pointLight.Specular, lightDir, specularMap, shininess);
 
-	return pointLight.Brightness * attenuation * (ambient + diffuse + specular);
+	return pointLight.Brightness * attenuation * (ambient + diffuse);
 }
 
 //GET POINT LIGHT VECTOR
@@ -157,5 +157,5 @@ vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 s
 
 	vec4 specular = intensity * getSpecular(spotLight.Specular, lightDir, specularMap, shininess);
 
-	return spotLight.Brightness * attenuation * (ambient + diffuse + specular);
+	return spotLight.Brightness * attenuation * (ambient + diffuse);
 }

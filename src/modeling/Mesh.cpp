@@ -71,5 +71,5 @@ void Mesh::bindTextures() const {
 
 		m_Textures[i].bind(i);
 	}
-	m_Shader->setUniform1f("u_Material.shininess", 78.6f);
+	m_Shader->setUniform1f("u_Material.shininess", 32.0f);
 }

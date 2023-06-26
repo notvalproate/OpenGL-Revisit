@@ -33,7 +33,6 @@ public:
         CameraHandler camHandler(camera);
 
         //LIGHTING
- 
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);

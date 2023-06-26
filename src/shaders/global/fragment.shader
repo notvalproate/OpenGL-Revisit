@@ -88,7 +88,7 @@ void main() {
 
 	color += getSpotLight(u_SpotLight, tex, spec, shininess);
 
-	color = vec4(1.0f);
+	color = vec4(color.rgb, tex.a);
 }
 
 //GET AMBIENCE DIFFUSION AND SPECULAR VECTORS

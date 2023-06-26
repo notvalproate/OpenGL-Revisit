@@ -17,7 +17,9 @@ public:
 
 	[[nodiscard]] unsigned int getID() const { return m_TextureID; }
 	[[nodiscard]] TextureType getType() const { return m_Type; }
+	[[nodiscard]] std::string getPath() const { return m_Path; }
 private:
 	unsigned int m_TextureID;
 	TextureType m_Type;
+	std::string m_Path;
 };

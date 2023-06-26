@@ -16,13 +16,6 @@ Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indi
 }
 
 Mesh::~Mesh() {
-	if (m_VAO == nullptr && m_IBO == nullptr) {
-		std::cout << "destructing moved mesh";
-	}
-	else {
-		std::cout << "called mesh destructor";
-	}
-
 	delete m_VAO;
 	delete m_IBO;
 }

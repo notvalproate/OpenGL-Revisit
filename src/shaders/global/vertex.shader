@@ -5,10 +5,10 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoord;
 layout(location = 3) in float aTexIndex;
 
-out vec2 v_TexCoord;
-out float v_TexIndex;
-out vec3 v_Normal;
-out vec3 v_FragPos;
+centroid out vec2 v_TexCoord;
+centroid out float v_TexIndex;
+centroid out vec3 v_Normal;
+centroid out vec3 v_FragPos;
 
 uniform mat4 u_Model;
 uniform mat4 u_View;

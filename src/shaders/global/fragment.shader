@@ -2,10 +2,10 @@
 
 out vec4 color;
 
-in vec2 v_TexCoord;
-in float v_TexIndex;
-in vec3 v_Normal;
-in vec3 v_FragPos;
+centroid in vec2 v_TexCoord;
+centroid in float v_TexIndex;
+centroid in vec3 v_Normal;
+centroid in vec3 v_FragPos;
 
 //STRUCTURES
 struct Material {
@@ -106,7 +106,7 @@ vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specular
 	vec3 viewDir = normalize(u_ViewPos - v_FragPos);
 	vec3 reflectDir = reflect(-lightDir, v_Normal);
 
-	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
+	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
 	return vec4(lightColor, 1.0) * (specStrength * specularMap);
 }

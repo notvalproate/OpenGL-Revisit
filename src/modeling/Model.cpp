@@ -14,8 +14,8 @@ void Model::draw() const {
 	}
 }
 
-void Model::setModelMatrix(glm::mat4& model) {
-	m_ModelMatrix = std::move(model);
+void Model::setModelMatrix(const glm::mat4& model) {
+	m_ModelMatrix = model;
 }
 
 void Model::loadModel(const std::filesystem::path modelPath) {
@@ -51,35 +51,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	VertexLayout layout = m_Shader->getLayout();
 
 	for (std::size_t i = 0; i < mesh->mNumVertices; i++) {
-		for (const auto& e : layout.getLayoutArray()) {
-			switch (e) {
-			case VertexAttribute::Position:
-				vertices.push_back(mesh->mVertices[i].x); 
-				vertices.push_back(mesh->mVertices[i].y); 
-				vertices.push_back(mesh->mVertices[i].z); 
-				break;
-
-			case VertexAttribute::Normal:
-				vertices.push_back(mesh->mNormals[i].x); 
-				vertices.push_back(mesh->mNormals[i].y); 
-				vertices.push_back(mesh->mNormals[i].z);
-				break;
-
-			case VertexAttribute::TextureCoordinates:
-				if (mesh->mTextureCoords[0]) {
-					vertices.push_back(mesh->mTextureCoords[0][i].x); 
-					vertices.push_back(mesh->mTextureCoords[0][i].y); 
-				}
-				else {
-					vertices.push_back(0.0f); 
-					vertices.push_back(0.0f); 
-				}
-				break; 
-
-			default:
-				vertices.push_back(0.0f);
-			}
-		}
+		processVertex(i, mesh, vertices, layout);
 	}
 
 	for (std::size_t i = 0; i < mesh->mNumFaces; i++) {
@@ -91,16 +63,42 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	}
 	
 	if (mesh->mMaterialIndex >= 0) {
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-
-		std::vector<Texture2D> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-		std::vector<Texture2D> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		processMaterial(mesh, scene, textures);
 	}
 
 	return Mesh(vertices, indices, textures, m_Shader);
+}
+
+void Model::processVertex(int index, aiMesh* mesh, std::vector<float>& vertices, VertexLayout& layout) const {
+	for (const auto& attribute : layout.getLayoutArray()) {
+		if (attribute == VertexAttribute::Position) {
+			vertices.insert(vertices.end(), { mesh->mVertices[index].x,  mesh->mVertices[index].y, mesh->mVertices[index].z });
+		}
+		else if (attribute == VertexAttribute::Normal) {
+			vertices.insert(vertices.end(), { mesh->mNormals[index].x,  mesh->mNormals[index].y, mesh->mNormals[index].z });
+		}
+		else if (attribute == VertexAttribute::TextureCoordinates) {
+			if (mesh->mTextureCoords[0]) { 
+				vertices.insert(vertices.end(), { mesh->mTextureCoords[0][index].x,  mesh->mTextureCoords[0][index].y }); 
+			}
+			else {
+				vertices.insert(vertices.end(), { 0.0f, 0.0f }); 
+			}
+		}
+		else {
+			vertices.push_back(0.0f);
+		}
+	}
+}
+
+void Model::processMaterial(aiMesh* mesh, const aiScene* scene, std::vector<Texture2D>& textures) {
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+	std::vector<Texture2D> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
+	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+	std::vector<Texture2D> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SPECULAR);
+	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 }
 
 std::vector<Texture2D> Model::loadMaterialTextures(aiMaterial* material, aiTextureType type, TextureType typeName) {
@@ -123,7 +121,7 @@ std::vector<Texture2D> Model::loadMaterialTextures(aiMaterial* material, aiTextu
 		}
 
 		if (!skip) {
-			Texture2D texture(Texture2D(m_Directory.string() + "/" + path.C_Str(), typeName));
+			Texture2D texture(Texture2D(pathString, typeName));
 			textures.push_back(texture);
 			m_LoadedTextures.push_back(texture);
 		}

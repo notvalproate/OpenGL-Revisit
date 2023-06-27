@@ -1,23 +1,18 @@
 #include "Mesh.hpp"
 #include <iostream>
 
-Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::vector<Texture2D>& textures, Shader* shader) 
+Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::vector<Texture2D>& textures, Shader* shader)
 	: m_Shader(shader), m_Textures(std::move(textures)) {
 
 	VertexBuffer vbo(vertices);
 
 	try {
-		m_VAO = new VertexArray(vbo, m_Shader->getLayout());
-		m_IBO = new IndexBuffer(indices);
+		m_VAO = std::make_unique<VertexArray>(vbo, m_Shader->getLayout());
+		m_IBO = std::make_unique<IndexBuffer>(indices);
 	}
 	catch (const std::bad_alloc& e) {
 		std::cerr << "Allocation for mesh failed! Exception thrown: " << e.what() << std::endl;
 	}
-}
-
-Mesh::~Mesh() {
-	delete m_VAO;
-	delete m_IBO;
 }
 
 Mesh::Mesh(Mesh&& other) noexcept {
@@ -29,14 +24,10 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 		return *this;
 	}
 
-	m_VAO = other.m_VAO;
-	m_IBO = other.m_IBO;
+	m_VAO = std::move(other.m_VAO);
+	m_IBO = std::move(other.m_IBO);
 	m_Shader = other.m_Shader;
 	m_Textures = std::move(other.m_Textures);
-
-	other.m_VAO = nullptr;
-	other.m_IBO = nullptr;
-	other.m_Shader = nullptr;
 
 	return *this;
 }

@@ -47,6 +47,11 @@ public:
         lightSourceShader.setLayout(lightSourceLayout); 
 
 
+        //MODELS
+
+        Model backpack(L"assets/models/backpack/backpack.obj", &globalShader); 
+
+
         //DIRECTIONAL LIGHT SETUP
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
@@ -76,11 +81,6 @@ public:
         FlashLight& flashLight = FlashLight::getFlashLight();
         flashLight.setShaderAndCamera(&globalShader, &camera);
         flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
-
-
-        //MODELS
-
-        Model backpack(L"assets/models/backpack/backpack.obj", &globalShader);
 
 
         //MAIN GAME LOOP

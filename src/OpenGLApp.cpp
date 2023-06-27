@@ -16,7 +16,7 @@ void OpenGLApp::initialize(int width, int height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  
+
     m_Window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
 
     if (!m_Window) {

@@ -7,11 +7,12 @@
 
 #include <span>
 #include <array>
+#include <memory>
 
 class Mesh {
 public:
 	Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::vector<Texture2D>& textures, Shader* shader);
-	~Mesh();
+	~Mesh() = default;
 
 	Mesh(const Mesh& other) = delete;
 	Mesh& operator=(const Mesh& other) = delete;
@@ -21,8 +22,8 @@ public:
 
 	void draw() const;
 private:
-	VertexArray* m_VAO;
-	IndexBuffer* m_IBO;
+	std::unique_ptr<VertexArray> m_VAO;
+	std::unique_ptr<IndexBuffer> m_IBO;
 	Shader* m_Shader;
 	std::vector<Texture2D> m_Textures;
 

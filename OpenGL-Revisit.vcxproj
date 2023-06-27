@@ -181,6 +181,7 @@
     <ClInclude Include="src\rendering\Buffers.hpp" />
     <ClInclude Include="src\rendering\Shader.hpp" />
     <ClInclude Include="src\rendering\VertexArray.hpp" />
+    <ClInclude Include="src\rendering\VertexLayout.hpp" />
     <ClInclude Include="src\scene\Camera.hpp" />
     <ClInclude Include="src\scene\CameraHandler.hpp" />
     <ClInclude Include="src\textures\TextureLoader.hpp" />

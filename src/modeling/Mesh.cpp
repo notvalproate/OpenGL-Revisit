@@ -2,7 +2,7 @@
 #include <iostream>
 
 Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::vector<Texture2D>& textures, Shader* shader) 
-	: m_Shader(shader), m_Textures(std::move(textures)), m_Model(glm::mat4(1.0f)) {
+	: m_Shader(shader), m_Textures(std::move(textures)) {
 
 	VertexBuffer vbo(vertices);
 
@@ -32,7 +32,6 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 	m_VAO = other.m_VAO;
 	m_IBO = other.m_IBO;
 	m_Shader = other.m_Shader;
-	m_Model = std::move(other.m_Model);
 	m_Textures = std::move(other.m_Textures);
 
 	other.m_VAO = nullptr;
@@ -42,13 +41,8 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 	return *this;
 }
 
-void Mesh::setModelMatrix(const glm::mat4& model) { 
-	m_Model = model;
-}
-
 void Mesh::draw() const {
 	bindTextures();
-	m_Shader->setUniformMat4f("u_Model", m_Model);
 
 	m_VAO->bind();
 	m_IBO->bind();

@@ -44,7 +44,7 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 	return *this;
 }
 
-void Shader::setLayout(std::vector<unsigned int>& layout) {
+void Shader::setLayout(VertexLayout& layout) {
 	m_Layout = std::move(layout);
 }
 

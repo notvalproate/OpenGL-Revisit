@@ -19,15 +19,12 @@ public:
 	Mesh(Mesh&& other) noexcept;
 	Mesh& operator=(Mesh&& other) noexcept;
 
-	void setModelMatrix(const glm::mat4& model);
 	void draw() const;
 private:
 	VertexArray* m_VAO;
 	IndexBuffer* m_IBO;
 	Shader* m_Shader;
 	std::vector<Texture2D> m_Textures;
-
-	glm::mat4 m_Model;
 
 	void bindTextures() const;
 };

@@ -14,11 +14,13 @@ class Model {
 public:
 	Model(const std::filesystem::path modelPath, Shader* shader);
 
-	void draw();
+	void draw() const;
+	void setModelMatrix(glm::mat4& model);
 private:
 	std::vector<Mesh> m_Meshes;
 	std::vector<Texture2D> m_LoadedTextures;
 	std::filesystem::path m_Directory;
+	glm::mat4 m_ModelMatrix;
 	Shader* m_Shader;
 
 	void loadModel(const std::filesystem::path modelPath);

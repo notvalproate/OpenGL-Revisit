@@ -1,10 +1,11 @@
 #pragma once
 #include "Buffers.hpp"
+#include "VertexLayout.hpp"
 #include <iostream>
 
 class VertexArray {
 public:
-	VertexArray(const VertexBuffer& VBO, const std::span<const unsigned int>& layout);
+	VertexArray(const VertexBuffer& VBO, const VertexLayout& layout);
 	~VertexArray();
 
 	VertexArray(const VertexArray& other) = delete;

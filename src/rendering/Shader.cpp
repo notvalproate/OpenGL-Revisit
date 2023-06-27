@@ -61,7 +61,7 @@ unsigned int Shader::compileShader(const std::filesystem::path& shaderPath, unsi
 		throw std::runtime_error("Shader Path Not found or not a regular file! Path: " + shaderPath.string());
 	}
 
-	std::string sourceString = getShaderSource(shaderPath);
+	std::string sourceString = std::move(getShaderSource(shaderPath));
 	const char* sourceCString = sourceString.c_str();
 
 	GLCall(unsigned int shaderID = glCreateShader(shaderType));
@@ -97,16 +97,18 @@ void Shader::checkCompilationStatus(unsigned int shader) const {
 }
 	
 int Shader::getUniformLocation(std::string_view uniformName) { 
-	bind();
 	auto iterator = m_UniformCache.find(std::string(uniformName));
 
 	if (iterator != m_UniformCache.end()) {
 		return iterator->second;
 	}
 
+	bind();
+
 	GLCall(int location = glGetUniformLocation(m_ShaderID, uniformName.data()));
 
 	iterator->second = location;
+
 	return location;
 }
 

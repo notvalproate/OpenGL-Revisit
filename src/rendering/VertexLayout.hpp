@@ -32,7 +32,6 @@ public:
 	void push(VertexAttribute attribute) {
 		m_Layout.push_back(attribute);
 		m_Stride += getAttributeWidth(attribute);
-
 	}
 
 	[[nodiscard]] std::size_t getStride() const { return m_Stride; }

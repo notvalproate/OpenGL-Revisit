@@ -50,13 +50,14 @@ public:
         //MODELS
 
         Model backpack(L"assets/models/backpack/backpack.obj", &globalShader); 
-
+        Model agera(L"assets/models/agera/agera.obj", &globalShader);
+        agera.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-20.0f, -2.0f, -5.0f)), glm::vec3(0.5f)));
 
         //DIRECTIONAL LIGHT SETUP
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);
-        directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.9f, 0.58f, 0.19f), 0.5f);
+        directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f), 0.5f);
 
 
         //POINTLIGHT SETUP
@@ -100,6 +101,7 @@ public:
 
             //Render backpack
             backpack.draw();
+            agera.draw();
 
             //Render the lights
             float test = 8.0f * glm::sin(glm::radians(k));

@@ -26,56 +26,62 @@
 class App : public OpenGLApp {
 public:
     void run() override {
-        Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader");
-        VertexLayout globalLayout;
-        globalLayout.push(VertexAttribute::Position);
-        globalLayout.push(VertexAttribute::Normal);
-        globalLayout.push(VertexAttribute::TextureCoordinates);
-        globalLayout.push(VertexAttribute::TextureIndex);
-        globalShader.setLayout(globalLayout);
-
-
-        Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader");
-        VertexLayout lightSourceLayout;
-        lightSourceLayout.push(VertexAttribute::Position);
-        lightSourceShader.setLayout(lightSourceLayout);
-
         Timer timer;
         Camera camera(m_WindowData.width, m_WindowData.height);
         CameraHandler camHandler(camera);
 
-        //LIGHTING
+
+        //SHADER SETUP
+
+        Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
+        VertexLayout globalLayout; 
+        globalLayout.push(VertexAttribute::Position); 
+        globalLayout.push(VertexAttribute::Normal); 
+        globalLayout.push(VertexAttribute::TextureCoordinates); 
+        globalLayout.push(VertexAttribute::TextureIndex); 
+        globalShader.setLayout(globalLayout); 
+
+        Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader"); 
+        VertexLayout lightSourceLayout; 
+        lightSourceLayout.push(VertexAttribute::Position);  
+        lightSourceShader.setLayout(lightSourceLayout); 
+
+
+        //DIRECTIONAL LIGHT SETUP
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);
+        directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.9f, 0.58f, 0.19f), 0.5f);
+
+
+        //POINTLIGHT SETUP
 
         PointLightList& pointLights = PointLightList::getList();
         pointLights.setShader(&globalShader);
 
+        glm::vec3 lightPos(3.0f, 0.0f, 4.0f); 
+        glm::vec3 color(1.0f, 1.0f, 1.0f); 
+
+        pointLights.addLight(0, lightPos, color, 1.0f, &lightSourceShader); 
+
+        color = glm::vec3(1.0f, 0.1f, 0.1f); 
+        pointLights.addLight(1, lightPos, color, 1.0f, &lightSourceShader); 
+
+        color = glm::vec3(0.1f, 1.0f, 0.0f); 
+        pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader); 
+
+
+        //SPOTLIGHT SETUP
+
         FlashLight& flashLight = FlashLight::getFlashLight();
         flashLight.setShaderAndCamera(&globalShader, &camera);
+        flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
 
-        {
-            //LIGHTING
-            flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
-
-            directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.9f, 0.58f, 0.19f), 0.5f);
-
-            glm::vec3 lightPos(3.0f, 0.0f, 4.0f);
-            glm::vec3 color(1.0f, 1.0f, 1.0f);
-
-            pointLights.addLight(0, lightPos, color, 1.0f, &lightSourceShader);
-
-            color = glm::vec3(1.0f, 0.1f, 0.1f);
-            pointLights.addLight(1, lightPos, color, 1.0f, &lightSourceShader);
-
-            color = glm::vec3(0.1f, 1.0f, 0.0f);
-            pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader);
-        }
 
         //MODELS
 
         Model backpack(L"assets/models/backpack/backpack.obj", &globalShader);
+
 
         //MAIN GAME LOOP
 

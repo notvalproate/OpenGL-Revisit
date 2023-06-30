@@ -70,7 +70,7 @@ void CameraHandler::handleMouseInput(GLFWwindow* window) {
 	m_Camera.m_Pitch -= (y - m_LastY) * m_Camera.m_Sensitivity;
 
 	//-89 <= PITCH <= 89, -180 < YAW < 180
-	m_Camera.m_Pitch = std::clamp(m_Camera.m_Pitch, -89.0, 89.0);
+	m_Camera.m_Pitch = std::clamp(m_Camera.m_Pitch, -89.0f, 89.0f);
 
 	if (m_Camera.m_Yaw > 180.0f) {
 		m_Camera.m_Yaw = m_Camera.m_Yaw - 360.0f;

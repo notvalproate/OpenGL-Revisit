@@ -4,8 +4,7 @@
 enum class VertexAttribute : unsigned short {
 	Position = 0x00,
 	Normal = 0x01,
-	TextureCoordinates = 0x02,
-	TextureIndex = 0x03
+	TextureCoordinates = 0x02
 };
 
 class VertexLayout {
@@ -23,9 +22,6 @@ public:
 		}
 		if (attribute == VertexAttribute::TextureCoordinates) {
 			return 2;
-		}
-		if (attribute == VertexAttribute::TextureIndex) {
-			return 1;
 		}
 	}
 

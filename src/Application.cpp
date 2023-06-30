@@ -30,28 +30,30 @@ public:
         Camera camera(m_WindowData.width, m_WindowData.height);
         CameraHandler camHandler(camera);
 
-
         //SHADER SETUP
 
         Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
         VertexLayout globalLayout; 
         globalLayout.push(VertexAttribute::Position); 
         globalLayout.push(VertexAttribute::Normal); 
-        globalLayout.push(VertexAttribute::TextureCoordinates); 
-        globalLayout.push(VertexAttribute::TextureIndex); 
+        globalLayout.push(VertexAttribute::TextureCoordinates);
         globalShader.setLayout(globalLayout); 
 
         Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader"); 
         VertexLayout lightSourceLayout; 
-        lightSourceLayout.push(VertexAttribute::Position);  
+        lightSourceLayout.push(VertexAttribute::Position);
         lightSourceShader.setLayout(lightSourceLayout); 
 
 
         //MODELS
 
-        Model backpack(L"assets/models/backpack/backpack.obj", &globalShader); 
-        Model agera(L"assets/models/agera/agera.obj", &globalShader);
-        agera.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-20.0f, -2.0f, -5.0f)), glm::vec3(0.5f)));
+        Model backpack(L"assets/models/backpack/backpack.obj", &globalShader, true); 
+
+        Model agera(L"assets/models/agera/agera.obj", &globalShader, true);
+        agera.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, -5.0f, 0.0f)));
+
+        Model cottage(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
+        cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
 
         //DIRECTIONAL LIGHT SETUP
 
@@ -91,6 +93,9 @@ public:
             if (m_WindowData.resized) camera.resetViewport(m_WindowData.width, m_WindowData.height);
             float deltaTime = timer.getDeltaTime();
 
+            float test = 8.0f * glm::sin(glm::radians(k));
+            float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
+
             glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -102,11 +107,9 @@ public:
             //Render backpack
             backpack.draw();
             agera.draw();
+            cottage.draw();
 
-            //Render the lights
-            float test = 8.0f * glm::sin(glm::radians(k));
-            float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
-
+            //Move the lights 
             pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));
 
             pointLights.setLightPosition(1, glm::vec3(3.0f, test2, -8.0f));

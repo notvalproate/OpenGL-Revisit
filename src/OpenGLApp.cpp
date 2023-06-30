@@ -31,7 +31,7 @@ void OpenGLApp::initialize(int width, int height) {
     glfwSetFramebufferSizeCallback(m_Window, &OpenGLApp::glfwResizeCallback);
 
     glfwMakeContextCurrent(m_Window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     if (glewInit() != GLEW_OK) {
         glfwTerminate();

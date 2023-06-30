@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "../textures/Texture2D.hpp"
+#include "../textures/Material.hpp"
 #include "../rendering/VertexArray.hpp"
 #include "../rendering/Buffers.hpp"
 #include "../rendering/Shader.hpp"
@@ -11,7 +12,7 @@
 
 class Mesh {
 public:
-	Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::vector<Texture2D>& textures, Shader* shader);
+	Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, Material* material, Shader* shader);
 	~Mesh() = default;
 
 	Mesh(const Mesh& other) = delete;
@@ -25,7 +26,7 @@ private:
 	std::unique_ptr<VertexArray> m_VAO;
 	std::unique_ptr<IndexBuffer> m_IBO;
 	Shader* m_Shader;
-	std::vector<Texture2D> m_Textures;
+	Material* m_Material;
 
 	void bindTextures() const;
 };

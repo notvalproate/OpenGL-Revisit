@@ -39,8 +39,9 @@ private:
 
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-	void processVertex(int index, aiMesh* mesh, std::vector<float>& vertices, const VertexLayout& layout) const;
+	void processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices, const VertexLayout& layout) const;
 
 	std::shared_ptr<Material> processMaterial(aiMesh* mesh, const aiScene* scene);
+	std::shared_ptr<Material> loadNewMaterial(aiMaterial* material);
 	std::shared_ptr<Texture2D> loadMaterialTexture(aiMaterial* meshmaterial, aiTextureType type, TextureType typeName);
 };

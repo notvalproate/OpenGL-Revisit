@@ -43,7 +43,7 @@ void Model::setModelMatrix(const glm::mat4& model) {
 void Model::loadModel(const std::filesystem::path modelPath, bool flipUVs) {
 	Assimp::Importer importer;
 
-	int flags = aiProcess_Triangulate;
+	unsigned int flags = aiProcess_Triangulate;
 	if (flipUVs) flags = flags | aiProcess_FlipUVs;
 
 	const aiScene* scene = importer.ReadFile(modelPath.string(), flags);
@@ -86,7 +86,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		processVertex(i, mesh, vertices, layout);
 	}
 
-	for (std::size_t i = 0; i < mesh->mNumFaces; i++) {
+	for (std::size_t i = 0; i < mesh->mNumFaces; i++) { 
 		aiFace face = mesh->mFaces[i];
 
 		for (std::size_t j = 0; j < face.mNumIndices; j++) {
@@ -99,7 +99,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	return Mesh(vertices, indices, material, m_Shader);
 }
 
-void Model::processVertex(int index, aiMesh* mesh, std::vector<float>& vertices, const VertexLayout& layout) const {
+void Model::processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices, const VertexLayout& layout) const {
 	for (const auto& attribute : layout.getLayoutArray()) {
 		if (attribute == VertexAttribute::Position) {
 			vertices.insert(vertices.end(), { mesh->mVertices[index].x,  mesh->mVertices[index].y, mesh->mVertices[index].z });
@@ -125,14 +125,7 @@ void Model::processVertex(int index, aiMesh* mesh, std::vector<float>& vertices,
 
 std::shared_ptr<Material> Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
 	if (mesh->mMaterialIndex < 0) {
-		for (const std::shared_ptr<Material>& loadedmaterial : m_LoadedMaterials) {
-			if (loadedmaterial->getName() == "DEFAULT_MATERIAL") {
-				return loadedmaterial;
-			}
-		}
-		std::shared_ptr<Material> material = std::make_shared<Material>();
-		m_LoadedMaterials.push_back(material);
-		return material;
+		return std::make_shared<Material>();
 	}
 
 	aiMaterial* meshmaterial = scene->mMaterials[mesh->mMaterialIndex];
@@ -142,7 +135,11 @@ std::shared_ptr<Material> Model::processMaterial(aiMesh* mesh, const aiScene* sc
 			return loadedmaterial;
 		}
 	}
-	
+
+	return loadNewMaterial(meshmaterial);
+}
+
+std::shared_ptr<Material> Model::loadNewMaterial(aiMaterial* meshmaterial) {
 	aiColor3D ambientColor, diffuseColor, specularColor;
 	float dissolve, shininess;
 	meshmaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
@@ -156,13 +153,11 @@ std::shared_ptr<Material> Model::processMaterial(aiMesh* mesh, const aiScene* sc
 	std::shared_ptr<Texture2D> normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
 
 	std::shared_ptr<Material> material = std::make_shared<Material>(meshmaterial->GetName().C_Str(), ambientColor, diffuseColor, specularColor, dissolve);
-
 	material->setDiffuseMap(diffuseMap);
 	material->setSpecularMap(specularMap, shininess);
 	material->setNormalMap(normalMap);
 
 	m_LoadedMaterials.push_back(material);
-
 	return material;
 }
 

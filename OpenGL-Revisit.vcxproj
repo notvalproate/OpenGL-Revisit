@@ -169,8 +169,6 @@
   <ItemGroup>
     <None Include="src\shaders\global\fragment.shader" />
     <None Include="src\shaders\global\vertex.shader" />
-    <None Include="src\shaders\light_source\fragment.shader" />
-    <None Include="src\shaders\light_source\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lighting\DirectionalLight.hpp" />

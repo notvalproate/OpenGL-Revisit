@@ -39,16 +39,8 @@ public:
         globalLayout.push(VertexAttribute::TextureCoordinates);
         globalShader.setLayout(globalLayout); 
 
-        Shader lightSourceShader(L"src/shaders/light_source/vertex.shader", L"src/shaders/light_source/fragment.shader"); 
-        VertexLayout lightSourceLayout; 
-        lightSourceLayout.push(VertexAttribute::Position);
-        lightSourceShader.setLayout(lightSourceLayout); 
-
 
         //MODELS
-
-        Model ironman(L"assets/models/IronMan/IronMan.obj", &globalShader, true);
-        ironman.setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.03f)), glm::vec3(0.0f, 200.0f, 0.0f)));
 
         Model backpack(L"assets/models/backpack/backpack.obj", &globalShader, true); 
 
@@ -76,13 +68,13 @@ public:
         glm::vec3 lightPos(3.0f, 0.0f, 4.0f); 
         glm::vec3 color(1.0f, 1.0f, 1.0f); 
 
-        pointLights.addLight(0, lightPos, color, 1.0f, &lightSourceShader); 
+        pointLights.addLight(0, lightPos, color, 1.0f); 
 
         color = glm::vec3(1.0f, 0.1f, 0.1f); 
-        pointLights.addLight(1, lightPos, color, 1.0f, &lightSourceShader); 
+        pointLights.addLight(1, lightPos, color, 1.0f); 
 
         color = glm::vec3(0.1f, 1.0f, 0.0f); 
-        pointLights.addLight(2, lightPos, color, 1.0f, &lightSourceShader); 
+        pointLights.addLight(2, lightPos, color, 1.0f); 
 
 
         //SPOTLIGHT SETUP
@@ -108,23 +100,19 @@ public:
             //CAMERA UPDATES
             camHandler.handleEvents(m_Window, deltaTime);
             camera.updateUniforms("u_View", "u_Projection", "u_ViewPos", globalShader);
-            camera.updateUniforms("u_View", "u_Projection", lightSourceShader);
+
+            //Move and update the lights 
+            pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));
+            pointLights.setLightPosition(1, glm::vec3(3.0f, test2, -8.0f));
+            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
+
+            flashLight.update();
 
             //Render backpack
             backpack.draw();
             agera.draw();
             cottage.draw();
             aya.draw();
-            ironman.draw();
-
-            //Move the lights 
-            pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));
-
-            pointLights.setLightPosition(1, glm::vec3(3.0f, test2, -8.0f));
-
-            pointLights.setLightPosition(2, glm::vec3(3.0f, -2.0f, test));
-
-            flashLight.update();
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

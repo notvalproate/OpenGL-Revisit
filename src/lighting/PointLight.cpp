@@ -2,16 +2,9 @@
 #include <iostream> 
 #include <glm/gtc/matrix_transform.hpp>
 
-PointLight::PointLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness, Shader* shader, Shader* modelShader) 
-    : m_Index("u_PointLight[" + std::to_string(index) + "]."), m_Model(glm::mat4(1.0f))
+PointLight::PointLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness, Shader* shader) 
+    : m_Index("u_PointLight[" + std::to_string(index) + "].")
 {
-    m_Model = glm::scale(glm::translate(m_Model, position), glm::vec3(0.2f)); 
-    m_ModelShader = modelShader;
-    m_ModelShader->setUniformMat4f("u_Model", m_Model);
-
-    m_ModelColor = color;
-    m_ModelShader->setUniform3fv("u_Color", m_ModelColor);
-
     shader->setUniform3fv(m_Index + "Position", position);
     shader->setUniform3fv(m_Index + "Ambient", 0.2f * color);
     shader->setUniform3fv(m_Index + "Diffuse", color);
@@ -34,10 +27,6 @@ void PointLight::resetUniforms(Shader* shader) {
 }
 
 void PointLight::setPosition(const glm::vec3& position, Shader* shader) {
-    m_Model = glm::scale(glm::translate(glm::mat4(1.0f), position), glm::vec3(0.2f));
-    m_ModelShader->setUniformMat4f("u_Model", m_Model);
-    m_ModelShader->setUniform3fv("u_Color", m_ModelColor);
-
     shader->setUniform3fv(m_Index + "Position", position);
 }
 
@@ -49,7 +38,7 @@ PointLightList& PointLightList::getList() {
 
 PointLightList::PointLightList() : m_PointLights({}), m_Shader(nullptr) {}
 
-void PointLightList::addLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness, Shader* modelShader) {
+void PointLightList::addLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness) {
     if (index >= 50) {
         std::cout << "PointLight index cannot be more than 50!" << std::endl;
         __debugbreak();
@@ -61,7 +50,7 @@ void PointLightList::addLight(unsigned short index, const glm::vec3& position, c
         return;
     }
 
-    m_PointLights[index] = new PointLight(index, position, color, brightness, m_Shader, modelShader);
+    m_PointLights[index] = new PointLight(index, position, color, brightness, m_Shader);
 }
 
 void PointLightList::removeLight(unsigned short index) {

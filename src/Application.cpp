@@ -19,6 +19,7 @@
 
 #include "modeling/Mesh.hpp"
 #include "modeling/Model.hpp"
+#include "modeling/ModelLoader.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -33,24 +34,23 @@ public:
         //SHADER SETUP
 
         Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
-        VertexLayout globalLayout; 
-        globalLayout.push(VertexAttribute::Position); 
-        globalLayout.push(VertexAttribute::Normal); 
-        globalLayout.push(VertexAttribute::TextureCoordinates);
+        VertexLayout globalLayout({ VertexAttribute::Position, VertexAttribute::Normal, VertexAttribute::TextureCoordinates });
         globalShader.setLayout(globalLayout); 
 
 
         //MODELS
 
-        Model backpack(L"assets/models/backpack/backpack.obj", &globalShader, true); 
+        ModelLoader modelLoader;
+        
+        Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
 
-        Model agera(L"assets/models/agera/agera.obj", &globalShader, true);
+        Model agera = modelLoader.loadModel(L"assets/models/agera/agera.obj", &globalShader, true);
         agera.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, -5.0f, 0.0f)));
 
-        Model cottage(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
+        Model cottage = modelLoader.loadModel(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
         cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
 
-        Model aya(L"assets/models/aya/091_W_Aya_100K.obj", &globalShader, false);
+        Model aya = modelLoader.loadModel(L"assets/models/aya/091_W_Aya_100K.obj", &globalShader, false);
         aya.setModelMatrix(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.007f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(-1550.0f, -160.0f, -800.0f)));
 
         //DIRECTIONAL LIGHT SETUP

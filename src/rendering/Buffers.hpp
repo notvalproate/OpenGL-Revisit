@@ -22,8 +22,6 @@ public:
 
 	void bind() const;
 	void unbind() const;
-
-	[[nodiscard]] unsigned int getID() const { return m_BufferID; }
 private:
 	unsigned int m_BufferID;
 	unsigned int m_BufferType;

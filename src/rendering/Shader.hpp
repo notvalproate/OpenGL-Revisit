@@ -22,7 +22,6 @@ public:
 	void bind() const;
 	void unbind() const;
 
-	[[nodiscard]] unsigned int getID() const { return m_ShaderID; }
 	[[nodiscard]] const VertexLayout& getLayout() const { return m_Layout; }
 	[[nodiscard]] int getUniformLocation(std::string_view UniformName);
 

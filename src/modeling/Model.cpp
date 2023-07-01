@@ -176,7 +176,7 @@ std::shared_ptr<Texture2D> Model::loadMaterialTexture(aiMaterial* meshmaterial, 
 		}
 	}
 
-	std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>(pathString, typeName);
+	std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>(pathString);
 	m_LoadedTextures.push_back(texture);
 
 	return texture;

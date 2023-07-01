@@ -31,7 +31,7 @@ public:
 	}
 
 	[[nodiscard]] std::size_t getStride() const { return m_Stride; }
-	[[nodiscard]] std::vector<VertexAttribute> getLayoutArray() const { return m_Layout; }
+	[[nodiscard]] const std::vector<VertexAttribute>& getLayoutArray() const { return m_Layout; }
 private:
 	std::vector<VertexAttribute> m_Layout{};
 	std::size_t m_Stride{};

@@ -23,12 +23,13 @@ public:
 	void unbind() const;
 
 	[[nodiscard]] unsigned int getID() const { return m_ShaderID; }
-	[[nodiscard]] VertexLayout getLayout() const { return m_Layout; }
+	[[nodiscard]] const VertexLayout& getLayout() const { return m_Layout; }
 	[[nodiscard]] int getUniformLocation(std::string_view UniformName);
 
 	void setUniform1i(std::string_view uniformName, const int value);
 	void setUniform1f(std::string_view uniformName, const float value);
 	void setUniform3fv(std::string_view uniformName, const glm::vec3 value);
+	void setUniformMat3f(std::string_view uniformName, const glm::mat3& value);
 	void setUniformMat4f(std::string_view uniformName, const glm::mat4& value);
 private:
 	unsigned int m_ShaderID;

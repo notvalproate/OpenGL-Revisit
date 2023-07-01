@@ -12,7 +12,7 @@ class Texture2D {
 public:
 	Texture2D(std::string_view path, TextureType type, unsigned int scaleMode = GL_LINEAR, unsigned int wrapMode = GL_REPEAT);
 
-	void bind(unsigned int Slot = 0) const;
+	void bind(unsigned int slot = 0) const;
 	void unbind() const;
 
 	[[nodiscard]] unsigned int getID() const { return m_TextureID; }

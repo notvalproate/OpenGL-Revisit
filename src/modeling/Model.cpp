@@ -2,20 +2,32 @@
 #include <iostream>
 
 Model::Model(const std::filesystem::path modelPath, Shader* shader, bool flipUVs) 
-	: m_Shader(shader), m_ModelMatrix(glm::mat4(1.0f)) {
+	: m_Shader(shader), m_ModelMatrix(glm::mat4(1.0f)), m_NormalMatrix(glm::transpose(glm::inverse(m_ModelMatrix))) {
 	loadModel(modelPath, flipUVs);
 }
 
-Model::~Model() {
-	for (auto texture : m_LoadedTextures) {
-		delete texture;
+Model::Model(Model&& other) noexcept {
+	*this = std::move(other);
+}
+
+Model& Model::operator=(Model&& other) noexcept {
+	if (this == &other) {
+		return *this;
 	}
-	for (auto material : m_LoadedMaterials) {
-		delete material;
-	}
+
+	m_Meshes = std::move(other.m_Meshes);
+	m_LoadedMaterials = std::move(other.m_LoadedMaterials);
+	m_LoadedTextures = std::move(other.m_LoadedTextures);
+
+	m_ModelMatrix = std::move(other.m_ModelMatrix);
+	m_NormalMatrix = std::move(other.m_NormalMatrix);
+
+	m_Directory = std::move(other.m_Directory);
+	m_Shader = other.m_Shader;
 }
 
 void Model::draw() const {
+	m_Shader->setUniformMat3f("u_NormalMatrix", m_NormalMatrix);
 	m_Shader->setUniformMat4f("u_Model", m_ModelMatrix);
 
 	for (const auto& mesh : m_Meshes) {
@@ -25,6 +37,7 @@ void Model::draw() const {
 
 void Model::setModelMatrix(const glm::mat4& model) {
 	m_ModelMatrix = model;
+	m_NormalMatrix = glm::transpose(glm::inverse(m_ModelMatrix));
 }
 
 void Model::loadModel(const std::filesystem::path modelPath, bool flipUVs) {
@@ -48,7 +61,13 @@ void Model::loadModel(const std::filesystem::path modelPath, bool flipUVs) {
 void Model::processNode(aiNode* node, const aiScene* scene) {
 	for (std::size_t i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		m_Meshes.push_back(processMesh(mesh, scene));
+
+		try {
+			m_Meshes.push_back(processMesh(mesh, scene));
+		}
+		catch (const std::bad_alloc& e) {
+			std::cerr << "Allocation for Mesh failed! Exception thrown: " << e.what() << std::endl;
+		}
 	}
 
 	for (std::size_t i = 0; i < node->mNumChildren; i++) { 
@@ -59,9 +78,9 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
-	Material* material = new Material();
+	std::shared_ptr<Material> material;
 
-	VertexLayout layout = m_Shader->getLayout();
+	const VertexLayout& layout = m_Shader->getLayout();
 
 	for (std::size_t i = 0; i < mesh->mNumVertices; i++) {
 		processVertex(i, mesh, vertices, layout);
@@ -75,15 +94,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		}
 	}
 	
-	if (mesh->mMaterialIndex >= 0) {
-		delete material; 
-		material = processMaterial(mesh, scene);
-	}
+	material = processMaterial(mesh, scene);
 
 	return Mesh(vertices, indices, material, m_Shader);
 }
 
-void Model::processVertex(int index, aiMesh* mesh, std::vector<float>& vertices, VertexLayout& layout) const {
+void Model::processVertex(int index, aiMesh* mesh, std::vector<float>& vertices, const VertexLayout& layout) const {
 	for (const auto& attribute : layout.getLayoutArray()) {
 		if (attribute == VertexAttribute::Position) {
 			vertices.insert(vertices.end(), { mesh->mVertices[index].x,  mesh->mVertices[index].y, mesh->mVertices[index].z });
@@ -107,10 +123,21 @@ void Model::processVertex(int index, aiMesh* mesh, std::vector<float>& vertices,
 	}
 }
 
-Material* Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
+std::shared_ptr<Material> Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
+	if (mesh->mMaterialIndex < 0) {
+		for (const std::shared_ptr<Material>& loadedmaterial : m_LoadedMaterials) {
+			if (loadedmaterial->getName() == "DEFAULT_MATERIAL") {
+				return loadedmaterial;
+			}
+		}
+		std::shared_ptr<Material> material = std::make_shared<Material>();
+		m_LoadedMaterials.push_back(material);
+		return material;
+	}
+
 	aiMaterial* meshmaterial = scene->mMaterials[mesh->mMaterialIndex];
 
-	for (const auto loadedmaterial : m_LoadedMaterials) {
+	for (const std::shared_ptr<Material>& loadedmaterial : m_LoadedMaterials) {
 		if (loadedmaterial->getName() == meshmaterial->GetName().C_Str()) {
 			return loadedmaterial;
 		}
@@ -124,11 +151,12 @@ Material* Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
 	meshmaterial->Get(AI_MATKEY_OPACITY, dissolve);
 	meshmaterial->Get(AI_MATKEY_SHININESS, shininess);
 
-	Texture2D* diffuseMap = loadMaterialTexture(meshmaterial, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
-	Texture2D* specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
-	Texture2D* normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
+	std::shared_ptr<Texture2D> diffuseMap = loadMaterialTexture(meshmaterial, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
+	std::shared_ptr<Texture2D> specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
+	std::shared_ptr<Texture2D> normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
 
-	Material* material = new Material(meshmaterial->GetName().C_Str(), ambientColor, diffuseColor, specularColor, dissolve);
+	std::shared_ptr<Material> material = std::make_shared<Material>(meshmaterial->GetName().C_Str(), ambientColor, diffuseColor, specularColor, dissolve);
+
 	material->setDiffuseMap(diffuseMap);
 	material->setSpecularMap(specularMap, shininess);
 	material->setNormalMap(normalMap);
@@ -138,7 +166,7 @@ Material* Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
 	return material;
 }
 
-Texture2D* Model::loadMaterialTexture(aiMaterial* meshmaterial, aiTextureType type, TextureType typeName) {
+std::shared_ptr<Texture2D> Model::loadMaterialTexture(aiMaterial* meshmaterial, aiTextureType type, TextureType typeName) {
 	if (meshmaterial->GetTextureCount(type) == 0) {
 		return nullptr;
 	}
@@ -147,13 +175,13 @@ Texture2D* Model::loadMaterialTexture(aiMaterial* meshmaterial, aiTextureType ty
 	meshmaterial->GetTexture(type, 0, &path);
 	std::string pathString(m_Directory.string() + "/" + path.C_Str());
 
-	for (std::size_t j = 0; j < m_LoadedTextures.size(); j++) { 
-		if (m_LoadedTextures[j]->getPath().compare(pathString) == 0) { 
-			return m_LoadedTextures[j];
+	for (const std::shared_ptr<Texture2D>& loadedTexture : m_LoadedTextures) {
+		if (loadedTexture->getPath().compare(pathString) == 0) { 
+			return loadedTexture;
 		}
 	}
 
-	Texture2D* texture = new Texture2D(pathString, typeName);
+	std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>(pathString, typeName);
 	m_LoadedTextures.push_back(texture);
 
 	return texture;

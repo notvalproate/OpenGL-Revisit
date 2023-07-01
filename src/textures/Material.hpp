@@ -14,12 +14,11 @@ public:
 	void bind(Shader* shader) const;
 	void unbind(Shader* shader) const;
 
-	void setDiffuseMap(Texture2D* map);
-	void setSpecularMap(Texture2D* map, float shininess);
-	void setNormalMap(Texture2D* map);
+	void setDiffuseMap(std::shared_ptr<Texture2D> map);
+	void setSpecularMap(std::shared_ptr<Texture2D> map, float shininess);
+	void setNormalMap(std::shared_ptr<Texture2D> map);
 
-	Texture2D* getdiffusemap() const { return m_DiffuseMap; }
-	[[nodiscard]] std::string getName() const { return m_Name; }
+	[[nodiscard]] std::string_view getName() const { return m_Name; }
 private:
 	std::string m_Name;
 
@@ -29,7 +28,7 @@ private:
 	float m_Dissolve;
 	float m_Shininess;
 
-	Texture2D* m_DiffuseMap;
-	Texture2D* m_SpecularMap;
-	Texture2D* m_NormalMap;
+	std::shared_ptr<Texture2D> m_DiffuseMap;
+	std::shared_ptr<Texture2D> m_SpecularMap;
+	std::shared_ptr<Texture2D> m_NormalMap;
 };

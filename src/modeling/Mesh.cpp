@@ -1,7 +1,7 @@
 #include "Mesh.hpp"
 #include <iostream>
 
-Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, Material* material, Shader* shader)
+Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::shared_ptr<Material> material, Shader* shader)
 	: m_Shader(shader), m_Material(material) {
 
 	VertexBuffer vbo(vertices);

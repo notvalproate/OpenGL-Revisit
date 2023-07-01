@@ -6,7 +6,8 @@ Material::Material() :
 	m_Ambient(1.0f, 1.0f, 1.0f), 
 	m_Diffuse(0.8f, 0.8f, 0.8f), 
 	m_Specular(0.5f, 0.5f, 0.5f), 
-	m_Dissolve(1.0f), 
+	m_Dissolve(1.0f),
+	m_Shininess(32.0f),
 	m_DiffuseMap(nullptr), m_SpecularMap(nullptr), m_NormalMap(nullptr) { }
 
 Material::Material(const std::string& name, const aiColor3D& ambient, const aiColor3D& diffuse, const aiColor3D& specular, float dissolve) : 
@@ -15,6 +16,7 @@ Material::Material(const std::string& name, const aiColor3D& ambient, const aiCo
 	m_Diffuse(diffuse.r, diffuse.g, diffuse.b),
 	m_Specular(specular.r, specular.g, specular.b),
 	m_Dissolve(dissolve),
+	m_Shininess(32.0f),
 	m_DiffuseMap(nullptr), m_SpecularMap(nullptr), m_NormalMap(nullptr) {}
 
 void Material::bind(Shader* shader) const {
@@ -22,6 +24,7 @@ void Material::bind(Shader* shader) const {
 	shader->setUniform3fv("u_Material.diffuse", m_Diffuse);
 	shader->setUniform3fv("u_Material.specular", m_Specular);
 	shader->setUniform1f("u_Material.dissolve", m_Dissolve);
+	shader->setUniform1f("u_Material.shininess", m_Shininess);
 
 	if (m_DiffuseMap) {
 		shader->setUniform1i("u_Material.diffuseMap", 0);
@@ -50,8 +53,9 @@ void Material::setDiffuseMap(Texture2D* map) {
 	m_DiffuseMap = map; 
 }
 
-void Material::setSpecularMap(Texture2D* map) {
+void Material::setSpecularMap(Texture2D* map, float shininess) {
 	m_SpecularMap = map; 
+	m_Shininess = shininess;
 }
 
 void Material::setNormalMap(Texture2D* map) {

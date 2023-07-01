@@ -117,11 +117,12 @@ Material* Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
 	}
 	
 	aiColor3D ambientColor, diffuseColor, specularColor;
-	float dissolve;
+	float dissolve, shininess;
 	meshmaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
 	meshmaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
 	meshmaterial->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
 	meshmaterial->Get(AI_MATKEY_OPACITY, dissolve);
+	meshmaterial->Get(AI_MATKEY_SHININESS, shininess);
 
 	Texture2D* diffuseMap = loadMaterialTexture(meshmaterial, aiTextureType_DIFFUSE, TextureType::DIFFUSE);
 	Texture2D* specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
@@ -129,7 +130,7 @@ Material* Model::processMaterial(aiMesh* mesh, const aiScene* scene) {
 
 	Material* material = new Material(meshmaterial->GetName().C_Str(), ambientColor, diffuseColor, specularColor, dissolve);
 	material->setDiffuseMap(diffuseMap);
-	material->setSpecularMap(specularMap);
+	material->setSpecularMap(specularMap, shininess);
 	material->setNormalMap(normalMap);
 
 	m_LoadedMaterials.push_back(material);

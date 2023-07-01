@@ -12,13 +12,14 @@ struct Material {
 	vec3 diffuse;
 	vec3 specular;
 	float dissolve;
+	float shininess;
 
 	sampler2D diffuseMap;
-	int hasDiffuse;
+	bool hasDiffuse;
 	sampler2D specularMap;
-	int hasSpecular;
+	bool hasSpecular;
 	sampler2D normalMap;
-	int hasNormal;
+	bool hasNormal;
 };
 
 struct DirectionalLight {
@@ -81,10 +82,10 @@ void main() {
 	vec4 diffuseMap = vec4(u_Material.diffuse, 1.0f);
 	vec4 specularMap = vec4(u_Material.specular, 1.0f);
 
-	if (u_Material.hasDiffuse == 1) {
+	if (u_Material.hasDiffuse) {
 		diffuseMap *= texture(u_Material.diffuseMap, v_TexCoord);
 	}
-	if (u_Material.hasSpecular == 1) {
+	if (u_Material.hasSpecular) {
 		specularMap *= texture(u_Material.specularMap, v_TexCoord);
 	}
 
@@ -118,7 +119,7 @@ vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specular
 	vec3 viewDir = normalize(u_ViewPos - v_FragPos);
 	vec3 reflectDir = reflect(-lightDir, v_Normal);
 
-	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
+	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), u_Material.shininess);
 
 	return vec4(lightColor, 1.0) * (specStrength * specularMap);
 }

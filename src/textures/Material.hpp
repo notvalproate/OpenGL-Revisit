@@ -15,7 +15,7 @@ public:
 	void unbind(Shader* shader) const;
 
 	void setDiffuseMap(Texture2D* map);
-	void setSpecularMap(Texture2D* map);
+	void setSpecularMap(Texture2D* map, float shininess);
 	void setNormalMap(Texture2D* map);
 
 	Texture2D* getdiffusemap() const { return m_DiffuseMap; }
@@ -27,6 +27,7 @@ private:
 	glm::vec3 m_Diffuse;
 	glm::vec3 m_Specular;
 	float m_Dissolve;
+	float m_Shininess;
 
 	Texture2D* m_DiffuseMap;
 	Texture2D* m_SpecularMap;

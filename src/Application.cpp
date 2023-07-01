@@ -47,6 +47,9 @@ public:
 
         //MODELS
 
+        Model ironman(L"assets/models/IronMan/IronMan.obj", &globalShader, true);
+        ironman.setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.03f)), glm::vec3(0.0f, 200.0f, 0.0f)));
+
         Model backpack(L"assets/models/backpack/backpack.obj", &globalShader, true); 
 
         Model agera(L"assets/models/agera/agera.obj", &globalShader, true);
@@ -55,11 +58,14 @@ public:
         Model cottage(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
         cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
 
+        Model aya(L"assets/models/aya/091_W_Aya_100K.obj", &globalShader, false);
+        aya.setModelMatrix(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.007f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(-1550.0f, -160.0f, -800.0f)));
+
         //DIRECTIONAL LIGHT SETUP
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);
-        directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f), 0.5f);
+        directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f), 1.0f);
 
 
         //POINTLIGHT SETUP
@@ -96,7 +102,7 @@ public:
             float test = 8.0f * glm::sin(glm::radians(k));
             float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
 
-            glClearColor(0.0f, 0.05f, 0.15f, 1.0f);
+            glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             //CAMERA UPDATES
@@ -108,6 +114,8 @@ public:
             backpack.draw();
             agera.draw();
             cottage.draw();
+            aya.draw();
+            ironman.draw();
 
             //Move the lights 
             pointLights.setLightPosition(0, glm::vec3(test2, 0.0f, 4.0f));

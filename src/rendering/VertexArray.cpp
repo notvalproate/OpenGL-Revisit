@@ -13,7 +13,7 @@ VertexArray::VertexArray(const VertexBuffer& VBO, const VertexLayout& layout) {
 	std::size_t typeSize = sizeof(float);
 	std::size_t stride = layout.getStride() * typeSize;
 
-	for (const auto& element : layout.getLayoutArray()) {
+	for (const auto& element : layout) {
 		std::size_t width = VertexLayout::getAttributeWidth(element);
 		GLCall(glVertexAttribPointer(i, width, GL_FLOAT, GL_FALSE, stride, (const void*)offset));
 		GLCall(glEnableVertexAttribArray(i++));

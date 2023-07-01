@@ -30,8 +30,10 @@ public:
 		m_Stride += getAttributeWidth(attribute);
 	}
 
+	std::vector<VertexAttribute>::const_iterator begin() const { return m_Layout.begin(); }
+	std::vector<VertexAttribute>::const_iterator end() const { return m_Layout.end(); }
+
 	[[nodiscard]] std::size_t getStride() const { return m_Stride; }
-	[[nodiscard]] const std::vector<VertexAttribute>& getLayoutArray() const { return m_Layout; }
 private:
 	std::vector<VertexAttribute> m_Layout{};
 	std::size_t m_Stride{};

@@ -100,7 +100,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 }
 
 void Model::processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices, const VertexLayout& layout) const {
-	for (const auto& attribute : layout.getLayoutArray()) {
+	for (const auto& attribute : layout) {
 		if (attribute == VertexAttribute::Position) {
 			vertices.insert(vertices.end(), { mesh->mVertices[index].x,  mesh->mVertices[index].y, mesh->mVertices[index].z });
 		}

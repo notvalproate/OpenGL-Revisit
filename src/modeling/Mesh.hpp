@@ -7,7 +7,6 @@
 #include "../rendering/Shader.hpp"
 
 #include <span>
-#include <array>
 #include <memory>
 
 class Mesh {

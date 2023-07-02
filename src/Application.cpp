@@ -34,7 +34,8 @@ public:
         //SHADER SETUP
 
         Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
-        VertexLayout globalLayout({ VertexAttribute::Position, VertexAttribute::Normal, VertexAttribute::TextureCoordinates });
+        VertexLayout globalLayout(
+            { VertexAttribute::Position, VertexAttribute::Normal, VertexAttribute::TextureCoordinates, VertexAttribute::MaterialIndex });
         globalShader.setLayout(globalLayout); 
 
 

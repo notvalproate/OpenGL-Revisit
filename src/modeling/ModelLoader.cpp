@@ -90,6 +90,9 @@ void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<flo
 				vertices.insert(vertices.end(), { 0.0f, 0.0f });
 			}
 		}
+		else if (attribute == VertexAttribute::MaterialIndex) {
+			vertices.push_back(mesh->mMaterialIndex);
+		}
 	}
 }
 

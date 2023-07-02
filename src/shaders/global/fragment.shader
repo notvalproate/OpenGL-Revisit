@@ -5,6 +5,7 @@ out vec4 color;
 centroid in vec2 v_TexCoord;
 centroid in vec3 v_Normal;
 centroid in vec3 v_FragPos;
+centroid in int v_MaterialIndex;
 
 //STRUCTURES
 struct Material {

@@ -43,6 +43,7 @@ void OpenGLApp::initialize(int width, int height) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
 }
 
 void OpenGLApp::glfwResizeCallback(GLFWwindow* window, int width, int height) {

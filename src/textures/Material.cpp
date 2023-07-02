@@ -1,16 +1,9 @@
 #include "Material.hpp"
 #include <iostream>
 
-Material::Material() : 
-	m_Name("DEFAULT_MATERIAL"), 
-	m_Ambient(1.0f, 1.0f, 1.0f), 
-	m_Diffuse(0.8f, 0.8f, 0.8f), 
-	m_Specular(0.5f, 0.5f, 0.5f), 
-	m_Dissolve(1.0f),
-	m_Shininess(32.0f) { }
-
-Material::Material(const std::string& name, const aiColor3D& ambient, const aiColor3D& diffuse, const aiColor3D& specular, float dissolve) : 
+Material::Material(const std::string& name, std::size_t index, const aiColor3D& ambient, const aiColor3D& diffuse, const aiColor3D& specular, float dissolve) :
 	m_Name(name),
+	m_MaterialIndex("u_Material[" + std::to_string(index) + "]."),
 	m_Ambient(ambient.r, ambient.g, ambient.b),
 	m_Diffuse(diffuse.r, diffuse.g, diffuse.b),
 	m_Specular(specular.r, specular.g, specular.b),

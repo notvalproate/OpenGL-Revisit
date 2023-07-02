@@ -47,7 +47,7 @@ void ModelLoader::processNode(aiNode* node, const aiScene* scene) {
 	}
 }
 
-Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
+std::unique_ptr<Mesh> ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
 	std::shared_ptr<Material> material;
@@ -66,7 +66,7 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 
 	material = processMaterial(mesh, scene);
 
-	return std::move(Mesh(vertices, indices, material, m_Shader));
+	return std::make_unique<Mesh>(vertices, indices, material, m_Shader);
 }
 
 void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices) const {
@@ -97,10 +97,6 @@ void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<flo
 }
 
 std::shared_ptr<Material> ModelLoader::processMaterial(aiMesh* mesh, const aiScene* scene) {
-	if (mesh->mMaterialIndex < 0) {
-		return std::make_shared<Material>();
-	}
-
 	aiMaterial* meshmaterial = scene->mMaterials[mesh->mMaterialIndex];
 
 	for (const std::shared_ptr<Material>& loadedmaterial : m_LoadedMaterials) {
@@ -109,10 +105,10 @@ std::shared_ptr<Material> ModelLoader::processMaterial(aiMesh* mesh, const aiSce
 		}
 	}
 
-	return loadNewMaterial(meshmaterial);
+	return loadNewMaterial(meshmaterial, mesh->mMaterialIndex);
 }
 
-std::shared_ptr<Material> ModelLoader::loadNewMaterial(aiMaterial* meshmaterial) {
+std::shared_ptr<Material> ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t materialindex) {
 	aiColor3D ambientColor, diffuseColor, specularColor;
 	float dissolve, shininess;
 	meshmaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
@@ -125,7 +121,7 @@ std::shared_ptr<Material> ModelLoader::loadNewMaterial(aiMaterial* meshmaterial)
 	std::shared_ptr<Texture2D> specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
 	std::shared_ptr<Texture2D> normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
 
-	std::shared_ptr<Material> material = std::make_shared<Material>(meshmaterial->GetName().C_Str(), ambientColor, diffuseColor, specularColor, dissolve);
+	std::shared_ptr<Material> material = std::make_shared<Material>(meshmaterial->GetName().C_Str(), materialindex, ambientColor, diffuseColor, specularColor, dissolve);
 	material->setDiffuseMap(diffuseMap);
 	material->setSpecularMap(specularMap, shininess);
 	material->setNormalMap(normalMap);

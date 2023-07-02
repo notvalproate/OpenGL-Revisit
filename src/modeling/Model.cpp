@@ -1,7 +1,7 @@
 #include "Model.hpp"
 #include <iostream>
 
-Model::Model(std::vector<Mesh>& meshes, Shader* shader) : 
+Model::Model(std::vector<std::unique_ptr<Mesh>>& meshes, Shader* shader) :
 	m_Meshes(std::move(meshes)),
 	m_Shader(shader),
 	m_ModelMatrix(glm::mat4(1.0f)),
@@ -23,11 +23,12 @@ Model& Model::operator=(Model&& other) noexcept {
 }
 
 void Model::draw() const {
+	m_Shader->bind();
 	m_Shader->setUniformMat3f("u_NormalMatrix", m_NormalMatrix);
 	m_Shader->setUniformMat4f("u_Model", m_ModelMatrix);
 
 	for (const auto& mesh : m_Meshes) {
-		mesh.draw();
+		mesh.get()->draw();
 	}
 }
 

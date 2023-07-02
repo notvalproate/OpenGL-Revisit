@@ -8,8 +8,7 @@
 
 class Material {
 public:
-	Material();
-	Material(const std::string& name, const aiColor3D& ambient, const aiColor3D& diffuse, const aiColor3D& specular, float dissolve);
+	Material(const std::string& name, std::size_t index, const aiColor3D& ambient, const aiColor3D& diffuse, const aiColor3D& specular, float dissolve);
 
 	void bind(Shader* shader) const;
 	void unbind(Shader* shader) const;
@@ -21,6 +20,7 @@ public:
 	[[nodiscard]] std::string_view getName() const { return m_Name; }
 private:
 	std::string m_Name;
+	std::string m_MaterialIndex;
 
 	glm::vec3 m_Ambient;
 	glm::vec3 m_Diffuse;

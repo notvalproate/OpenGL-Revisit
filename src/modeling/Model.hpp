@@ -7,7 +7,7 @@
 
 class Model {
 public:
-	Model(std::vector<Mesh>& meshes, Shader* shader);
+	Model(std::vector<std::unique_ptr<Mesh>>& meshes, Shader* shader);
 	~Model() = default;
 
 	Model(const Model& other) = delete;
@@ -19,7 +19,7 @@ public:
 	void draw() const;
 	void setModelMatrix(const glm::mat4& model);
 private:
-	std::vector<Mesh> m_Meshes;
+	std::vector<std::unique_ptr<Mesh>> m_Meshes;
 	glm::mat4 m_ModelMatrix;
 	glm::mat3 m_NormalMatrix;
 	Shader* m_Shader;

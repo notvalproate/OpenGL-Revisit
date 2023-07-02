@@ -36,7 +36,6 @@ void Mesh::draw() const {
 	m_Material->bind(m_Shader);
 	m_VAO->bind();
 	m_IBO->bind();
-	m_Shader->bind();
 	GLCall(glDrawElements(GL_TRIANGLES, m_IBO->getCount(), GL_UNSIGNED_INT, nullptr));
 	m_Material->unbind(m_Shader);
 }

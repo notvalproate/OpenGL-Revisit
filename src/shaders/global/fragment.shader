@@ -5,7 +5,7 @@ out vec4 color;
 centroid in vec2 v_TexCoord;
 centroid in vec3 v_Normal;
 centroid in vec3 v_FragPos;
-centroid in int v_MaterialIndex;
+centroid in float v_MaterialIndex;
 
 //STRUCTURES
 struct Material {
@@ -62,7 +62,7 @@ struct SpotLight {
 };
 
 //UNIFORMS
-uniform Material u_Material;
+uniform Material u_Material[16];
 
 uniform DirectionalLight u_DirectionalLight;
 uniform PointLight u_PointLight[50];
@@ -80,14 +80,15 @@ vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec
 vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 specularMap);
 
 void main() {
-	vec4 diffuseMap = vec4(u_Material.diffuse, 1.0f);
-	vec4 specularMap = vec4(u_Material.specular, 1.0f);
+	int index = int(v_MaterialIndex);
+	vec4 diffuseMap = vec4(u_Material[index].diffuse, 1.0f);
+	vec4 specularMap = vec4(u_Material[index].specular, 1.0f);
 
-	if (u_Material.hasDiffuse) {
-		diffuseMap *= texture(u_Material.diffuseMap, v_TexCoord);
+	if (u_Material[index].hasDiffuse) {
+		diffuseMap *= texture(u_Material[index].diffuseMap, v_TexCoord);
 	}
-	if (u_Material.hasSpecular) {
-		specularMap *= texture(u_Material.specularMap, v_TexCoord);
+	if (u_Material[index].hasSpecular) {
+		specularMap *= texture(u_Material[index].specularMap, v_TexCoord);
 	}
 
 	color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -102,12 +103,12 @@ void main() {
 
 	color += getSpotLight(u_SpotLight, diffuseMap, specularMap);
 
-	color = vec4(color.rgb, u_Material.dissolve);
+	color = vec4(color.rgb, u_Material[index].dissolve);
 }
 
 //GET AMBIENCE DIFFUSION AND SPECULAR VECTORS
 vec4 getAmbience(const vec3 lightColor, const vec4 diffuseMap) {
-	return vec4(lightColor, 1.0) * diffuseMap;
+	return vec4(u_Material[int(v_MaterialIndex)].ambient, 1.0f) * vec4(lightColor, 1.0) * diffuseMap;
 }
 
 vec4 getDiffusion(const vec3 lightColor, const vec3 lightDir, const vec4 diffuseMap) {
@@ -120,7 +121,7 @@ vec4 getSpecular(const vec3 lightColor, const vec3 lightDir, const vec4 specular
 	vec3 viewDir = normalize(u_ViewPos - v_FragPos);
 	vec3 reflectDir = reflect(-lightDir, v_Normal);
 
-	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), u_Material.shininess);
+	float specStrength = pow(max(dot(viewDir, reflectDir), 0.0), u_Material[int(v_MaterialIndex)].shininess);
 
 	return vec4(lightColor, 1.0) * (specStrength * specularMap);
 }

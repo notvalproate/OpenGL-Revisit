@@ -10,7 +10,7 @@ class Material {
 public:
 	Material(const std::string& name, std::size_t index, const aiColor3D& ambient, const aiColor3D& diffuse, const aiColor3D& specular, float dissolve);
 
-	void bind(Shader* shader) const;
+	void bind(Shader* shader, std::size_t& textureCount) const;
 	void unbind(Shader* shader) const;
 
 	void setDiffuseMap(std::shared_ptr<Texture2D> map);
@@ -18,6 +18,7 @@ public:
 	void setNormalMap(std::shared_ptr<Texture2D> map);
 
 	[[nodiscard]] std::string_view getName() const { return m_Name; }
+	[[nodiscard]] std::string_view getIndex() const { return m_MaterialIndex; }
 private:
 	std::string m_Name;
 	std::string m_MaterialIndex;

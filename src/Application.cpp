@@ -43,6 +43,8 @@ public:
 
         ModelLoader modelLoader;
         
+        Model madhav = modelLoader.loadModel(L"assets/models/bike/Mountain_Bike.obj", &globalShader, false);
+
         Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
 
         Model agera = modelLoader.loadModel(L"assets/models/agera/agera.obj", &globalShader, true);
@@ -110,6 +112,7 @@ public:
             flashLight.update();
 
             //Render backpack
+            madhav.draw();
             backpack.draw();
             agera.draw();
             cottage.draw();

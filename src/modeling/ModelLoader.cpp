@@ -19,7 +19,7 @@ Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shad
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-		return std::move(Model(m_Meshes, shader));
+		return std::move(Model(m_Meshes, m_LoadedMaterials, shader));
 	}
 
 	m_Directory = modelPath.string().substr(0, modelPath.string().find_last_of('/'));
@@ -27,7 +27,7 @@ Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shad
 
 	processNode(scene->mRootNode, scene);
 
-	return std::move(Model(m_Meshes, shader));
+	return std::move(Model(m_Meshes, m_LoadedMaterials, shader));
 }
 
 void ModelLoader::processNode(aiNode* node, const aiScene* scene) {
@@ -64,9 +64,9 @@ std::unique_ptr<Mesh> ModelLoader::processMesh(aiMesh* mesh, const aiScene* scen
 		}
 	}
 
-	material = processMaterial(mesh, scene);
+	processMaterial(mesh, scene);
 
-	return std::make_unique<Mesh>(vertices, indices, material, m_Shader);
+	return std::make_unique<Mesh>(vertices, indices, m_Shader);
 }
 
 void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices) const {
@@ -91,24 +91,24 @@ void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<flo
 			}
 		}
 		else if (attribute == VertexAttribute::MaterialIndex) {
-			vertices.push_back(mesh->mMaterialIndex);
+			vertices.push_back(mesh->mMaterialIndex - 0.9f);
 		}
 	}
 }
 
-std::shared_ptr<Material> ModelLoader::processMaterial(aiMesh* mesh, const aiScene* scene) {
+void ModelLoader::processMaterial(aiMesh* mesh, const aiScene* scene) {
 	aiMaterial* meshmaterial = scene->mMaterials[mesh->mMaterialIndex];
 
-	for (const std::shared_ptr<Material>& loadedmaterial : m_LoadedMaterials) {
-		if (loadedmaterial->getName() == meshmaterial->GetName().C_Str()) {
-			return loadedmaterial;
+	for (const auto& loadedmaterial : m_LoadedMaterials) {
+		if (loadedmaterial.get()->getName() == meshmaterial->GetName().C_Str()) {
+			return;
 		}
 	}
 
-	return loadNewMaterial(meshmaterial, mesh->mMaterialIndex);
+	loadNewMaterial(meshmaterial, mesh->mMaterialIndex - 1);
 }
 
-std::shared_ptr<Material> ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t materialindex) {
+void ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t materialindex) {
 	aiColor3D ambientColor, diffuseColor, specularColor;
 	float dissolve, shininess;
 	meshmaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
@@ -121,13 +121,12 @@ std::shared_ptr<Material> ModelLoader::loadNewMaterial(aiMaterial* meshmaterial,
 	std::shared_ptr<Texture2D> specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
 	std::shared_ptr<Texture2D> normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
 
-	std::shared_ptr<Material> material = std::make_shared<Material>(meshmaterial->GetName().C_Str(), materialindex, ambientColor, diffuseColor, specularColor, dissolve);
+	std::unique_ptr<Material> material = std::make_unique<Material>(meshmaterial->GetName().C_Str(), materialindex, ambientColor, diffuseColor, specularColor, dissolve);
 	material->setDiffuseMap(diffuseMap);
 	material->setSpecularMap(specularMap, shininess);
 	material->setNormalMap(normalMap);
 
-	m_LoadedMaterials.push_back(material);
-	return material;
+	m_LoadedMaterials.push_back(std::move(material));
 }
 
 std::shared_ptr<Texture2D> ModelLoader::loadMaterialTexture(aiMaterial* meshmaterial, aiTextureType type, TextureType typeName) {

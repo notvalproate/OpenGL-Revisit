@@ -1,13 +1,11 @@
 #include "Mesh.hpp"
 #include <iostream>
 
-Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::shared_ptr<Material> material, Shader* shader)
-	: m_Shader(shader), m_Material(material) {
-
+Mesh::Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, Shader* shader) {
 	VertexBuffer vbo(vertices);
 
 	try {
-		m_VAO = std::make_unique<VertexArray>(vbo, m_Shader->getLayout());
+		m_VAO = std::make_unique<VertexArray>(vbo, shader->getLayout());
 		m_IBO = std::make_unique<IndexBuffer>(indices);
 	}
 	catch (const std::bad_alloc& e) {
@@ -26,16 +24,12 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 
 	m_VAO = std::move(other.m_VAO);
 	m_IBO = std::move(other.m_IBO);
-	m_Shader = other.m_Shader;
-	m_Material = other.m_Material;
 
 	return *this;
 }
 
 void Mesh::draw() const {
-	m_Material->bind(m_Shader);
 	m_VAO->bind();
 	m_IBO->bind();
 	GLCall(glDrawElements(GL_TRIANGLES, m_IBO->getCount(), GL_UNSIGNED_INT, nullptr));
-	m_Material->unbind(m_Shader);
 }

@@ -11,7 +11,7 @@
 
 class Mesh {
 public:
-	Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, std::shared_ptr<Material> material, Shader* shader);
+	Mesh(const std::span<float>& vertices, const std::span<unsigned int>& indices, Shader* shader);
 	~Mesh() = default;
 
 	Mesh(const Mesh& other) = delete;
@@ -24,6 +24,4 @@ public:
 private:
 	std::unique_ptr<VertexArray> m_VAO;
 	std::unique_ptr<IndexBuffer> m_IBO;
-	std::shared_ptr<Material> m_Material;
-	Shader* m_Shader;
 };

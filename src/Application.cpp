@@ -4,21 +4,13 @@
 #include "util/Timer.hpp"
 
 #include "rendering/Shader.hpp"
-#include "rendering/Buffers.hpp"
-#include "rendering/VertexArray.hpp"
-#include "rendering/VertexLayout.hpp"
 
-#include "textures/Texture2D.hpp"
-
-#include "scene/Camera.hpp"
 #include "scene/CameraHandler.hpp"
 
 #include "lighting/PointLight.hpp"
 #include "lighting/DirectionalLight.hpp"
 #include "lighting/FlashLight.hpp"
 
-#include "modeling/Mesh.hpp"
-#include "modeling/Model.hpp"
 #include "modeling/ModelLoader.hpp"
 
 #include <glm/glm.hpp>

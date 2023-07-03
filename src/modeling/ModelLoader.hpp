@@ -18,7 +18,7 @@ public:
 	Model loadModel(const std::filesystem::path modelPath, Shader* shader, bool flipUVs);
 private:
 	std::vector<std::unique_ptr<Mesh>> m_Meshes{};
-	std::vector<std::unique_ptr<Material>> m_LoadedMaterials{};
+	std::vector<Material> m_LoadedMaterials{};
 	std::vector<std::shared_ptr<Texture2D>> m_LoadedTextures{};
 
 	std::filesystem::path m_Directory;

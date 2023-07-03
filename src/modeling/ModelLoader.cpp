@@ -50,7 +50,6 @@ void ModelLoader::processNode(aiNode* node, const aiScene* scene) {
 std::unique_ptr<Mesh> ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
-	std::shared_ptr<Material> material;
 
 	for (std::size_t i = 0; i < mesh->mNumVertices; i++) {
 		processVertex(i, mesh, vertices);
@@ -100,7 +99,7 @@ void ModelLoader::processMaterial(aiMesh* mesh, const aiScene* scene) {
 	aiMaterial* meshmaterial = scene->mMaterials[mesh->mMaterialIndex];
 
 	for (const auto& loadedmaterial : m_LoadedMaterials) {
-		if (loadedmaterial.get()->getName() == meshmaterial->GetName().C_Str()) {
+		if (loadedmaterial.getName() == meshmaterial->GetName().C_Str()) {
 			return;
 		}
 	}
@@ -121,10 +120,10 @@ void ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t material
 	std::shared_ptr<Texture2D> specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
 	std::shared_ptr<Texture2D> normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
 
-	std::unique_ptr<Material> material = std::make_unique<Material>(meshmaterial->GetName().C_Str(), materialindex, ambientColor, diffuseColor, specularColor, dissolve);
-	material->setDiffuseMap(diffuseMap);
-	material->setSpecularMap(specularMap, shininess);
-	material->setNormalMap(normalMap);
+	Material material(meshmaterial->GetName().C_Str(), materialindex, ambientColor, diffuseColor, specularColor, dissolve);
+	material.setDiffuseMap(diffuseMap);
+	material.setSpecularMap(specularMap, shininess);
+	material.setNormalMap(normalMap);
 
 	m_LoadedMaterials.push_back(std::move(material));
 }

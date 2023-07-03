@@ -1,7 +1,7 @@
 #include "Model.hpp"
 #include <iostream>
 
-Model::Model(std::vector<std::unique_ptr<Mesh>>& meshes, std::vector<std::unique_ptr<Material>>& materials, Shader* shader) :
+Model::Model(std::vector<std::unique_ptr<Mesh>>& meshes, std::vector<Material>& materials, Shader* shader) :
 	m_Meshes(std::move(meshes)),
 	m_Materials(std::move(materials)),
 	m_Shader(shader),
@@ -32,7 +32,7 @@ void Model::draw() const {
 	std::size_t textureCount = 0;
 
 	for (const auto& material : m_Materials) {
-		material.get()->bind(m_Shader, textureCount);
+		material.bind(m_Shader, textureCount);
 	}
 
 	for (const auto& mesh : m_Meshes) {

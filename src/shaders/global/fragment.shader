@@ -62,7 +62,7 @@ struct SpotLight {
 };
 
 //UNIFORMS
-uniform Material u_Material[16];
+uniform Material u_Material[8];
 
 uniform DirectionalLight u_DirectionalLight;
 uniform PointLight u_PointLight[50];

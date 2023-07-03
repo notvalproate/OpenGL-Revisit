@@ -2,8 +2,8 @@
 #include "Mesh.hpp"
 
 void ModelLoader::cleanLoader() {
-	m_Meshes.clear();
-	m_LoadedTextures.clear(); 
+	m_Batcher.clean();
+	m_LoadedTextures.clear();
 	m_LoadedMaterials.clear();
 }
 
@@ -19,7 +19,7 @@ Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shad
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-		return std::move(Model(m_Meshes, m_LoadedMaterials, shader));
+		return std::move(Model(m_Batcher, shader));
 	}
 
 	m_Directory = modelPath.string().substr(0, modelPath.string().find_last_of('/'));
@@ -27,19 +27,17 @@ Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shad
 
 	processNode(scene->mRootNode, scene);
 
-	return std::move(Model(m_Meshes, m_LoadedMaterials, shader));
+	m_Batcher.finalize(m_LoadedMaterials, m_Shader);
+
+	return std::move(Model(m_Batcher, m_Shader));
 }
 
 void ModelLoader::processNode(aiNode* node, const aiScene* scene) {
 	for (std::size_t i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-		try {
-			m_Meshes.push_back(processMesh(mesh, scene));
-		}
-		catch (const std::bad_alloc& e) {
-			std::cerr << "Allocation for Mesh failed! Exception thrown: " << e.what() << std::endl;
-		}
+		Mesh myMesh = std::move(processMesh(mesh, scene));
+		m_Batcher.add(mesh->mMaterialIndex, myMesh);
 	}
 
 	for (std::size_t i = 0; i < node->mNumChildren; i++) {
@@ -47,7 +45,7 @@ void ModelLoader::processNode(aiNode* node, const aiScene* scene) {
 	}
 }
 
-std::unique_ptr<Mesh> ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
+Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
 
@@ -65,7 +63,7 @@ std::unique_ptr<Mesh> ModelLoader::processMesh(aiMesh* mesh, const aiScene* scen
 
 	processMaterial(mesh, scene);
 
-	return std::make_unique<Mesh>(vertices, indices, m_Shader);
+	return Mesh(vertices, indices);
 }
 
 void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices) const {

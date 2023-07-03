@@ -2,6 +2,7 @@
 #include "Batch.hpp"
 
 #include "../rendering/Shader.hpp"
+#include "../modeling/Mesh.hpp"
 
 #include <vector>
 
@@ -9,10 +10,19 @@ class BatchManager {
 public:
 	BatchManager() = default;
 
-	void add(std::size_t index, std::vector<float>& vertices, std::vector<unsigned int>& indices);
-	void finalize(std::vector<std::unique_ptr<Material>>& m_Materials);
+	BatchManager(const BatchManager& other) = delete;
+	BatchManager& operator=(const BatchManager& other) = delete;
 
-	void draw(Shader* shader);
+	BatchManager(BatchManager&& other) noexcept;
+	BatchManager& operator=(BatchManager&& other) noexcept;
+
+	void add(std::size_t materialIndex, Mesh& mesh);
+	void finalize(std::vector<Material>& materials, Shader* shader);
+	void clean();
+
+	void draw() const;
 private:
 	std::vector<Batch> m_Batches{};
+	std::vector<Material> m_Materials{};
+	Shader* m_Shader;
 };

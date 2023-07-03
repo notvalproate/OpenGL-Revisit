@@ -10,6 +10,7 @@
 #include <assimp/postprocess.h>
 
 #include "Model.hpp"
+#include "../batching/BatchManager.hpp"
 
 class ModelLoader {
 public:
@@ -17,7 +18,8 @@ public:
 
 	Model loadModel(const std::filesystem::path modelPath, Shader* shader, bool flipUVs);
 private:
-	std::vector<std::unique_ptr<Mesh>> m_Meshes{};
+	BatchManager m_Batcher;
+
 	std::vector<Material> m_LoadedMaterials{};
 	std::vector<std::shared_ptr<Texture2D>> m_LoadedTextures{};
 
@@ -26,7 +28,7 @@ private:
 
 	void cleanLoader();
 	void processNode(aiNode* node, const aiScene* scene);
-	std::unique_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene);
+	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 	void processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices) const;
 
 	void processMaterial(aiMesh* mesh, const aiScene* scene);

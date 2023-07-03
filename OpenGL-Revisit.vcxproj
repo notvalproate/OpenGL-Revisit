@@ -153,7 +153,6 @@
     <ClCompile Include="src\lighting\DirectionalLight.cpp" />
     <ClCompile Include="src\lighting\FlashLight.cpp" />
     <ClCompile Include="src\lighting\PointLight.cpp" />
-    <ClCompile Include="src\modeling\Mesh.cpp" />
     <ClCompile Include="src\modeling\Model.cpp" />
     <ClCompile Include="src\modeling\ModelLoader.cpp" />
     <ClCompile Include="src\OpenGLApp.cpp" />

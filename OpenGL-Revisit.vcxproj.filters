@@ -60,9 +60,6 @@
     <ClCompile Include="src\lighting\FlashLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\modeling\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\modeling\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

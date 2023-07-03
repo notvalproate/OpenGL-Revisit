@@ -34,19 +34,19 @@ public:
         //MODELS
 
         ModelLoader modelLoader;
-        
+
+        //Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
+
+        //Model cottage = modelLoader.loadModel(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
+        //cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
+
+        //Model aya = modelLoader.loadModel(L"assets/models/aya/091_W_Aya_100K.obj", &globalShader, false);
+        //aya.setModelMatrix(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.007f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(-1550.0f, -160.0f, -800.0f)));
+
+        //Model agera = modelLoader.loadModel(L"assets/models/agera/agera.obj", &globalShader, true);
+        //agera.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, -5.0f, 0.0f)));
+
         Model madhav = modelLoader.loadModel(L"assets/models/bike/Mountain_Bike.obj", &globalShader, false);
-
-        Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
-
-        Model agera = modelLoader.loadModel(L"assets/models/agera/agera.obj", &globalShader, true);
-        agera.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-12.0f, -5.0f, 0.0f)));
-
-        Model cottage = modelLoader.loadModel(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
-        cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
-
-        Model aya = modelLoader.loadModel(L"assets/models/aya/091_W_Aya_100K.obj", &globalShader, false);
-        aya.setModelMatrix(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.007f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(-1550.0f, -160.0f, -800.0f)));
 
         //DIRECTIONAL LIGHT SETUP
 
@@ -105,10 +105,10 @@ public:
 
             //Render backpack
             madhav.draw();
-            backpack.draw();
-            agera.draw();
-            cottage.draw();
-            aya.draw();
+            //backpack.draw();
+            //agera.draw();
+            //cottage.draw();
+            //aya.draw();
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

@@ -25,4 +25,6 @@ private:
 	std::vector<Batch> m_Batches{};
 	std::vector<Material> m_Materials{};
 	Shader* m_Shader;
+
+	void bindMaterialBatch(std::size_t materialBatch) const;
 };

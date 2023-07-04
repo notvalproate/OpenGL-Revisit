@@ -45,18 +45,19 @@ void BatchManager::clean() {
 
 void BatchManager::draw() const {
 	std::size_t materialBatch = 0;
-	std::size_t textureCount = 0;
 
 	for (const auto& batch : m_Batches) {
-		std::size_t i = 0;
-		while (i + materialBatch < m_Materials.size() && i < 8) { 
-			m_Materials[i + materialBatch].bind(m_Shader, textureCount);
-			i++;
-		}
-
+		bindMaterialBatch(materialBatch++);
 		batch.draw();
-
-		materialBatch += maxMaterialsPerBatch;
-		textureCount = 0;
 	}
+}
+
+void BatchManager::bindMaterialBatch(std::size_t materialBatch) const {
+	std::size_t textureCount = 0;
+	std::size_t i = 0; 
+	std::size_t materialStartingIndex = materialBatch * maxMaterialsPerBatch;
+	while (materialStartingIndex + i < m_Materials.size() && i < 8) {
+		m_Materials[materialStartingIndex + i].bind(m_Shader, textureCount);
+		i++;
+	} 
 }

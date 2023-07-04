@@ -10,33 +10,32 @@ void Batch::finalize(Shader* shader) {
 	std::vector<float> finalVertices;
 	finalVertices.reserve(m_BatchInfo.numOfVertices);
 	std::vector<unsigned int> finalIndices;
-	finalVertices.reserve(m_BatchInfo.numOfIndices);
+	finalIndices.reserve(m_BatchInfo.numOfIndices);
 
-	for (const auto& mesh : m_Meshes) {
-		std::size_t lastIndex = finalVertices.size() / shader->getLayout().getStride();
-
-		std::copy(mesh.m_Vertices.begin(), mesh.m_Vertices.end(), std::back_inserter(finalVertices));
-
-		std::vector<unsigned int> transformedIndices = mesh.m_Indices;
-		std::transform(
-			transformedIndices.begin(),
-			transformedIndices.end(),
-			transformedIndices.begin(),
-			[lastIndex](int value) {
-				return value + lastIndex;
-			}
-		);
-
-		finalIndices.insert(
-			finalIndices.begin(),
-			std::make_move_iterator(transformedIndices.begin()),
-			std::make_move_iterator(transformedIndices.end())
-		);
-	}
+	parseMeshes(finalVertices, finalIndices, shader->getLayout().getStride());
 
 	m_VBO = new VertexBuffer(finalVertices);
 	m_VAO = std::make_unique<VertexArray>(*m_VBO, shader->getLayout());
 	m_IBO = std::make_unique<IndexBuffer>(finalIndices);
+}
+
+void Batch::parseMeshes(std::vector<float>& finalVertices, std::vector<unsigned int>& finalIndices, std::size_t stride) {
+	for (auto& mesh : m_Meshes) {
+		std::size_t lastIndex = finalVertices.size() / stride;
+
+		std::copy(mesh.m_Vertices.begin(), mesh.m_Vertices.end(), std::back_inserter(finalVertices));
+
+		std::transform(
+			mesh.m_Indices.begin(),
+			mesh.m_Indices.end(),
+			mesh.m_Indices.begin(),
+			[&lastIndex](int value) {
+				return value + lastIndex;
+			}
+		);
+
+		std::copy(mesh.m_Indices.begin(), mesh.m_Indices.end(), std::back_inserter(finalIndices));
+	}
 }
 
 void Batch::draw() const {

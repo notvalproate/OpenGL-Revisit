@@ -19,11 +19,13 @@ public:
 
 	void draw() const;
 private:
-	BatchInfo m_BatchInfo{};
-
 	std::vector<Mesh> m_Meshes{};
+
+	BatchInfo m_BatchInfo{};
 
 	VertexBuffer* m_VBO;
 	std::unique_ptr<VertexArray> m_VAO;
 	std::unique_ptr<IndexBuffer> m_IBO;
+
+	void parseMeshes(std::vector<float>& finalVertices, std::vector<unsigned int>& finalIndices, std::size_t stride);
 };

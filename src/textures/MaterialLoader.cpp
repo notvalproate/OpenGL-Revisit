@@ -15,22 +15,24 @@ void MaterialLoader::clean() {
 }
 
 void MaterialLoader::processMaterial(aiMaterial* material, std::size_t materialIndex) {
+	MaterialProperties properties;
 	aiColor3D ambientColor, diffuseColor, specularColor;
-	float dissolve, shininess;
+
 	material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
 	material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
 	material->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
-	material->Get(AI_MATKEY_OPACITY, dissolve);
-	material->Get(AI_MATKEY_SHININESS, shininess);
+	material->Get(AI_MATKEY_OPACITY, properties.dissolve);
+	material->Get(AI_MATKEY_SHININESS, properties.shininess);
 
-	std::shared_ptr<Texture2D> diffuseMap = getTexture(material, aiTextureType_DIFFUSE);
-	std::shared_ptr<Texture2D> specularMap = getTexture(material, aiTextureType_SPECULAR);
-	std::shared_ptr<Texture2D> normalMap = getTexture(material, aiTextureType_NORMALS);
+	properties.ambient = {ambientColor.r, ambientColor.g, ambientColor.b};
+	properties.diffuse = {diffuseColor.r, diffuseColor.g, diffuseColor.b};
+	properties.specular = {specularColor.r, specularColor.g, specularColor.b};
 
-	Material myMaterial(material->GetName().C_Str(), (materialIndex - 1) % 8, ambientColor, diffuseColor, specularColor, dissolve);
-	myMaterial.setDiffuseMap(diffuseMap);
-	myMaterial.setSpecularMap(specularMap, shininess); 
-	myMaterial.setNormalMap(normalMap);
+	properties.diffuseMap = getTexture(material, aiTextureType_DIFFUSE);
+	properties.specularMap = getTexture(material, aiTextureType_SPECULAR);
+	properties.normalMap = getTexture(material, aiTextureType_NORMALS);
+
+	Material myMaterial((materialIndex - 1) % 8, properties);
 
 	m_LoadedMaterials.push_back(std::move(myMaterial));
 }

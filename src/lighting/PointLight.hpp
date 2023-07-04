@@ -32,5 +32,6 @@ private:
 
 	static PointLightList s_Instance;
 	std::unordered_map<unsigned short, PointLight*> m_PointLights;
+	std::size_t m_HighestIndex;
 	Shader* m_Shader;
 };

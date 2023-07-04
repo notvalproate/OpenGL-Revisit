@@ -36,7 +36,7 @@ PointLightList& PointLightList::getList() {
     return s_Instance;
 }
 
-PointLightList::PointLightList() : m_PointLights({}), m_Shader(nullptr) {}
+PointLightList::PointLightList() : m_PointLights({}), m_Shader(nullptr), m_HighestIndex(0) {}
 
 void PointLightList::addLight(unsigned short index, const glm::vec3& position, const glm::vec3& color, float brightness) {
     if (index >= 50) {
@@ -48,6 +48,11 @@ void PointLightList::addLight(unsigned short index, const glm::vec3& position, c
     if (m_PointLights.contains(index)) {
         std::cout << "PointLight already exists at index " << index << std::endl;
         return;
+    }
+
+    if (index > m_HighestIndex) {
+        m_HighestIndex = index;
+        m_Shader->setUniform1i("u_HighestPointLight", m_HighestIndex);
     }
 
     m_PointLights[index] = new PointLight(index, position, color, brightness, m_Shader);

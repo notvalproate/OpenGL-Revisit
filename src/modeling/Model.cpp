@@ -21,6 +21,8 @@ Model& Model::operator=(Model&& other) noexcept {
 	m_ModelMatrix = std::move(other.m_ModelMatrix);
 	m_NormalMatrix = std::move(other.m_NormalMatrix);
 	m_Shader = other.m_Shader;
+
+	return *this;
 }
 
 void Model::draw() const {

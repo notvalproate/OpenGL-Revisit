@@ -1,15 +1,19 @@
 #include "Batch.hpp"
 
 void Batch::add(Mesh& mesh) {
+	m_BatchInfo.numOfIndices += mesh.m_Indices.size();
+	m_BatchInfo.numOfVertices += mesh.m_Vertices.size();
 	m_Meshes.push_back(std::move(mesh));
 }
 
 void Batch::finalize(Shader* shader) {
 	std::vector<float> finalVertices;
+	finalVertices.reserve(m_BatchInfo.numOfVertices);
 	std::vector<unsigned int> finalIndices;
+	finalVertices.reserve(m_BatchInfo.numOfIndices);
 
 	for (const auto& mesh : m_Meshes) {
-		std::size_t lastIndex = finalVertices.size() / 9;
+		std::size_t lastIndex = finalVertices.size() / shader->getLayout().getStride();
 
 		std::copy(mesh.m_Vertices.begin(), mesh.m_Vertices.end(), std::back_inserter(finalVertices));
 

@@ -65,7 +65,10 @@ struct SpotLight {
 uniform Material u_Material[8];
 
 uniform DirectionalLight u_DirectionalLight;
+
 uniform PointLight u_PointLight[50];
+uniform int u_HighestPointLight;
+
 uniform SpotLight u_SpotLight;
 
 uniform vec3 u_ViewPos;
@@ -95,7 +98,7 @@ void main() {
 
 	color += getDirectionalLight(diffuseMap, specularMap);
 
-	for (int i = 0; i < 50; i += 1) {
+	for (int i = 0; i <= u_HighestPointLight; i += 1) {
 		if (u_PointLight[i].Brightness != 0) {
 			color += getPointLight(u_PointLight[i], diffuseMap, specularMap);
 		}
@@ -170,7 +173,7 @@ vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 s
 
 	vec4 diffuse = intensity * getDiffusion(spotLight.Diffuse, lightDir, diffuseMap);
 
-	vec4 specular = intensity * getSpecular(spotLight.Specular, lightDir, specularMap);
+	vec4 specular = getSpecular(spotLight.Specular, lightDir, specularMap);
 
 	return spotLight.Brightness * attenuation * (ambient + diffuse + specular);
 }

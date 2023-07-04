@@ -5,6 +5,11 @@
 
 #include <vector>
 
+struct BatchInfo {
+	std::size_t numOfVertices{};
+	std::size_t numOfIndices{};
+};
+
 class Batch {
 public:
 	Batch() = default;
@@ -14,7 +19,9 @@ public:
 
 	void draw() const;
 private:
-	std::vector<Mesh> m_Meshes;
+	BatchInfo m_BatchInfo{};
+
+	std::vector<Mesh> m_Meshes{};
 
 	VertexBuffer* m_VBO;
 	std::unique_ptr<VertexArray> m_VAO;

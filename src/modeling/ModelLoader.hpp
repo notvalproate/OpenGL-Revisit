@@ -27,11 +27,13 @@ private:
 	Shader* m_Shader;
 
 	void cleanLoader();
+
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 	void processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices) const;
 
-	void processMaterial(aiMesh* mesh, const aiScene* scene);
+	void loadMaterials(const aiScene* scene);
+	void processMaterial(aiMaterial* material, std::size_t materialIndex);
 	void loadNewMaterial(aiMaterial* material, std::size_t materialindex);
 	std::shared_ptr<Texture2D> loadMaterialTexture(aiMaterial* meshmaterial, aiTextureType type, TextureType typeName);
 };

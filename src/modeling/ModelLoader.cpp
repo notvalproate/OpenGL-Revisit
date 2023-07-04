@@ -26,6 +26,7 @@ Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shad
 	m_Shader = shader;
 
 	processNode(scene->mRootNode, scene);
+	loadMaterials(scene);
 
 	m_Batcher.finalize(m_LoadedMaterials, m_Shader);
 
@@ -61,8 +62,6 @@ Mesh ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene) {
 		}
 	}
 
-	processMaterial(mesh, scene);
-
 	return Mesh(vertices, indices);
 }
 
@@ -88,24 +87,28 @@ void ModelLoader::processVertex(std::size_t index, aiMesh* mesh, std::vector<flo
 			}
 		}
 		else if (attribute == VertexAttribute::MaterialIndex) {
-			vertices.push_back(mesh->mMaterialIndex - 0.9f);
+			vertices.push_back(((mesh->mMaterialIndex - 1) % 8) + 0.1f);
 		}
 	}
 }
 
-void ModelLoader::processMaterial(aiMesh* mesh, const aiScene* scene) {
-	aiMaterial* meshmaterial = scene->mMaterials[mesh->mMaterialIndex];
+void ModelLoader::loadMaterials(const aiScene* scene) {
+	for (std::size_t i = 0; i < scene->mNumMaterials; i++) {
+		processMaterial(scene->mMaterials[i], i);
+	}
+}
 
+void ModelLoader::processMaterial(aiMaterial* material, std::size_t materialIndex) {
 	for (const auto& loadedmaterial : m_LoadedMaterials) {
-		if (loadedmaterial.getName() == meshmaterial->GetName().C_Str()) {
+		if (loadedmaterial.getName() == material->GetName().C_Str()) {
 			return;
 		}
 	}
 
-	loadNewMaterial(meshmaterial, mesh->mMaterialIndex - 1);
+	loadNewMaterial(material, materialIndex);
 }
 
-void ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t materialindex) {
+void ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t materialIndex) {
 	aiColor3D ambientColor, diffuseColor, specularColor;
 	float dissolve, shininess;
 	meshmaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
@@ -118,7 +121,7 @@ void ModelLoader::loadNewMaterial(aiMaterial* meshmaterial, std::size_t material
 	std::shared_ptr<Texture2D> specularMap = loadMaterialTexture(meshmaterial, aiTextureType_SPECULAR, TextureType::SPECULAR);
 	std::shared_ptr<Texture2D> normalMap = loadMaterialTexture(meshmaterial, aiTextureType_NORMALS, TextureType::NORMAL);
 
-	Material material(meshmaterial->GetName().C_Str(), materialindex, ambientColor, diffuseColor, specularColor, dissolve);
+	Material material(meshmaterial->GetName().C_Str(), (materialIndex - 1) % 8, ambientColor, diffuseColor, specularColor, dissolve);
 	material.setDiffuseMap(diffuseMap);
 	material.setSpecularMap(specularMap, shininess);
 	material.setNormalMap(normalMap);

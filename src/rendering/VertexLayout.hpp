@@ -27,6 +27,7 @@ public:
 		if (attribute == VertexAttribute::MaterialIndex) {
 			return 1;
 		}
+		return 0;
 	}
 
 	void push(VertexAttribute attribute) {

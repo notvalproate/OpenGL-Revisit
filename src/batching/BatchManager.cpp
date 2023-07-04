@@ -15,6 +15,8 @@ BatchManager& BatchManager::operator=(BatchManager&& other) noexcept {
 	m_Shader = other.m_Shader;
 	m_Batches = std::move(other.m_Batches);
 	m_Materials = std::move(other.m_Materials);
+
+	return *this;
 }
 
 void BatchManager::add(std::size_t materialIndex, Mesh& mesh) {
@@ -42,15 +44,19 @@ void BatchManager::clean() {
 }
 
 void BatchManager::draw() const {
-	size_t materialBatch = 0;
-	size_t textureCount = 0;
+	std::size_t materialBatch = 0;
+	std::size_t textureCount = 0;
 
 	for (const auto& batch : m_Batches) {
-		for (size_t i = 0; i < maxMaterialsPerBatch && i < m_Materials.size(); i++) {
-			m_Materials[i + (materialBatch * maxMaterialsPerBatch)].bind(m_Shader, textureCount);
+		std::size_t i = 0;
+		while (i + materialBatch < m_Materials.size() && i < 8) { 
+			m_Materials[i + materialBatch].bind(m_Shader, textureCount);
+			i++;
 		}
+
 		batch.draw();
 
-		materialBatch++;
+		materialBatch += maxMaterialsPerBatch;
+		textureCount = 0;
 	}
 }

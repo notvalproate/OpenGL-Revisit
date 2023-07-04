@@ -14,8 +14,8 @@ void Batch::finalize(Shader* shader) {
 
 	parseMeshes(finalVertices, finalIndices, shader->getLayout().getStride());
 
-	m_VBO = new VertexBuffer(finalVertices);
-	m_VAO = std::make_unique<VertexArray>(*m_VBO, shader->getLayout());
+	m_VBO = std::make_unique<VertexBuffer>(finalVertices);
+	m_VAO = std::make_unique<VertexArray>(m_VBO.get(), shader->getLayout());
 	m_IBO = std::make_unique<IndexBuffer>(finalIndices);
 }
 

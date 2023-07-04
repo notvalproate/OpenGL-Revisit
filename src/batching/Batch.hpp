@@ -23,7 +23,7 @@ private:
 
 	BatchInfo m_BatchInfo{};
 
-	VertexBuffer* m_VBO;
+	std::unique_ptr<VertexBuffer> m_VBO;
 	std::unique_ptr<VertexArray> m_VAO;
 	std::unique_ptr<IndexBuffer> m_IBO;
 

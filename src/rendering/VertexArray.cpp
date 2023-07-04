@@ -3,10 +3,10 @@
 #include <numeric>
 #include "../util/ErrorHandling.hpp"
 
-VertexArray::VertexArray(const VertexBuffer& VBO, const VertexLayout& layout) {
+VertexArray::VertexArray(const VertexBuffer* VBO, const VertexLayout& layout) {
 	GLCall(glGenVertexArrays(1, &m_ArrayID));
 	GLCall(glBindVertexArray(m_ArrayID));
-	VBO.bind();
+	VBO->bind();
 
 	std::size_t i = 0;
 	std::size_t offset = 0;
@@ -21,7 +21,7 @@ VertexArray::VertexArray(const VertexBuffer& VBO, const VertexLayout& layout) {
 	}
 
 	GLCall(glBindVertexArray(0));
-	VBO.unbind();
+	VBO->unbind();
 }
 
 VertexArray::~VertexArray() {

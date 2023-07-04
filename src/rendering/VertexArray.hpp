@@ -5,7 +5,7 @@
 
 class VertexArray {
 public:
-	VertexArray(const VertexBuffer& VBO, const VertexLayout& layout);
+	VertexArray(const VertexBuffer* VBO, const VertexLayout& layout);
 	~VertexArray();
 
 	VertexArray(const VertexArray& other) = delete;

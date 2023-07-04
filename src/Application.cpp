@@ -12,7 +12,6 @@
 
 #include "modeling/ModelLoader.hpp"
 
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 class App : public OpenGLApp {

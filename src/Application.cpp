@@ -1,6 +1,5 @@
 #include "OpenGLApp.hpp"
 
-#include "util/ErrorHandling.hpp"
 #include "util/Timer.hpp"
 
 #include "rendering/Shader.hpp"

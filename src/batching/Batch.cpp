@@ -23,7 +23,7 @@ void Batch::parseMeshes(std::vector<float>& finalVertices, std::vector<unsigned 
 	for (auto& mesh : m_Meshes) {
 		std::size_t lastIndex = finalVertices.size() / stride;
 
-		std::copy(mesh.m_Vertices.begin(), mesh.m_Vertices.end(), std::back_inserter(finalVertices));
+		finalVertices.insert(finalVertices.end(), mesh.m_Vertices.begin(), mesh.m_Vertices.end());
 
 		std::transform(
 			mesh.m_Indices.begin(),
@@ -34,7 +34,7 @@ void Batch::parseMeshes(std::vector<float>& finalVertices, std::vector<unsigned 
 			}
 		);
 
-		std::copy(mesh.m_Indices.begin(), mesh.m_Indices.end(), std::back_inserter(finalIndices));
+		finalIndices.insert(finalIndices.end(), mesh.m_Indices.begin(), mesh.m_Indices.end());
 	}
 }
 

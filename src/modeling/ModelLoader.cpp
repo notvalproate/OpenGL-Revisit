@@ -32,7 +32,7 @@ Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shad
 	m_MaterialLoader.loadMaterials(scene, directory);
 	std::vector<Material> materials = m_MaterialLoader.extractMaterials();
 
-	m_Batcher.finalize(materials, shader); 
+	m_Batcher.finalize(materials, shader);
 
 	return std::move(Model(m_Batcher, shader));
 }

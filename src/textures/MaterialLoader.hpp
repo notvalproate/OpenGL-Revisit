@@ -19,6 +19,6 @@ private:
 	std::vector<std::shared_ptr<Texture2D>> m_LoadedTextures{};
 	std::filesystem::path m_Directory;
 
-	void processMaterial(aiMaterial* material, std::size_t materialIndex);
-	std::shared_ptr<Texture2D> getTexture(aiMaterial* meshmaterial, aiTextureType type);
+	void processMaterial(const aiMaterial* material, std::size_t materialIndex);
+	std::shared_ptr<Texture2D> getTexture(const aiMaterial* meshmaterial, aiTextureType type);
 };

@@ -14,7 +14,7 @@ void MaterialLoader::clean() {
 	m_Directory.clear();
 }
 
-void MaterialLoader::processMaterial(aiMaterial* material, std::size_t materialIndex) {
+void MaterialLoader::processMaterial(const aiMaterial* material, std::size_t materialIndex) {
 	MaterialProperties properties;
 	aiColor3D ambientColor, diffuseColor, specularColor;
 
@@ -37,7 +37,7 @@ void MaterialLoader::processMaterial(aiMaterial* material, std::size_t materialI
 	m_LoadedMaterials.push_back(std::move(myMaterial));
 }
 
-std::shared_ptr<Texture2D> MaterialLoader::getTexture(aiMaterial* material, aiTextureType type) {
+std::shared_ptr<Texture2D> MaterialLoader::getTexture(const aiMaterial* material, aiTextureType type) {
 	if (material->GetTextureCount(type) == 0) {
 		return nullptr;
 	}

@@ -26,5 +26,7 @@ private:
 	std::vector<Material> m_Materials{};
 	Shader* m_Shader;
 
+	bool m_Finalized{ false };
+
 	void bindMaterialBatch(std::size_t materialBatch) const;
 };

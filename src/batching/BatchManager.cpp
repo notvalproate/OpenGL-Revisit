@@ -30,17 +30,24 @@ void BatchManager::add(std::size_t materialIndex, Mesh& mesh) {
 }
 
 void BatchManager::finalize(std::vector<Material>& materials, Shader* shader) {
+	if (m_Finalized) {
+		std::cout << "Already Finalized this batch manager!" << std::endl;
+		return;
+	}
+
 	m_Shader = shader;
 	m_Materials = std::move(materials);
 
 	for (auto& batch : m_Batches) {
 		batch.finalize(shader);
 	}
+	m_Finalized = true;
 }
 
 void BatchManager::clean() {
 	m_Batches.clear();
 	m_Materials.clear();
+	m_Finalized = false;
 }
 
 void BatchManager::draw() const {
@@ -54,10 +61,10 @@ void BatchManager::draw() const {
 
 void BatchManager::bindMaterialBatch(std::size_t materialBatch) const {
 	std::size_t textureCount = 0;
-	std::size_t i = 0; 
+	std::size_t i = 0;
 	std::size_t materialStartingIndex = materialBatch * maxMaterialsPerBatch;
 	while (materialStartingIndex + i < m_Materials.size() && i < 8) {
 		m_Materials[materialStartingIndex + i].bind(m_Shader, textureCount);
 		i++;
-	} 
+	}
 }

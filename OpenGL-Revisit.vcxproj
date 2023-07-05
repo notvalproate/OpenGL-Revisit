@@ -153,6 +153,7 @@
     <ClCompile Include="src\lighting\DirectionalLight.cpp" />
     <ClCompile Include="src\lighting\FlashLight.cpp" />
     <ClCompile Include="src\lighting\PointLight.cpp" />
+    <ClCompile Include="src\modeling\MeshLoader.cpp" />
     <ClCompile Include="src\modeling\Model.cpp" />
     <ClCompile Include="src\modeling\ModelLoader.cpp" />
     <ClCompile Include="src\OpenGLApp.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="src\lighting\FlashLight.hpp" />
     <ClInclude Include="src\lighting\PointLight.hpp" />
     <ClInclude Include="src\modeling\Mesh.hpp" />
+    <ClInclude Include="src\modeling\MeshLoader.hpp" />
     <ClInclude Include="src\modeling\Model.hpp" />
     <ClInclude Include="src\modeling\ModelLoader.hpp" />
     <ClInclude Include="src\OpenGLApp.hpp" />

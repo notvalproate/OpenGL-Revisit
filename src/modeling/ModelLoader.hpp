@@ -1,6 +1,7 @@
 #pragma once
 #include "../textures/MaterialLoader.hpp"
 #include "../rendering/VertexLayout.hpp"
+#include "../modeling/MeshLoader.hpp"
 
 #include <vector>
 
@@ -19,11 +20,8 @@ public:
 private:
 	BatchManager m_Batcher;
 	MaterialLoader m_MaterialLoader;
-
-	Shader* m_Shader;
+	MeshLoader m_MeshLoader;
 
 	void cleanLoader();
-	void processNode(aiNode* node, const aiScene* scene);
-	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-	void processVertex(std::size_t index, aiMesh* mesh, std::vector<float>& vertices) const;
+	void processNode(const aiNode* node, const aiScene* scene);
 };

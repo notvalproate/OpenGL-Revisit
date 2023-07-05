@@ -24,7 +24,6 @@ public:
 	Material(std::size_t index, MaterialProperties& properties);
 
 	void bind(Shader* shader, std::size_t& textureCount) const;
-	void unbind(Shader* shader) const;
 private:
 	std::string m_MaterialIndex;
 	MaterialProperties m_Properties;

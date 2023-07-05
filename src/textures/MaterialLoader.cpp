@@ -30,7 +30,7 @@ void MaterialLoader::processMaterial(const aiMaterial* material, std::size_t mat
 
 	properties.diffuseMap = getTexture(material, aiTextureType_DIFFUSE);
 	properties.specularMap = getTexture(material, aiTextureType_SPECULAR);
-	properties.normalMap = getTexture(material, aiTextureType_NORMALS);
+	properties.normalMap = getTexture(material, aiTextureType_HEIGHT);
 
 	Material myMaterial((materialIndex - 1) % 8, properties);
 

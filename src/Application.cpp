@@ -35,8 +35,6 @@ public:
 
         ModelLoader modelLoader;
 
-        auto allmodels = std::chrono::high_resolution_clock::now();
-
         Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
 
         Model cottage = modelLoader.loadModel(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
@@ -50,9 +48,6 @@ public:
 
         Model madhav = modelLoader.loadModel(L"assets/models/bike/Mountain_Bike.obj", &globalShader, false);
         madhav.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.0f, 44.0f)));
-
-        auto allmodelsend = std::chrono::high_resolution_clock::now();
-        auto totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(allmodelsend - allmodels);
 
         //DIRECTIONAL LIGHT SETUP
 

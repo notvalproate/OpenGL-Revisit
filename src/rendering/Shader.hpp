@@ -33,7 +33,6 @@ public:
 private:
 	unsigned int m_ShaderID;
 	VertexLayout m_Layout;
-	std::unordered_map<std::string, int> m_UniformCache{}; //DOESNT MAKE IT FASTER, IMPLEMENT UNIFORM CLASS
 
 	unsigned int compileShader(const std::filesystem::path& shaderPath, unsigned int shaderType) const;
 	std::string getShaderSource(const std::filesystem::path& shaderPath) const;

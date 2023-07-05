@@ -97,17 +97,9 @@ void Shader::checkCompilationStatus(unsigned int shader) const {
 }
 	
 int Shader::getUniformLocation(std::string_view uniformName) { 
-	auto iterator = m_UniformCache.find(std::string(uniformName));
-
-	if (iterator != m_UniformCache.end()) {
-		return iterator->second;
-	}
-
 	bind();
 
 	GLCall(int location = glGetUniformLocation(m_ShaderID, uniformName.data()));
-
-	iterator->second = location;
 
 	return location;
 }

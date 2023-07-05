@@ -3,6 +3,7 @@
 void ModelLoader::cleanLoader() {
 	m_Batcher.clean();
 	m_MaterialLoader.clean();
+	m_MeshLoader.clean();
 }
 
 Model ModelLoader::loadModel(const std::filesystem::path modelPath, Shader* shader, bool flipUVs) {

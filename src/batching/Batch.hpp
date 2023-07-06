@@ -14,6 +14,12 @@ class Batch {
 public:
 	Batch() = default;
 
+	Batch(const Batch& other) = delete;
+	Batch& operator=(const Batch& other) = delete;
+
+	Batch(Batch&& other) noexcept;
+	Batch& operator=(Batch&& other) noexcept;
+
 	void add(Mesh& mesh);
 	void finalize(Shader* shader);
 

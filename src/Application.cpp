@@ -44,7 +44,7 @@ public:
         aya.setModelMatrix(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.007f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(-1550.0f, -160.0f, -800.0f)));
 
         Model agera = modelLoader.loadModel(L"assets/models/agera/agera.obj", &globalShader, true);
-        agera.setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.9f)), glm::vec3(-12.0f, -5.0f, 0.0f)));
+        agera.setModelMatrix(glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.98f)), glm::vec3(-12.0f, -5.0f, 0.0f)));
 
         Model madhav = modelLoader.loadModel(L"assets/models/bike/Mountain_Bike.obj", &globalShader, false);
         madhav.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.0f, 44.0f)));

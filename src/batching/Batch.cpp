@@ -1,5 +1,23 @@
 #include "Batch.hpp"
 
+Batch::Batch(Batch&& other) noexcept {
+	*this = std::move(other);
+}
+
+Batch& Batch::operator=(Batch&& other) noexcept {
+	if (this == &other) {
+		return *this;
+	}
+
+	m_Meshes = std::move(other.m_Meshes);
+
+	m_BatchInfo = std::move(other.m_BatchInfo);
+
+	m_VBO = std::move(other.m_VBO);
+	m_VAO = std::move(other.m_VAO);
+	m_IBO = std::move(other.m_IBO);
+}
+
 void Batch::add(Mesh& mesh) {
 	m_BatchInfo.numOfIndices += mesh.m_Indices.size();
 	m_BatchInfo.numOfVertices += mesh.m_Vertices.size();

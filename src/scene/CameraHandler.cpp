@@ -70,21 +70,21 @@ void CameraHandler::handleMouseInput(GLFWwindow* window) {
 	m_Camera.m_Pitch -= (y - m_LastY) * m_Camera.m_Sensitivity;
 
 	//-89 <= PITCH <= 89, -180 < YAW < 180
-	m_Camera.m_Pitch = std::clamp(m_Camera.m_Pitch, -89.0f, 89.0f);
+	m_Camera.m_Pitch = std::clamp(m_Camera.m_Pitch, -89.0, 89.0);
 
-	if (m_Camera.m_Yaw > 180.0f) {
-		m_Camera.m_Yaw = m_Camera.m_Yaw - 360.0f;
+	if (m_Camera.m_Yaw > 180.0) {
+		m_Camera.m_Yaw = m_Camera.m_Yaw - 360.0;
 	}
-	if (m_Camera.m_Yaw < -180.0f) {
-		m_Camera.m_Yaw = m_Camera.m_Yaw + 360.0f;
+	if (m_Camera.m_Yaw < -180.0) {
+		m_Camera.m_Yaw = m_Camera.m_Yaw + 360.0;
 	}
 	
 	m_LastX = x;
 	m_LastY = y;
 
 	glm::vec3 direction;
-	direction.z = sin(glm::radians(m_Camera.m_Yaw)) * cos(glm::radians(m_Camera.m_Pitch)); 
-	direction.y = sin(glm::radians(m_Camera.m_Pitch)); 
-	direction.x = cos(glm::radians(m_Camera.m_Yaw)) * cos(glm::radians(m_Camera.m_Pitch)); 
+	direction.z = sin(glm::radians(static_cast<float>(m_Camera.m_Yaw))) * cos(glm::radians(static_cast<float>(m_Camera.m_Pitch)));
+	direction.y = sin(glm::radians(static_cast<float>(m_Camera.m_Pitch)));
+	direction.x = cos(glm::radians(static_cast<float>(m_Camera.m_Yaw))) * cos(glm::radians(static_cast<float>(m_Camera.m_Pitch)));
 	m_Camera.m_Direction = glm::normalize(direction); 
 }

@@ -1,8 +1,6 @@
 #pragma once
-#include <filesystem>
-#include <unordered_map>
-#include <span>
 #include "glm/glm.hpp"
+#include <filesystem>
 
 #include "VertexLayout.hpp"
 
@@ -33,8 +31,4 @@ public:
 private:
 	unsigned int m_ShaderID;
 	VertexLayout m_Layout;
-
-	unsigned int compileShader(const std::filesystem::path& shaderPath, unsigned int shaderType) const;
-	std::string getShaderSource(const std::filesystem::path& shaderPath) const;
-	void checkCompilationStatus(unsigned int Shader) const;
 };

@@ -1,28 +1,11 @@
 #include "Shader.hpp"
 #include "GL/glew.h"
-#include <fstream>
-#include <iostream>
+#include "ShaderCompiler.hpp"
+
 #include "../util/ErrorHandling.hpp"
 
 Shader::Shader(const std::filesystem::path& vertexPath, const std::filesystem::path& fragmentPath) {
-	GLCall(m_ShaderID = glCreateProgram());
-	unsigned int vertexShader = 0, fragmentShader = 0;
-
-	try {
-		vertexShader = compileShader(vertexPath, GL_VERTEX_SHADER);
-		fragmentShader = compileShader(fragmentPath, GL_FRAGMENT_SHADER);
-	}
-	catch (const std::runtime_error& e) {
-		std::cout << e.what() << std::endl;
-	}
-
-	GLCall(glAttachShader(m_ShaderID, vertexShader));
-	GLCall(glAttachShader(m_ShaderID, fragmentShader));
-	GLCall(glLinkProgram(m_ShaderID));
-	GLCall(glValidateProgram(m_ShaderID));
-
-	GLCall(glDeleteShader(vertexShader));
-	GLCall(glDeleteShader(fragmentShader));
+	m_ShaderID = shadercompiler::loadShader(vertexPath, fragmentPath);
 }
 
 Shader::~Shader() {
@@ -54,46 +37,6 @@ void Shader::bind() const {
 
 void Shader::unbind() const {
 	GLCall(glUseProgram(0));
-}
-
-unsigned int Shader::compileShader(const std::filesystem::path& shaderPath, unsigned int shaderType) const {
-	if (!std::filesystem::is_regular_file(shaderPath)) {
-		throw std::runtime_error("Shader Path Not found or not a regular file! Path: " + shaderPath.string());
-	}
-
-	std::string sourceString = std::move(getShaderSource(shaderPath));
-	const char* sourceCString = sourceString.c_str();
-
-	GLCall(unsigned int shaderID = glCreateShader(shaderType));
-
-	GLCall(glShaderSource(shaderID, 1, &sourceCString, NULL));
-	GLCall(glCompileShader(shaderID));
-
-	checkCompilationStatus(shaderID);
-
-	return shaderID;
-}
-
-std::string Shader::getShaderSource(const std::filesystem::path& shaderPath) const {
-	std::ifstream fileStream(shaderPath);
-	if (!fileStream) {
-		throw std::runtime_error("Failed to open shader file: " + shaderPath.string());
-	}
-	return std::string((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-}
-
-void Shader::checkCompilationStatus(unsigned int shader) const {
-	int result;
-	GLCall(glGetShaderiv(shader, GL_COMPILE_STATUS, &result));
-	if (result == GL_FALSE) {
-		int length;
-		GLCall(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
-		char message[256];
-		GLCall(glGetShaderInfoLog(shader, length, &length, message));
-		GLCall(glDeleteShader(shader));
-
-		throw std::runtime_error("Shader Compilation Error: " + std::string(message));
-	}
 }
 	
 int Shader::getUniformLocation(std::string_view uniformName) { 

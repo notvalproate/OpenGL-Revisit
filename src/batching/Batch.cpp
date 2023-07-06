@@ -16,6 +16,8 @@ Batch& Batch::operator=(Batch&& other) noexcept {
 	m_VBO = std::move(other.m_VBO);
 	m_VAO = std::move(other.m_VAO);
 	m_IBO = std::move(other.m_IBO);
+
+	return *this;
 }
 
 void Batch::add(Mesh& mesh) {

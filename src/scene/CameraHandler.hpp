@@ -22,7 +22,7 @@ public:
 private:
 	Camera& m_Camera;	
 	std::unordered_map<KeyBind, unsigned int> m_KeyBindings;
-	float m_LastX{}, m_LastY{};
+	double m_LastX{}, m_LastY{};
 	bool m_FirstMouse;
 
 	void handleKeyboardInput(GLFWwindow* window, const float deltaTime) const;

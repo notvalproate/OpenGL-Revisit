@@ -159,6 +159,7 @@
     <ClCompile Include="src\OpenGLApp.cpp" />
     <ClCompile Include="src\rendering\Buffers.cpp" />
     <ClCompile Include="src\rendering\Shader.cpp" />
+    <ClCompile Include="src\rendering\ShaderCompiler.cpp" />
     <ClCompile Include="src\rendering\VertexArray.cpp" />
     <ClCompile Include="src\scene\Camera.cpp" />
     <ClCompile Include="src\scene\CameraHandler.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="src\OpenGLApp.hpp" />
     <ClInclude Include="src\rendering\Buffers.hpp" />
     <ClInclude Include="src\rendering\Shader.hpp" />
+    <ClInclude Include="src\rendering\ShaderCompiler.hpp" />
     <ClInclude Include="src\rendering\VertexArray.hpp" />
     <ClInclude Include="src\rendering\VertexLayout.hpp" />
     <ClInclude Include="src\scene\Camera.hpp" />

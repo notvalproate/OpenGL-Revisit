@@ -16,8 +16,8 @@ public:
 	[[nodiscard]] glm::vec3 getPosition() const { return m_Position; }
 	[[nodiscard]] glm::vec3 getDirection() const { return m_Direction; }
 	[[nodiscard]] glm::vec3 getUp() const { return m_Up; }
-	[[nodiscard]] float getYaw() const { return m_Yaw; }
-	[[nodiscard]] float getPitch() const { return m_Pitch; }
+	[[nodiscard]] double getYaw() const { return m_Yaw; }
+	[[nodiscard]] double getPitch() const { return m_Pitch; }
 private:
 	glm::vec3 m_Position;
 	glm::vec3 m_Direction;
@@ -31,8 +31,8 @@ private:
 	float m_SpeedMultiplier;
 	float m_Sensitivity;
 
-	float m_Yaw;
-	float m_Pitch;
+	double m_Yaw;
+	double m_Pitch;
 
 	friend class CameraHandler;
 };

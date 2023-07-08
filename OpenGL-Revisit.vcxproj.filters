@@ -88,6 +88,8 @@
   <ItemGroup>
     <None Include="src\shaders\global\vertex.shader" />
     <None Include="src\shaders\global\fragment.shader" />
+    <None Include="src\shaders\framebuffershader\fragment.shader" />
+    <None Include="src\shaders\framebuffershader\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rendering\Shader.hpp">

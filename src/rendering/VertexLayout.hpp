@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 enum class VertexAttribute : unsigned short {
 	Position = 0x00,
@@ -33,6 +34,7 @@ public:
 	void push(VertexAttribute attribute) {
 		m_Layout.push_back(attribute);
 		m_Stride += getAttributeWidth(attribute);
+		std::cout << m_Layout.size() << std::endl;
 	}
 
 	std::vector<VertexAttribute>::const_iterator begin() const { return m_Layout.begin(); }

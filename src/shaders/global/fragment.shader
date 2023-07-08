@@ -82,6 +82,15 @@ vec4 getDirectionalLight(const vec4 diffuseMap, const vec4 specularMap);
 vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec4 specularMap);
 vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 specularMap);
 
+float near = 0.1;
+float far = 100.0;
+
+float linearizeDepth(float depth)
+{
+	float z = depth * 2.0 - 1.0;
+	return (2.0 * near * far) / (far + near - z * (far - near));
+}
+
 void main() {
 	int index = int(v_MaterialIndex);
 	vec4 diffuseMap = vec4(u_Material[index].diffuse, 1.0f);
@@ -105,6 +114,8 @@ void main() {
 	}
 
 	color += getSpotLight(u_SpotLight, diffuseMap, specularMap);
+	
+	float depth = linearizeDepth(gl_FragCoord.z) / far;
 
 	color = vec4(color.rgb, u_Material[index].dissolve);
 }

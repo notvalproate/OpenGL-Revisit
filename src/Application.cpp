@@ -27,9 +27,15 @@ public:
 
         Shader globalShader(L"src/shaders/global/vertex.shader", L"src/shaders/global/fragment.shader"); 
         VertexLayout globalLayout(
-            { VertexAttribute::Position, VertexAttribute::Normal, VertexAttribute::TextureCoordinates, VertexAttribute::MaterialIndex });
+            { VertexAttribute::Position, VertexAttribute::Normal, VertexAttribute::TextureCoordinates, VertexAttribute::MaterialIndex }
+        );
         globalShader.setLayout(globalLayout); 
 
+        Shader bufferShader(L"src/shaders/framebuffershader/vertex.shader", L"src/shaders/framebuffershader/fragment.shader");
+        VertexLayout bufferShaderLayout(
+            { VertexAttribute::Position, VertexAttribute::TextureCoordinates }
+        );
+        bufferShader.setLayout(bufferShaderLayout);
 
         //MODELS
 
@@ -79,9 +85,55 @@ public:
         flashLight.setShaderAndCamera(&globalShader, &camera);
         flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
 
+        //FRAME BUFFERS
+        unsigned int fbo;
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+        unsigned int texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, m_WindowData.width, m_WindowData.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+        unsigned int rbo;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_WindowData.width, m_WindowData.height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+            std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+
+        //TRIANGLE
+        std::vector<float> vquad = {
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
+        };
+
+        std::vector<unsigned int> vindices = {
+            0, 1, 2,
+            2, 3, 0
+        };
+
+        VertexBuffer vbo(vquad);
+        VertexArray vao(&vbo, bufferShader.getLayout());
+        IndexBuffer ibo(vindices);
 
         //MAIN GAME LOOP
-
         float k = 0.5f;
         while (!glfwWindowShouldClose(m_Window)) {
             if (m_WindowData.resized) camera.resetViewport(m_WindowData.width, m_WindowData.height);
@@ -89,9 +141,6 @@ public:
 
             float test = 8.0f * glm::sin(glm::radians(k));
             float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
-
-            glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             //CAMERA UPDATES
             camHandler.handleEvents(m_Window, deltaTime);
@@ -104,12 +153,33 @@ public:
 
             flashLight.update();
 
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+            glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_DEPTH_TEST);
+
             //Render backpack
             madhav.draw();
             backpack.draw();
             agera.draw();
             cottage.draw();
             aya.draw();
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glDisable(GL_DEPTH_TEST);
+
+            glActiveTexture(GL_TEXTURE0 + 1);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            bufferShader.setUniform1i("tex", 1);
+
+            bufferShader.bind();
+            vao.bind();
+            ibo.bind();
+            GLCall(glDrawElements(GL_TRIANGLES, ibo.getCount(), GL_UNSIGNED_INT, nullptr));
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();
@@ -118,6 +188,8 @@ public:
             if (k >= 360.0f) k -= 360.0f;
         }
 
+        //glDeleteFramebuffers(1, &fbo);
+
         glfwTerminate();
     }
 };
@@ -125,8 +197,14 @@ public:
 int main() {
     App app; 
 
-    app.initialize(1600, 900);
-    app.run();
+    try {
+        app.initialize(1600, 900);
+        app.run();
+    }
+    catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

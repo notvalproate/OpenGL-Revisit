@@ -9,7 +9,7 @@ public:
 	BufferBase(const std::span<T>& data, unsigned int type) : m_BufferType(type) {
 		GLCall(glGenBuffers(1, &m_BufferID));
 		GLCall(glBindBuffer(m_BufferType, m_BufferID));
-		GLCall(glBufferData(m_BufferType, data.size_bytes(), data.data(), GL_DYNAMIC_DRAW));
+		GLCall(glBufferData(m_BufferType, data.size_bytes(), data.data(), GL_STATIC_DRAW));
 		GLCall(glBindBuffer(m_BufferType, 0));
 	}
 	virtual ~BufferBase();

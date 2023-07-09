@@ -158,6 +158,7 @@
     <ClCompile Include="src\modeling\ModelLoader.cpp" />
     <ClCompile Include="src\OpenGLApp.cpp" />
     <ClCompile Include="src\rendering\Buffers.cpp" />
+    <ClCompile Include="src\rendering\FrameBuffer.cpp" />
     <ClCompile Include="src\rendering\Shader.cpp" />
     <ClCompile Include="src\rendering\ShaderCompiler.cpp" />
     <ClCompile Include="src\rendering\VertexArray.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="src\modeling\ModelLoader.hpp" />
     <ClInclude Include="src\OpenGLApp.hpp" />
     <ClInclude Include="src\rendering\Buffers.hpp" />
+    <ClInclude Include="src\rendering\FrameBuffer.hpp" />
     <ClInclude Include="src\rendering\Shader.hpp" />
     <ClInclude Include="src\rendering\ShaderCompiler.hpp" />
     <ClInclude Include="src\rendering\VertexArray.hpp" />

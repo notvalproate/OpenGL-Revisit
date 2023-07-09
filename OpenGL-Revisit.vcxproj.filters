@@ -84,6 +84,9 @@
     <ClCompile Include="src\rendering\ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering\FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\global\vertex.shader" />
@@ -162,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\ShaderCompiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rendering\FrameBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

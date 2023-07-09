@@ -4,12 +4,12 @@ out vec4 color;
 
 in vec2 v_TexCoords;
 
-uniform sampler2D tex;
+uniform sampler2D frame;
 
 float offset = 1.0 / 300.0;
 
 void main() {
-    vec2 offsets[9];
+    /*vec2 offsets[9];
     offsets[0] = vec2(-offset, offset);
     offsets[1] = vec2(0.0, offset);
     offsets[2] = vec2(offset, offset);
@@ -39,10 +39,10 @@ void main() {
     vec3 col = vec3(0.0);
     for (int i = 0; i < 9; i++) {
         col += kernel[i] * sampleTex[i];
-    }
+    }*/
 
-    /*vec4 texcolor = texture(tex, v_TexCoords);
-    float average = 0.2126 * texcolor.r + 0.7152 * texcolor.g + 0.0722 * texcolor.b;*/
+    vec4 texcolor = texture(frame, v_TexCoords);
+    float average = 0.2126 * texcolor.r + 0.7152 * texcolor.g + 0.0722 * texcolor.b;
 
-    color = vec4(col, 1.0);
+    color = vec4(vec3(average), 1.0);
 }

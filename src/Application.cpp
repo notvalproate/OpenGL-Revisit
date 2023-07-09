@@ -3,6 +3,7 @@
 #include "util/Timer.hpp"
 
 #include "rendering/Shader.hpp"
+#include "rendering/FrameBuffer.hpp"
 
 #include "scene/CameraHandler.hpp"
 
@@ -20,7 +21,7 @@ class App : public OpenGLApp {
 public:
     void run() override {
         Timer timer;
-        Camera camera(m_WindowData.width, m_WindowData.height);
+        Camera camera;
         CameraHandler camHandler(camera);
 
         //SHADER SETUP
@@ -85,59 +86,18 @@ public:
         flashLight.setShaderAndCamera(&globalShader, &camera);
         flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
 
-        //FRAME BUFFERS
-        unsigned int fbo;
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        //FRAMEBUFFER
 
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, m_WindowData.width, m_WindowData.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-        unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_WindowData.width, m_WindowData.height);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-        }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
-
-        //TRIANGLE
-        std::vector<float> vquad = {
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
-        };
-
-        std::vector<unsigned int> vindices = {
-            0, 1, 2,
-            2, 3, 0
-        };
-
-        VertexBuffer vbo(vquad);
-        VertexArray vao(&vbo, bufferShader.getLayout());
-        IndexBuffer ibo(vindices);
+        FrameBuffer fbo(m_WindowData.width, m_WindowData.height, &bufferShader);
 
         //MAIN GAME LOOP
         float k = 0.5f;
         while (!glfwWindowShouldClose(m_Window)) {
             if (m_WindowData.resized) camera.resetViewport(m_WindowData.width, m_WindowData.height);
             float deltaTime = timer.getDeltaTime();
+
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             float test = 8.0f * glm::sin(glm::radians(k));
             float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
@@ -153,11 +113,7 @@ public:
 
             flashLight.update();
 
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-            glClearColor(0.5f, 0.7f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glEnable(GL_DEPTH_TEST);
+            //fbo.bind();
 
             //Render backpack
             madhav.draw();
@@ -166,20 +122,8 @@ public:
             cottage.draw();
             aya.draw();
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glDisable(GL_DEPTH_TEST);
-
-            glActiveTexture(GL_TEXTURE0 + 1);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            bufferShader.setUniform1i("tex", 1);
-
-            bufferShader.bind();
-            vao.bind();
-            ibo.bind();
-            GLCall(glDrawElements(GL_TRIANGLES, ibo.getCount(), GL_UNSIGNED_INT, nullptr));
+            //fbo.unbind();
+            //fbo.draw();
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

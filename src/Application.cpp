@@ -32,11 +32,17 @@ public:
         );
         globalShader.setLayout(globalLayout); 
 
-        Shader bufferShader(L"src/shaders/framebuffershader/vertex.shader", L"src/shaders/framebuffershader/fragment.shader");
-        VertexLayout bufferShaderLayout(
+        Shader blackwhiteShader(L"src/shaders/blackwhite/vertex.shader", L"src/shaders/blackwhite/fragment.shader");
+        VertexLayout blackwhiteLayout(
             { VertexAttribute::Position, VertexAttribute::TextureCoordinates }
         );
-        bufferShader.setLayout(bufferShaderLayout);
+        blackwhiteShader.setLayout(blackwhiteLayout);
+
+        Shader kernelShader(L"src/shaders/kernel/vertex.shader", L"src/shaders/kernel/fragment.shader");
+        VertexLayout kernelLayout(
+            { VertexAttribute::Position, VertexAttribute::TextureCoordinates }
+        );
+        kernelShader.setLayout(kernelLayout);
 
         //MODELS
 
@@ -88,7 +94,8 @@ public:
 
         //FRAMEBUFFER
 
-        FrameBuffer fbo(m_WindowData.width, m_WindowData.height, &bufferShader);
+        FrameBuffer blackwhite(m_WindowData.width, m_WindowData.height, &blackwhiteShader);
+        FrameBuffer kernel(m_WindowData.width, m_WindowData.height, &kernelShader);
 
         //MAIN GAME LOOP
         float k = 0.5f;
@@ -113,7 +120,7 @@ public:
 
             flashLight.update();
 
-            //fbo.bind();
+            kernel.bind();
 
             //Render backpack
             madhav.draw();
@@ -122,8 +129,14 @@ public:
             cottage.draw();
             aya.draw();
 
-            //fbo.unbind();
-            //fbo.draw();
+            kernel.unbind();
+            blackwhite.bind();
+
+            kernel.draw();
+
+            blackwhite.unbind();
+            blackwhite.draw();
+
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

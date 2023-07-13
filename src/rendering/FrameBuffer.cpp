@@ -4,6 +4,18 @@
 
 #include <iostream>
 
+static float QUAD[] = {
+    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+     1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+    -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
+};
+
+static unsigned int QUAD_INDICES[] = {
+    0, 1, 2,
+    2, 3, 0
+};
+
 FrameBuffer::FrameBuffer(const unsigned int width, const unsigned int height, Shader* shader) : m_Shader(shader) {
     glGenFramebuffers(1, &m_BufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, m_BufferID);
@@ -22,24 +34,35 @@ FrameBuffer::FrameBuffer(const unsigned int width, const unsigned int height, Sh
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    std::vector<float> vquad = {
-       -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-       -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
-    };
-
-    std::vector<unsigned int> vindices = {
-        0, 1, 2,
-        2, 3, 0
-    }; 
-
-    VertexBuffer vbo(vquad);
+    
+    VertexBuffer vbo(QUAD);
     m_VAO = std::make_unique<VertexArray>(&vbo, m_Shader->getLayout());
-    m_IBO = std::make_unique<IndexBuffer>(vindices);
+    m_IBO = std::make_unique<IndexBuffer>(QUAD_INDICES);
 }
 
+FrameBuffer::FrameBuffer(FrameBuffer&& other) noexcept {
+    *this = std::move(other);
+}
+
+FrameBuffer& FrameBuffer::operator=(FrameBuffer&& other) noexcept {
+    if (this == &other) {
+        return *this;
+    }
+
+    m_BufferID = other.m_BufferID;
+    m_TextureID = other.m_TextureID;
+    m_RenderBufferID = other.m_RenderBufferID;
+
+    m_VAO = std::move(other.m_VAO);
+    m_IBO = std::move(other.m_IBO);
+
+    m_Shader = other.m_Shader;
+
+    other.m_BufferID = 0;
+    other.m_TextureID = 0;
+    other.m_RenderBufferID = 0;
+    other.m_Shader = nullptr;
+}
 
 void FrameBuffer::bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_BufferID); 

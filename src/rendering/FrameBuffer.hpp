@@ -7,6 +7,12 @@ class FrameBuffer {
 public:
 	FrameBuffer(const unsigned int width, const unsigned int height, Shader* shader);
 
+	FrameBuffer(const FrameBuffer& other) = delete;
+	FrameBuffer& operator=(const FrameBuffer& other) = delete;
+
+	FrameBuffer(FrameBuffer&& other) noexcept;
+	FrameBuffer& operator=(FrameBuffer&& other) noexcept;
+
 	void bind() const;
 	void unbind() const;
 	void draw() const;

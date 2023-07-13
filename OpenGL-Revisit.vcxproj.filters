@@ -91,8 +91,10 @@
   <ItemGroup>
     <None Include="src\shaders\global\vertex.shader" />
     <None Include="src\shaders\global\fragment.shader" />
-    <None Include="src\shaders\framebuffershader\fragment.shader" />
-    <None Include="src\shaders\framebuffershader\vertex.shader" />
+    <None Include="src\shaders\blackwhite\fragment.shader" />
+    <None Include="src\shaders\blackwhite\vertex.shader" />
+    <None Include="src\shaders\kernel\fragment.shader" />
+    <None Include="src\shaders\kernel\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rendering\Shader.hpp">

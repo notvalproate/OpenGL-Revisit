@@ -52,7 +52,7 @@ public:
 
         Model cottage = modelLoader.loadModel(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
         cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
-
+        
         Model aya = modelLoader.loadModel(L"assets/models/aya/091_W_Aya_100K.obj", &globalShader, false);
         aya.setModelMatrix(glm::translate(glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(0.007f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(-1550.0f, -160.0f, -800.0f)));
 
@@ -103,7 +103,7 @@ public:
             if (m_WindowData.resized) camera.resetViewport(m_WindowData.width, m_WindowData.height);
             float deltaTime = timer.getDeltaTime();
 
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClearColor(0.5f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             float test = 8.0f * glm::sin(glm::radians(k));
@@ -120,23 +120,18 @@ public:
 
             flashLight.update();
 
-            kernel.bind();
-
-            //Render backpack
-            madhav.draw();
-            backpack.draw();
-            agera.draw();
-            cottage.draw();
-            aya.draw();
-
-            kernel.unbind();
             blackwhite.bind();
 
-            kernel.draw();
+            //Render Models
+            aya.draw(); 
+            madhav.draw();
+            agera.draw();
+            cottage.draw(); 
+            backpack.draw(); 
 
             blackwhite.unbind();
             blackwhite.draw();
-
+           
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();
@@ -144,8 +139,6 @@ public:
             k += 120.0f * deltaTime;
             if (k >= 360.0f) k -= 360.0f;
         }
-
-        //glDeleteFramebuffers(1, &fbo);
 
         glfwTerminate();
     }
@@ -164,4 +157,4 @@ int main() {
     }
 
     return EXIT_SUCCESS;
-}
+}   

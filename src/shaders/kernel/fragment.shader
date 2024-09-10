@@ -21,15 +21,15 @@ void main() {
     offsets[8] = vec2(offset, -offset);
 
     float kernel[9];
-    kernel[0] = 2;
-    kernel[1] = 2;
-    kernel[2] = 2;
-    kernel[3] = 2;
-    kernel[4] = -15;
-    kernel[5] = 2;
-    kernel[6] = 2;
-    kernel[7] = 2;
-    kernel[8] = 2;
+    kernel[0] = 0.11;
+    kernel[1] = 0.11;
+    kernel[2] = 0.11;
+    kernel[3] = 0.11;
+    kernel[4] = 0.11;
+    kernel[5] = 0.11;
+    kernel[6] = 0.11;
+    kernel[7] = 0.11;
+    kernel[8] = 0.11;
 
     vec3 sampleTex[9];
     for (int i = 0; i < 9; i++) {
@@ -41,5 +41,7 @@ void main() {
         col += kernel[i] * sampleTex[i];
     }
 
-    color = vec4(col, 1.0);
+    float a = (col.r + col.g + col.b) / 3.0;
+
+    color = vec4(a, 0.0, 0.0, 1.0);
 }

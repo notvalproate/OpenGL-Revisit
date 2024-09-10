@@ -47,9 +47,10 @@ public:
         //MODELS
 
         ModelLoader modelLoader;
+    
+        //Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
 
-        Model backpack = modelLoader.loadModel(L"assets/models/backpack/backpack.obj", &globalShader, true);
-
+        /*
         Model cottage = modelLoader.loadModel(L"assets/models/cottage/Cottage_FREE.obj", &globalShader, false);
         cottage.setModelMatrix(glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, -5.0f, 0.0f)), glm::vec3(4.0f)));
         
@@ -61,13 +62,15 @@ public:
 
         Model madhav = modelLoader.loadModel(L"assets/models/bike/Mountain_Bike.obj", &globalShader, false);
         madhav.setModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.0f, 44.0f)));
+        */
+
+        Model eat = modelLoader.loadModel(L"assets/models/eat/eatraja.obj", &globalShader, false);
 
         //DIRECTIONAL LIGHT SETUP
 
         DirectionalLight& directionalLight = DirectionalLight::getDirectionalLight();
         directionalLight.setShader(&globalShader);
         directionalLight.setDirectionalLight(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f), 1.0f);
-
 
         //POINTLIGHT SETUP
 
@@ -85,12 +88,11 @@ public:
         color = glm::vec3(0.1f, 1.0f, 0.0f); 
         pointLights.addLight(2, lightPos, color, 1.0f); 
 
-
         //SPOTLIGHT SETUP
 
         FlashLight& flashLight = FlashLight::getFlashLight();
         flashLight.setShaderAndCamera(&globalShader, &camera);
-        flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 12.5f, 17.5f, 1.0f);
+        flashLight.setFlashLight(glm::vec3(1.0f, 0.9f, 0.9f), 20.0f, 25.0f, 1.0f);
 
         //FRAMEBUFFER
 
@@ -103,11 +105,13 @@ public:
             if (m_WindowData.resized) camera.resetViewport(m_WindowData.width, m_WindowData.height);
             float deltaTime = timer.getDeltaTime();
 
-            glClearColor(0.5f, 1.0f, 1.0f, 1.0f);
+            glClearColor(0.7f, 0.7f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             float test = 8.0f * glm::sin(glm::radians(k));
             float test2 = 8.0f * glm::sin(glm::radians(k + 90.0f));
+
+            globalShader.setUniform1f("sintime", glm::sin(glm::radians(k)));
 
             //CAMERA UPDATES
             camHandler.handleEvents(m_Window, deltaTime);
@@ -120,18 +124,18 @@ public:
 
             flashLight.update();
 
-            blackwhite.bind();
+            //kernel.bind();
 
             //Render Models
-            aya.draw(); 
-            madhav.draw();
-            agera.draw();
-            cottage.draw(); 
-            backpack.draw(); 
+            // aya.draw();
+            // madhav.draw();
+            // agera.draw();
+            // cottage.draw();
+            //backpack.draw();
+            //eat.draw();
 
-            blackwhite.unbind();
-            blackwhite.draw();
-           
+            //kernel.unbind();
+            //kernel.draw();
 
             glfwSwapBuffers(m_Window);
             glfwPollEvents();

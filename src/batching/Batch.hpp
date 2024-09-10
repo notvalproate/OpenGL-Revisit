@@ -34,4 +34,6 @@ private:
 	std::unique_ptr<IndexBuffer> m_IBO;
 
 	void parseMeshes(std::vector<float>& finalVertices, std::vector<unsigned int>& finalIndices, std::size_t stride);
+	
+	friend class BatchManager;
 };

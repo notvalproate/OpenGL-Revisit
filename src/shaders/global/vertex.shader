@@ -15,6 +15,8 @@ uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
 
+uniform float sintime;
+
 void main() {
 	v_MaterialIndex = aMaterialIndex;
 	v_TexCoord = aTexCoord;

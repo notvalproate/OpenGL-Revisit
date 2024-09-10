@@ -20,8 +20,8 @@ void FlashLight::setFlashLight(glm::vec3 color, float innerCutOff, float outerCu
     m_Shader->setUniform1f("u_SpotLight.InnerCutOff", glm::cos(glm::radians(innerCutOff)));
     m_Shader->setUniform1f("u_SpotLight.OuterCutOff", glm::cos(glm::radians(outerCutOff)));
     m_Shader->setUniform1f("u_SpotLight.Kc", 1.0f);
-    m_Shader->setUniform1f("u_SpotLight.Kl", 0.07f);
-    m_Shader->setUniform1f("u_SpotLight.Kq", 0.014f);
+    m_Shader->setUniform1f("u_SpotLight.Kl", 0.0f);
+    m_Shader->setUniform1f("u_SpotLight.Kq", 0.0f);
     m_Shader->setUniform1f("u_SpotLight.Brightness", brightess);
 }
 

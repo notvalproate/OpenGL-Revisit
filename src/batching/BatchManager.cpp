@@ -21,8 +21,9 @@ BatchManager& BatchManager::operator=(BatchManager&& other) noexcept {
 
 void BatchManager::add(std::size_t materialIndex, Mesh& mesh) {
 	std::size_t batchIndex = materialIndex / maxMaterialsPerBatch;
+	int batchSizeDifference = batchIndex - m_Batches.size() + 1;
 
-	if (m_Batches.size() < batchIndex + 1) {
+	for (int i = 0; i < batchSizeDifference; i++) {
 		m_Batches.push_back(Batch());
 	}
 

@@ -83,7 +83,7 @@ vec4 getPointLight(const PointLight pointLight, const vec4 diffuseMap, const vec
 vec4 getSpotLight(const SpotLight spotLight, const vec4 diffuseMap, const vec4 specularMap);
 
 float near = 0.1;
-float far = 100.0;
+float far = 5.0;
 
 float linearizeDepth(float depth)
 {
@@ -117,7 +117,7 @@ void main() {
 	
 	float depth = linearizeDepth(gl_FragCoord.z) / far;
 
-	color = vec4(color.rgb, u_Material[index].dissolve);
+	color = vec4(color.r, color.g, color.b, u_Material[index].dissolve);
 }
 
 //GET AMBIENCE DIFFUSION AND SPECULAR VECTORS

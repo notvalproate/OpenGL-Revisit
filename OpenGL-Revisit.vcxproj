@@ -192,6 +192,7 @@
     <ClInclude Include="src\modeling\ModelLoader.hpp" />
     <ClInclude Include="src\OpenGLApp.hpp" />
     <ClInclude Include="src\rendering\Buffers.hpp" />
+    <ClInclude Include="src\rendering\Cubemap.hpp" />
     <ClInclude Include="src\rendering\FrameBuffer.hpp" />
     <ClInclude Include="src\rendering\Shader.hpp" />
     <ClInclude Include="src\rendering\ShaderCompiler.hpp" />
